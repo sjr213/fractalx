@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FractalX", "FractalX\FractalX.vcxproj", "{EA738E87-4273-4551-9BA7-ED78D01E2743}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718} = {6B5E81C8-7E15-49AB-9CCE-B7241E63A718}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DxSupport", "DxSupport\DxSupport.vcxproj", "{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DxTests", "DxTests\DxTests.vcxproj", "{4EDAC3F3-223B-4AE7-9547-96FC787B4817}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718} = {6B5E81C8-7E15-49AB-9CCE-B7241E63A718}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DxColors", "DxColors\DxColors.vcxproj", "{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Debug|x64.ActiveCfg = Debug|x64
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Debug|x64.Build.0 = Debug|x64
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Debug|x86.ActiveCfg = Debug|Win32
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Debug|x86.Build.0 = Debug|Win32
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Release|x64.ActiveCfg = Release|x64
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Release|x64.Build.0 = Release|x64
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Release|x86.ActiveCfg = Release|Win32
+		{EA738E87-4273-4551-9BA7-ED78D01E2743}.Release|x86.Build.0 = Release|Win32
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Debug|x64.ActiveCfg = Debug|x64
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Debug|x64.Build.0 = Debug|x64
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Debug|x86.ActiveCfg = Debug|Win32
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Debug|x86.Build.0 = Debug|Win32
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Release|x64.ActiveCfg = Release|x64
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Release|x64.Build.0 = Release|x64
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Release|x86.ActiveCfg = Release|Win32
+		{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}.Release|x86.Build.0 = Release|Win32
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Debug|x64.ActiveCfg = Debug|x64
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Debug|x64.Build.0 = Debug|x64
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Debug|x86.ActiveCfg = Debug|Win32
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Debug|x86.Build.0 = Debug|Win32
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Release|x64.ActiveCfg = Release|x64
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Release|x64.Build.0 = Release|x64
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Release|x86.ActiveCfg = Release|Win32
+		{4EDAC3F3-223B-4AE7-9547-96FC787B4817}.Release|x86.Build.0 = Release|Win32
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Debug|x64.ActiveCfg = Debug|x64
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Debug|x64.Build.0 = Debug|x64
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Debug|x86.ActiveCfg = Debug|Win32
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Debug|x86.Build.0 = Debug|Win32
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Release|x64.ActiveCfg = Release|x64
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Release|x64.Build.0 = Release|x64
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Release|x86.ActiveCfg = Release|Win32
+		{C45AC6BB-A55A-4224-BB4C-62BBED017CDE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB53DF1B-8252-49D1-A04E-4FC1B0F6549A}
+	EndGlobalSection
+EndGlobal
