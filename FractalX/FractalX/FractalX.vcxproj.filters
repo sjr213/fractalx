@@ -176,13 +176,13 @@
     <None Include="res\FractalX.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="res\ribbon1.mfcribbon-ms">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="res\ribbon.mfcribbon-ms">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FractalX.rc">

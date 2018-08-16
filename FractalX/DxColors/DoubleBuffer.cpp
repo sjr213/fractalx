@@ -99,6 +99,8 @@ namespace DxColor
 			if(! m_oldDisplayBitmap)
 				m_oldDisplayBitmap = m_displayDC->SelectObject(m_displayBitmap.get());
 
+			m_displayDC->SetStretchBltMode(COLORONCOLOR);
+
 			// this may not be correct
 			m_displayDC->StretchBlt(0, 0, m_displaySize.cx, m_displaySize.cy, m_drawDC.get(), 0, 0, m_drawSize.cx, m_drawSize.cy, SRCCOPY);
 

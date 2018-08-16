@@ -143,7 +143,8 @@ protected:
 	{
 		for (int x = 0; x < NumberOfColors; ++x)
 		{
-			COLORREF color = fx::ColorUtilities::ToColorRef(m_colors.at(x));
+			auto uColor = m_colors.at(x);
+			COLORREF color = fx::ColorUtilities::ToColorRef(uColor);
 			CPen aPen;
 			aPen.CreatePen(PS_SOLID, 1, color);
 
