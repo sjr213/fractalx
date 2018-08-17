@@ -20,9 +20,12 @@ private:
 	bool m_dcNotReady = true;
 	bool m_paletteNeedsDrawing = true;
 	std::vector<uint32_t> m_colors;
+	HICON m_hIcon;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
+	const int BorderWidth = 10;
+	const int ControlRegionHeight = 50;
 
 public:
 	CPaletteViewDlgImp(const PinPalette& palette, CWnd* pParent)
@@ -33,7 +36,10 @@ public:
 	{}
 
 	virtual ~CPaletteViewDlgImp()
-	{}
+	{
+		if (m_hIcon)
+			DestroyIcon(m_hIcon);
+	}
 
 	void SetNewPaletteMethod(std::function<void(const PinPalette&)> newPaletteMethod) override
 	{
@@ -47,6 +53,9 @@ protected:
 	BOOL OnInitDialog() override
 	{
 		CPaletteViewDlg::OnInitDialog();
+
+		// the Pin - we need to use the instance handle for the dll because that's where the resource (icon) is
+		m_hIcon = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_PIN_ICON), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR);
 
 		CRect clientRect;
 		GetClientRect(clientRect);
@@ -63,20 +72,17 @@ protected:
 		CSize drawSize(NumberOfColors, ColorLineHeight);
 		m_doubleBuffer->SetDrawSize(drawSize);
 
-		const int borderWidth = 10;
-		const int controlHeight = 50;
-
 		CSize displaySize(clientRect.Size());
-		if (displaySize.cx > 3 * borderWidth)
+		if (displaySize.cx > 3 * BorderWidth)
 		{
-			displaySize.cx -= 2 * borderWidth;
-			m_topLeft.x = borderWidth;
+			displaySize.cx -= 2 * BorderWidth;
+			m_topLeft.x = BorderWidth;
 		}
 
-		if (displaySize.cy > 2 * controlHeight)
+		if (displaySize.cy > 2 * ControlRegionHeight)
 		{
-			displaySize.cy -= (2 * controlHeight);
-			m_topLeft.y = controlHeight;
+			displaySize.cy -= (2 * ControlRegionHeight);
+			m_topLeft.y = ControlRegionHeight;
 		}
 
 		m_paletteRect = CRect(m_topLeft, displaySize);
@@ -170,15 +176,22 @@ protected:
 		}
 	}
 
+	void DrawPins()
+	{
+		auto pDC = m_doubleBuffer->GetDisplayDC();
+
+		int top = m_doubleBuffer->GetDisplaySize().cy - 34;
+
+		pDC->DrawIcon(0, top, m_hIcon);
+	}
+
 	void OnPaint()
 	{
 		CPaintDC dc(this); // device context for painting
 
 		PrepBuffer(dc);
-		DrawPalatte(dc);
-
-		m_doubleBuffer->GetDisplayDC();
-		// draw pins here
+		DrawPalatte(dc);		
+		DrawPins();
 
 		m_doubleBuffer->Draw(dc, m_topLeft);
 	}

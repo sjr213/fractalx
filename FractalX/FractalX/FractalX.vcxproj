@@ -276,6 +276,7 @@
     <Image Include="res\FractalXDoc.ico" />
     <Image Include="res\homelarge.bmp" />
     <Image Include="res\homesmall.bmp" />
+    <Image Include="res\icon1.ico" />
     <Image Include="res\main.bmp" />
     <Image Include="res\menuimages.bmp" />
     <Image Include="res\menuimages_hc.bmp" />
