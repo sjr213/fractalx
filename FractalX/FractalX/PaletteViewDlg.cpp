@@ -5,6 +5,7 @@
 #include "Messages.h"
 #include "DoubleBuffer.h"
 #include "ColorUtilities.h"
+#include "PinTracker.h"
 
 using namespace DxColor;
 
@@ -21,6 +22,7 @@ private:
 	bool m_paletteNeedsDrawing = true;
 	std::vector<uint32_t> m_colors;
 	HICON m_hIcon;
+	std::shared_ptr<DxColor::CPinTracker> m_pinTracker;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
@@ -88,6 +90,8 @@ protected:
 		m_paletteRect = CRect(m_topLeft, displaySize);
 
 		m_doubleBuffer->SetDisplaySize(displaySize);
+
+		m_pinTracker = std::make_shared<CPinTracker>(displaySize, NumberOfColors, 32, m_palette.Pins);
 	}
 
 	void PaletteChanged()
@@ -180,9 +184,14 @@ protected:
 	{
 		auto pDC = m_doubleBuffer->GetDisplayDC();
 
+		if (!m_pinTracker)
+			return;
+
 		int top = m_doubleBuffer->GetDisplaySize().cy - 34;
 
-		pDC->DrawIcon(0, top, m_hIcon);
+		int nPins = m_pinTracker->GetNumberOfPins();
+		for (int i = 0; i < nPins; ++i)
+			pDC->DrawIcon(m_pinTracker->GetLeft(i), top, m_hIcon);
 	}
 
 	void OnPaint()
