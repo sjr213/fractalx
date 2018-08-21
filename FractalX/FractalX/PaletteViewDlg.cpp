@@ -23,6 +23,8 @@ private:
 	std::vector<uint32_t> m_colors;
 	HICON m_hIcon;
 	std::shared_ptr<DxColor::CPinTracker> m_pinTracker;
+	int m_activePinIndex = -1;
+	CPoint m_pinPt;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
@@ -204,10 +206,51 @@ protected:
 
 		m_doubleBuffer->Draw(dc, m_topLeft);
 	}
+
+	void OnLButtonDown(UINT nFlags, CPoint point)
+	{
+		m_activePinIndex = m_pinTracker->GetIndex(point);
+
+		if (m_activePinIndex >= 0)
+		{
+			SetCapture();
+			m_pinPt = point;
+		}
+
+		CPaletteViewDlg::OnLButtonDown(nFlags, point);
+	}
+
+	void OnLButtonUp(UINT nFlags, CPoint point)
+	{
+		if (m_activePinIndex >= 0)
+		{
+			ReleaseCapture();
+
+			int x = m_pinPt.x - point.x;
+
+			// use this to determine new pin position 
+			// need to take into account window limits
+
+			m_activePinIndex = -1;
+		}
+
+		CPaletteViewDlg::OnLButtonUp(nFlags, point);
+	}
+
+	void OnMouseMove(UINT nFlags, CPoint point)
+	{
+	//	if (nFlags & MK_LBUTTON && this == GetCapture())
+	//	{ }
+
+		CPaletteViewDlg::OnMouseMove(nFlags, point);
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_WM_PAINT()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDOK, &CPaletteViewDlgImp::OnOk)
 	ON_BN_CLICKED(IDCANCEL, &CPaletteViewDlgImp::OnBnClickedCancel)
 END_MESSAGE_MAP()
