@@ -100,8 +100,10 @@ protected:
 	{
 		m_colors = fx::ColorUtilities::ConvertPalette(m_palette, NumberOfColors);
 
+//		m_paletteNeedsDrawing = true;
+
 		UpdateData(FALSE);
-		InvalidateRect(m_paletteRect);
+		InvalidateRect(m_paletteRect, FALSE);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -228,8 +230,8 @@ protected:
 		{
 			ReleaseCapture();
 
-			int x = m_pinPt.x - point.x;
-			int y = m_pinPt.y - point.y;
+			int x =  point.x - m_pinPt.x;
+			int y =  point.y - m_pinPt.y;
 
 			// use this to determine new pin position 
 			// need to take into account window limits
