@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "PinTracker.h"
+#include <algorithm>
 
 namespace DxColor
 {
-	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins)
+	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins, CPoint topLeft)
 		: m_screenSize(screenSize)
 		, m_numberOfColors(numberOfColors)
 		, m_iconDim(iconDimension)
 		, m_pins(pins)
+		, m_topLeftDisplay(topLeft)
 	{
 		SetPins();
 	}
@@ -30,12 +32,9 @@ namespace DxColor
 	{
 		int nPins = static_cast<int>(m_rects.size());
 
-		CPoint ptCopy(pt);
-		ptCopy.x = static_cast<int>(pt.x * GetAdjustedPositionX() + 0.5);
-
 		for (int i = 0; i < nPins; ++i)
 		{
-			if (m_rects.at(i).PtInRect(ptCopy))
+			if (m_rects.at(i).PtInRect(pt))
 				return i;
 		}
 
@@ -43,28 +42,47 @@ namespace DxColor
 	}
 
 	// check this later
-	void CPinTracker::Move(int index, int deltaX)
+	void CPinTracker::Move(int index, int deltaX, int deltaY)
 	{
-		if (index >= 0 && index < static_cast<int>(m_pins.size()))
+		if (index >= 0 && index >= static_cast<int>(m_pins.size()))
 		{
 			return;
 		}
 
-		double adjustedPos = GetAdjustedPositionX();
+		CRect rect = m_rects.at(index);
 
-		int correctedX = static_cast<int>(deltaX * adjustedPos + 0.5);
-		m_lefts.at(index) += correctedX;
+		rect.top += deltaY;
+		if (rect.top < m_topLeftDisplay.y)
+			rect.top = m_topLeftDisplay.y;
 
-		// set rect	
-		double iconDim = m_iconDim * adjustedPos;
+		if (rect.top > m_topLeftDisplay.y + m_screenSize.cy - 2)
+			rect.top = m_topLeftDisplay.y + m_screenSize.cy - 2;
 
-		int top = static_cast<int>(m_screenSize.cy - iconDim - 2);
-		int bottom = static_cast<int>(top + iconDim);
-		int left = m_lefts.at(index);
-		m_rects.at(index) = CRect(left, top, static_cast<int>(left + iconDim), bottom);
+		rect.left += deltaX;
+		if (rect.left < m_topLeftDisplay.x - m_iconDim / 2)
+			rect.left = m_topLeftDisplay.x - m_iconDim / 2;
+		if (rect.left > m_topLeftDisplay.x + m_screenSize.cx - m_iconDim / 2)
+			rect.left = m_topLeftDisplay.x + m_screenSize.cx - m_iconDim / 2;
 
-		double center = m_lefts.at(index) + iconDim / 2.0;
+		rect.bottom = rect.top + m_iconDim;
+		rect.right = rect.left + m_iconDim;
+		m_rects.at(index) = rect;
+
+		// calculate top lefts relative to display
+		int top = rect.top - m_topLeftDisplay.y;
+		int left = static_cast<int>(GetAdjustedPositionX() * (rect.left - m_topLeftDisplay.x));
+		if (left < 0)
+			left = 0;
+		if (left > m_screenSize.cx)
+			left = m_screenSize.cx;
+
+		m_topLefts.at(index) = CPoint(left, top);
+
+		double center = left + m_iconDim / 2.0;
 		double newPosition = center / m_screenSize.cx;
+
+		newPosition = std::max(0.0, std::min(newPosition, 1.0));
+
 		m_pins.at(index).Index = newPosition;
 	}
 
@@ -73,9 +91,9 @@ namespace DxColor
 		return m_pins;
 	}
 
-	int CPinTracker::GetLeft(int index) const
+	CPoint CPinTracker::GetTopLeft(int index) const
 	{
-		return m_lefts.at(index);
+		return m_topLefts.at(index);
 	}
 
 	double CPinTracker::GetAdjustedPositionX() const
@@ -83,24 +101,34 @@ namespace DxColor
 		return static_cast<double>(m_screenSize.cx) / m_numberOfColors;
 	}
 
+	// display to window
+	double CPinTracker::GetUnAdjustedPositionX() const 
+	{
+		return static_cast<double>(m_numberOfColors) / m_screenSize.cx;
+	}
+
 	void CPinTracker::SetPins()
 	{
-		SetLefts();
+		SetTopLefts();
 		SetRects();
 	}
 
-	void CPinTracker::SetLefts()
+	void CPinTracker::SetTopLefts()
 	{
 		int nPins = static_cast<int>(m_pins.size());
-		m_lefts.resize(nPins);
+		m_topLefts.resize(nPins);
 
 		double adjustedPos = GetAdjustedPositionX();
 		double halfIconWidth = 0.5 * m_iconDim *  adjustedPos;
 
+		// The 2 is so the pin doesn't touch the bottom
+		int top = m_screenSize.cy - m_iconDim - 2;
+
 		for (int i = 0; i < nPins; ++i)
 		{
 			double centerPin = m_pins.at(i).Index * adjustedPos * m_numberOfColors;
-			m_lefts.at(i) = static_cast<int>(centerPin - halfIconWidth + 0.5);
+			CPoint topLeft(static_cast<int>(centerPin - halfIconWidth + 0.5), top);
+			m_topLefts.at(i) = topLeft;
 		}
 	}
 
@@ -109,16 +137,16 @@ namespace DxColor
 		int nPins = static_cast<int>(m_pins.size());
 		m_rects.resize(nPins);
 
-		double adjustedPos = GetAdjustedPositionX();
-		double iconDim = m_iconDim *  adjustedPos;
-
-		int top = static_cast<int>(m_screenSize.cy - iconDim - 2);
-		int bottom = static_cast<int>(top + iconDim);
+		double unAdjust = GetUnAdjustedPositionX();
 
 		for (int i = 0; i < nPins; ++i)
 		{
-			int left = m_lefts.at(i);
-			m_rects.at(i) = CRect(left, top, static_cast<int>(left + iconDim), bottom);
+			CPoint topLeft = m_topLefts.at(i);
+
+			int left = static_cast<int>(topLeft.x * unAdjust) + m_topLeftDisplay.x;
+			int top = topLeft.y + m_topLeftDisplay.y;
+
+			m_rects.at(i) = CRect(left, top, left + m_iconDim, top + m_iconDim);
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace DxColor
 	class CPinTracker
 	{
 	public:
-		CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins);
+		CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins, CPoint topLeft);
 		~CPinTracker();
 
 		void SetPins(const std::vector<ColorPin>& pins);
@@ -18,26 +18,31 @@ namespace DxColor
 		// -1 is not found
 		int GetIndex(const CPoint& pt) const;
 
-		void Move(int index, int deltaX);
+		void Move(int index, int deltaX, int deltaY);
 
 		std::vector<ColorPin> GetPins() const;
 
-		int GetLeft(int index) const;
+		CPoint GetTopLeft(int index) const;
 
 	protected:
 		void SetPins();
-		void SetLefts();
+		void SetTopLefts();
 		void SetRects();
 
+		// window to display
 		double GetAdjustedPositionX() const;
+
+		// display to window
+		double GetUnAdjustedPositionX() const;
 
 	private:
 		CSize m_screenSize;
 		int m_numberOfColors;
 		int m_iconDim;
+		CPoint m_topLeftDisplay;			// Display relative to dialog window
 
 		std::vector<ColorPin> m_pins;
 		std::vector<CRect> m_rects;
-		std::vector<int> m_lefts;
+		std::vector<CPoint> m_topLefts;		// Relative to pin display
 	};
 }

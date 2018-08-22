@@ -93,7 +93,7 @@ protected:
 
 		m_doubleBuffer->SetDisplaySize(displaySize);
 
-		m_pinTracker = std::make_shared<CPinTracker>(displaySize, NumberOfColors, 32, m_palette.Pins);
+		m_pinTracker = std::make_shared<CPinTracker>(displaySize, NumberOfColors, 32, m_palette.Pins, m_topLeft);
 	}
 
 	void PaletteChanged()
@@ -189,11 +189,13 @@ protected:
 		if (!m_pinTracker)
 			return;
 
-		int top = m_doubleBuffer->GetDisplaySize().cy - 34;
-
 		int nPins = m_pinTracker->GetNumberOfPins();
 		for (int i = 0; i < nPins; ++i)
-			pDC->DrawIcon(m_pinTracker->GetLeft(i), top, m_hIcon);
+		{
+			CPoint pt = m_pinTracker->GetTopLeft(i);
+
+			pDC->DrawIcon(pt.x, pt.y, m_hIcon);
+		}
 	}
 
 	void OnPaint()
@@ -227,11 +229,19 @@ protected:
 			ReleaseCapture();
 
 			int x = m_pinPt.x - point.x;
+			int y = m_pinPt.y - point.y;
 
 			// use this to determine new pin position 
 			// need to take into account window limits
+			m_pinTracker->Move(m_activePinIndex, x, y);
+
+			// need to update the palette
 
 			m_activePinIndex = -1;
+
+			m_palette.Pins = m_pinTracker->GetPins();
+
+			PaletteChanged();
 		}
 
 		CPaletteViewDlg::OnLButtonUp(nFlags, point);
