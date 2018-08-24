@@ -249,8 +249,20 @@ protected:
 
 	void OnMouseMove(UINT nFlags, CPoint point)
 	{
-	//	if (nFlags & MK_LBUTTON && this == GetCapture())
-	//	{ }
+		if (nFlags & MK_LBUTTON && this == GetCapture() && m_activePinIndex >= 0)
+		{ 
+			int x = point.x - m_pinPt.x;
+			int y = point.y - m_pinPt.y;
+
+			m_pinPt.x += x;
+			m_pinPt.y += y;
+
+			// use this to determine new pin position 
+			// need to take into account window limits
+			m_pinTracker->Move(m_activePinIndex, x, y);
+		
+			InvalidateRect(m_paletteRect, FALSE);
+		}
 
 		CPaletteViewDlg::OnMouseMove(nFlags, point);
 	}
