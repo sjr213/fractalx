@@ -96,6 +96,9 @@ namespace DxColor
 
 		CDC* GetDisplayDC() override
 		{
+			if (!m_oldDrawBitmap)
+				m_oldDrawBitmap = m_drawDC->SelectObject(m_drawBitmap.get());
+
 			if(! m_oldDisplayBitmap)
 				m_oldDisplayBitmap = m_displayDC->SelectObject(m_displayBitmap.get());
 

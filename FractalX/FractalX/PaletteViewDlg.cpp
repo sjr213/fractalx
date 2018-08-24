@@ -100,7 +100,7 @@ protected:
 	{
 		m_colors = fx::ColorUtilities::ConvertPalette(m_palette, NumberOfColors);
 
-//		m_paletteNeedsDrawing = true;
+		m_paletteNeedsDrawing = true;
 
 		UpdateData(FALSE);
 		InvalidateRect(m_paletteRect, FALSE);
@@ -171,12 +171,12 @@ protected:
 		}
 	}
 
-	void DrawPalatte(CDC& dc)
+	void DrawPalatte()
 	{
 		if (m_paletteNeedsDrawing)
-		{
+		{		
 			CDC* pDC = m_doubleBuffer->GetDrawingDC();
-			
+
 			if(pDC)
 				DrawPaletteColors(*pDC);
 
@@ -205,7 +205,7 @@ protected:
 		CPaintDC dc(this); // device context for painting
 
 		PrepBuffer(dc);
-		DrawPalatte(dc);		
+		DrawPalatte();		
 		DrawPins();
 
 		m_doubleBuffer->Draw(dc, m_topLeft);
@@ -236,8 +236,6 @@ protected:
 			// use this to determine new pin position 
 			// need to take into account window limits
 			m_pinTracker->Move(m_activePinIndex, x, y);
-
-			// need to update the palette
 
 			m_activePinIndex = -1;
 
