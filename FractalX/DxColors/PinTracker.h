@@ -18,7 +18,7 @@ namespace DxColor
 		// -1 is not found
 		int GetIndex(const CPoint& pt) const;
 
-		void Move(int index, int deltaX, int deltaY);
+		void Move(int index, int deltaX);
 
 		std::vector<ColorPin> GetPins() const;
 

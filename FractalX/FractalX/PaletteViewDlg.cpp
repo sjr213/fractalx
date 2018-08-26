@@ -231,11 +231,10 @@ protected:
 			ReleaseCapture();
 
 			int x =  point.x - m_pinPt.x;
-			int y =  point.y - m_pinPt.y;
 
 			// use this to determine new pin position 
 			// need to take into account window limits
-			m_pinTracker->Move(m_activePinIndex, x, y);
+			m_pinTracker->Move(m_activePinIndex, x);
 
 			m_activePinIndex = -1;
 
@@ -252,14 +251,12 @@ protected:
 		if (nFlags & MK_LBUTTON && this == GetCapture() && m_activePinIndex >= 0)
 		{ 
 			int x = point.x - m_pinPt.x;
-			int y = point.y - m_pinPt.y;
 
 			m_pinPt.x += x;
-			m_pinPt.y += y;
 
 			// use this to determine new pin position 
 			// need to take into account window limits
-			m_pinTracker->Move(m_activePinIndex, x, y);
+			m_pinTracker->Move(m_activePinIndex, x);
 		
 			InvalidateRect(m_paletteRect, FALSE);
 		}

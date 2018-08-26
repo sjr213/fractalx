@@ -42,7 +42,7 @@ namespace DxColor
 	}
 
 	// check this later
-	void CPinTracker::Move(int index, int deltaX, int deltaY)
+	void CPinTracker::Move(int index, int deltaX)
 	{
 		if (index < 0 || index >= static_cast<int>(m_pins.size()))
 		{
@@ -51,28 +51,19 @@ namespace DxColor
 
 		CRect rect = m_rects.at(index);
 
-		rect.top += deltaY;
-		if (rect.top < m_topLeftDisplay.y)
-			rect.top = m_topLeftDisplay.y;
-
-		if (rect.top > m_topLeftDisplay.y + m_screenSize.cy - 2)
-			rect.top = m_topLeftDisplay.y + m_screenSize.cy - 2;
-
 		rect.left += deltaX;
 		if (rect.left < m_topLeftDisplay.x - m_iconDim / 2)
 			rect.left = m_topLeftDisplay.x - m_iconDim / 2;
 		if (rect.left > m_topLeftDisplay.x + m_screenSize.cx - m_iconDim / 2)
 			rect.left = m_topLeftDisplay.x + m_screenSize.cx - m_iconDim / 2;
 
-		rect.bottom = rect.top + m_iconDim;
 		rect.right = rect.left + m_iconDim;
 		m_rects.at(index) = rect;
 
 		// calculate top lefts relative to display
-		int top = rect.top - m_topLeftDisplay.y;
 		int left = static_cast<int>(GetAdjustedPositionX() * (rect.left - m_topLeftDisplay.x));
 
-		m_topLefts.at(index) = CPoint(left, top);
+		m_topLefts.at(index).x = left;
 
 		double center = left + m_iconDim / 2.0;
 		double newPosition = center / m_screenSize.cx;
