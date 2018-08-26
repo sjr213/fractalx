@@ -1,4 +1,8 @@
 #include "stdafx.h"
+
+#define NOMINMAX
+
+#include <algorithm>
 #include "ColorUtilities.h"
 #include "..\DxColors\ColorPin.h"
 
@@ -29,12 +33,39 @@ namespace fx
 			return static_cast<bite>(result + 0.5);
 		}
 
-		static void StretchPins(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nColors)
+		static int ColorsRemaining(std::vector<uint32_t>& colors, int nColors)
+		{
+			return nColors - static_cast<int>(colors.size());
+		}
+
+		void FillSpaceBeforeFirstPin(const DxColor::ColorPin& pin1, std::vector<uint32_t>& colors, int nColors)
+		{
+			if (pin1.Index <= 0.0)
+				return;
+
+			int nSteps = static_cast<int>(pin1.Index * nColors);
+			nSteps = std::min<int>(nSteps, nColors);
+
+			for(int i = 0; i < nSteps; ++i)
+				AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
+		}
+
+		static void StretchPins(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, bool lastPins)
 		{
 			if (pin1.CurveType != DxColor::ColorCurveType::Normal)
 				throw std::exception("Only Normal curve type is implemented");
 
 			int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
+
+			if (lastPins)
+			{
+				int colorsRemaining = ColorsRemaining(colors, nColors);
+				if(colorsRemaining <= 1)
+					throw std::exception("stretch failed, too many colors!");
+
+				if (pin2.Index >= 1.0)
+					nSteps = colorsRemaining;
+			}
 
 			// always add one color for each pin
 			AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
@@ -54,6 +85,12 @@ namespace fx
 
 			// add last color
 			AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
+
+			if (!lastPins)
+				return;
+
+			while(static_cast<int>(colors.size()) < nColors)
+				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 		}
 
 		std::vector<uint32_t> ConvertPalette(DxColor::PinPalette& palette, int nColors)
@@ -67,12 +104,16 @@ namespace fx
 			std::vector<uint32_t> colors;
 			colors.reserve(nColors);
 
+			FillSpaceBeforeFirstPin(pin1, colors, nColors);
+
 			for (int i = 1; i < nPins; ++i)
 			{
 				const DxColor::ColorPin& pin2 = palette.Pins.at(i);
-				StretchPins(pin1, pin2, colors, nColors);
+				StretchPins(pin1, pin2, colors, nColors, i == nPins - 1);
 				pin1 = pin2;
 			}
+
+			ASSERT(static_cast<int>(colors.size() == nColors));
 
 			return colors;
 		}

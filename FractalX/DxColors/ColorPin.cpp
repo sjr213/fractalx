@@ -78,6 +78,7 @@ namespace DxColor
 		}
 	}
 
+	// no longer used
 	static void StretchPaletteIndices(PinPalette& palette, double oldMin, double oldMax)
 	{
 		if (oldMin == oldMax) // stretch evenly since the pin indices are the same
@@ -118,7 +119,10 @@ namespace DxColor
 			return lf.Index < rt.Index;
 		});
 
-		if (pr.first->Index != 0.0 || pr.second->Index != 1.0)
-			StretchPaletteIndices(palette, pr.first->Index, pr.second->Index);
+		if (pr.first->Index < 0.0)
+			throw std::exception("lowest index less than 0.0");
+
+		if(pr.second->Index > 1.0)
+			throw std::exception("highest index greater than 1.0");
 	}
 }

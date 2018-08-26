@@ -44,7 +44,7 @@ namespace DxColor
 	// check this later
 	void CPinTracker::Move(int index, int deltaX, int deltaY)
 	{
-		if (index >= 0 && index >= static_cast<int>(m_pins.size()))
+		if (index < 0 || index >= static_cast<int>(m_pins.size()))
 		{
 			return;
 		}
