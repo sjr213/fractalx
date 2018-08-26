@@ -45,9 +45,7 @@ namespace DxColor
 	void CPinTracker::Move(int index, int deltaX)
 	{
 		if (index < 0 || index >= static_cast<int>(m_pins.size()))
-		{
 			return;
-		}
 
 		CRect rect = m_rects.at(index);
 

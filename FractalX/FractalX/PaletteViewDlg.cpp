@@ -240,6 +240,8 @@ protected:
 
 			m_palette.Pins = m_pinTracker->GetPins();
 
+			SpacePins(m_palette);
+
 			PaletteChanged();
 		}
 

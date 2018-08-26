@@ -40,5 +40,8 @@ namespace DxColor
 	// Make sure indices are between 0 and 1.0 and in ascending order
 	void ValidatePalette(PinPalette& palette);
 
+	// Make sure the pins don't overlap
+	void SpacePins(PinPalette& palette);
+
 	void ExportPins(CArchive& ar, PinPalette& palette);
 }

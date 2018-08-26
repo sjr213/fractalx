@@ -125,4 +125,35 @@ namespace DxColor
 		if(pr.second->Index > 1.0)
 			throw std::exception("highest index greater than 1.0");
 	}
+
+	void SpacePins(PinPalette& palette)
+	{
+		if (palette.Pins.size() < 2)
+			throw std::exception("less than 2 pins");
+
+		std::sort(begin(palette.Pins), end(palette.Pins), [&](const ColorPin& lf, const ColorPin& rt)
+		{
+			return lf.Index < rt.Index;
+		});
+
+		DxColor::ColorPin* pin1 = &palette.Pins.at(0);
+
+		int nPins = static_cast<int>(palette.Pins.size());
+
+		const double space = 0.0001;
+
+		for (int i = 1; i < nPins; ++i)
+		{
+			DxColor::ColorPin* pin2 = &palette.Pins.at(i);
+			if (pin2->Index <= pin1->Index)
+			{
+				if (pin2->Index >= 1.0 - space)
+					pin1->Index -= space;
+				else
+					pin2->Index += space;
+			}
+
+			pin1 = &palette.Pins.at(i);
+		}
+	}
 }
