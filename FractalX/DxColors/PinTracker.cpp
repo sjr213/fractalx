@@ -71,10 +71,6 @@ namespace DxColor
 		// calculate top lefts relative to display
 		int top = rect.top - m_topLeftDisplay.y;
 		int left = static_cast<int>(GetAdjustedPositionX() * (rect.left - m_topLeftDisplay.x));
-		if (left < 0)
-			left = 0;
-		if (left > m_screenSize.cx)
-			left = m_screenSize.cx;
 
 		m_topLefts.at(index) = CPoint(left, top);
 
