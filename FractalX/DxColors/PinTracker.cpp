@@ -42,10 +42,10 @@ namespace DxColor
 	}
 
 	// check this later
-	void CPinTracker::Move(int index, int deltaX)
+	int CPinTracker::Move(int index, int deltaX)
 	{
 		if (index < 0 || index >= static_cast<int>(m_pins.size()))
-			return;
+			return -1;
 
 		CRect rect = m_rects.at(index);
 
@@ -69,6 +69,8 @@ namespace DxColor
 		newPosition = std::max(0.0, std::min(newPosition, 1.0));
 
 		m_pins.at(index).Index = newPosition;
+
+		return static_cast<int>(m_numberOfColors * newPosition);
 	}
 
 	std::vector<ColorPin> CPinTracker::GetPins() const

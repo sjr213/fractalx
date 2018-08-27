@@ -25,6 +25,7 @@ private:
 	std::shared_ptr<DxColor::CPinTracker> m_pinTracker;
 	int m_activePinIndex = -1;
 	CPoint m_pinPt;
+	CString m_indexText;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
@@ -114,6 +115,8 @@ protected:
 		{
 			auto name = m_palette.Name;
 			DDX_Text(pDX, IDC_PALETTE_NAME_EDIT, name);
+
+			DDX_Text(pDX, IDC_STATIC_INDEX, m_indexText);
 		}
 	}
 
@@ -224,6 +227,16 @@ protected:
 		CPaletteViewDlg::OnLButtonDown(nFlags, point);
 	}
 
+	void UpdateIndex(int index)
+	{
+		if (index < 0)
+			m_indexText = _T("");
+		else
+			m_indexText.Format(_T("Index: %d"), index);
+
+		UpdateData(FALSE);
+	}
+
 	void OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if (m_activePinIndex >= 0)
@@ -245,6 +258,8 @@ protected:
 			PaletteChanged();
 		}
 
+		UpdateIndex(-1);
+
 		CPaletteViewDlg::OnLButtonUp(nFlags, point);
 	}
 
@@ -258,7 +273,8 @@ protected:
 
 			// use this to determine new pin position 
 			// need to take into account window limits
-			m_pinTracker->Move(m_activePinIndex, x);
+			int index = m_pinTracker->Move(m_activePinIndex, x);
+			UpdateIndex(index);
 		
 			InvalidateRect(m_paletteRect, FALSE);
 		}

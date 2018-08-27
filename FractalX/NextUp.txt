@@ -1,10 +1,10 @@
 Next Up
 
-1) Fix so left most pin can go to end. Currently it's block about 1/4 th inch to right.
-2) Make pins stay in the plane.
-3) When pin is let go and it's exactly on top of another pin index, make it move 1 position rt or left
-4) Check pin movement
-5) Add grid below
+1) Fix so left most pin can go to end. Currently it's block about 1/4 th inch to right. -ok
+2) Make pins stay in the plane. -ok
+3) When pin is let go and it's exactly on top of another pin index, make it move 1 position rt or left -ok
+4) Check pin movement -ok
+5) Display current index -ok
 
 6) work on serializing palette only, Save and open dialog
 7) Add dialog to change individual pin color and position
