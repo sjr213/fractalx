@@ -281,6 +281,161 @@ protected:
 
 		CPaletteViewDlg::OnMouseMove(nFlags, point);
 	}
+
+	void OnImport()
+	{
+	/*
+		CString fileName;
+		CString fileExt;
+		fileExt.Format(_T(".clr%d"), nOrigColors);
+		CString fileType;
+		fileType.Format(_T("color files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
+
+		// Open a Save As dialog to get a name
+		CFileDialog MyImportDlg(TRUE, fileExt, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, fileType);
+
+		// Display as modal 
+		if (MyImportDlg.DoModal() == IDOK)
+		{
+			fileName = MyImportDlg.GetPathName();
+
+			ImportColorsFromFile(fileName);
+		}
+
+		///////////////////////////////////////////
+		////////////////////////////////////////////
+
+
+		shared_ptr<CImageBasic<ush> > pImage = GetImageCopy();
+		if (!pImage)
+			return false;
+
+		int nOrigColors = pImage->GetNumColors();
+		std::vector<RGBQUAD> Quads = pImage->GetColors();
+
+		// Create a CFile and then a CArchive
+		CFile colorFile;
+
+		// do something about exceptions
+		CFileException FileExcept;
+		if (!colorFile.Open(fileName, CFile::modeRead, &FileExcept))
+		{
+			CString error;
+			wchar_t message[100] = { 0 };
+			FileExcept.GetErrorMessage(message, 100);
+			error.Format(_T("Error opening file: %s: %s"), fileName, message);
+			AfxMessageBox(error, MB_ICONWARNING);
+			return false;
+		}
+
+		CArchive ar(&colorFile, CArchive::load);
+		int nColors;
+		// Serialize
+		ar >> nColors;
+
+		if (nColors != nOrigColors)
+		{
+			CString mes;
+			mes.Format(_T("Color File has an incorrect number of colors %d, instead of %d"), nColors, nOrigColors);
+			AfxMessageBox(mes, MB_ICONWARNING);
+			ar.Close();
+			colorFile.Close();
+			return false;
+		}
+
+		// Construct the bitmap
+		shared_ptr<CDib> pDib(new CDib());
+		if (!pDib)
+		{
+			AfxMessageBox(_T("Memory Error, Please Exit!"), MB_ICONSTOP);
+			ar.Close();
+			colorFile.Close();
+			return false;
+		}
+		// Save the original colors for undo
+		MakeBackUp();
+
+		// we just have to read thru the bitmap but we don't need it so delete it
+		pDib->Serialize(ar);
+
+		// Read colors
+		for (int i = 0; i < nColors; i++)
+			ar >> Quads[i].rgbRed >> Quads[i].rgbGreen >> Quads[i].rgbBlue;
+
+		// read number of pins - 
+		int nPins;
+		ar >> nPins;
+
+		// read pins
+		ClearList();
+
+		// We read in using a CObList to support old versions
+		CTypedPtrList<CObList, CPinn*> PinList;
+		PinList.Serialize(ar);
+
+		int i = 0;
+		POSITION POS = PinList.GetHeadPosition();
+		while (POS && i < nPins)
+		{
+			CPinn *pPin = PinList.GetNext(POS);
+			shared_ptr<CPinn> pNewPin(pPin);
+			m_Pins.push_back(pNewPin);
+			i++;
+		}
+
+		// close up
+		ar.Close();
+		colorFile.Close();
+
+		pImage->SetColors(Quads);
+		SetImage(pImage);
+
+		SetModifiedFlag();
+		PinsChanged();
+		// Change from 0 to HintZoomContrastMin to stop scrolling 10/31/06
+		UpdateAllViews(NULL, HintZoomContrastMin, 0);
+		return true;
+		*/
+	}
+
+	void OnExport()
+	{
+		CString fileName;
+		CString fileExt(_T("pins"));
+		CString fileType;
+		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
+
+		// Open a Save As dialog to get a name
+		CFileDialog exportDlg(FALSE, fileExt, NULL, OFN_PATHMUSTEXIST, fileType);
+
+		// Display as modal 
+		if (exportDlg.DoModal() != IDOK)
+			return;
+
+		fileName = exportDlg.GetPathName();
+
+		// Create a CFile and then a CArchive
+		CFile colorFile;
+
+		// do something about exceptions
+		CFileException FileExcept;
+		if (! colorFile.Open(fileName, CFile::modeCreate | CFile::modeWrite, &FileExcept))
+		{
+			CString error;
+			wchar_t message[100] = { 0 };
+			FileExcept.GetErrorMessage(message, 100);
+			error.Format(_T("Error opening file: %s: %s"), fileName, message);
+			AfxMessageBox(error, MB_ICONWARNING);
+			return;
+		}
+
+		CArchive ar(&colorFile, CArchive::store);
+
+		DxColor::ExportPins(ar, m_palette);
+
+		ar.Close();
+		colorFile.Close();
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
@@ -290,6 +445,8 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDOK, &CPaletteViewDlgImp::OnOk)
 	ON_BN_CLICKED(IDCANCEL, &CPaletteViewDlgImp::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_IMPORT_BUT, &CPaletteViewDlgImp::OnImport)
+	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)
