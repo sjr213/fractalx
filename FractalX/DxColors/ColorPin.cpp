@@ -13,7 +13,17 @@ namespace DxColor
 		if (ar.IsStoring())
 			ar << color.A << color.R << color.G << color.B;
 		else
-			ar >> color.A >> color.R << color.G << color.B;
+		{
+			// ar >> color.A >> color.R << color.G << color.B;
+			BYTE a, r, g, b;
+			ar >> a >> r >> g >> b;
+
+			color.A = a;
+			color.R = r;
+			color.G = g;
+			color.B = b;
+		}
+			
 	}
 
 	static void SerializePin(CArchive& ar, ColorPin& pin, int version)
