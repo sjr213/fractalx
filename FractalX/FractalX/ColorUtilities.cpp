@@ -57,23 +57,26 @@ namespace fx
 
 			int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
 
+			int colorsRemaining = ColorsRemaining(colors, nColors);
+			if (colorsRemaining < 1)
+				return;
+
 			if (lastPins)
 			{
-				int colorsRemaining = ColorsRemaining(colors, nColors);
-				if(colorsRemaining <= 1)
-					throw std::exception("stretch failed, too many colors!");
-
 				if (pin2.Index >= 1.0)
 					nSteps = colorsRemaining;
+
+				// remove 1 for last color
+				--nSteps;
 			}
 
 			// always add one color for each pin
 			AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
 
 			// add intermediate colors
-			if (nSteps > 2)
+			if (nSteps > 1)
 			{
-				for (int i = 1; i < nSteps - 1; ++i)
+				for (int i = 1; i < nSteps; ++i)
 				{
 					bite a = StretchBite(pin1.Color1.A, pin2.Color1.A, i, nSteps);
 					bite r = StretchBite(pin1.Color1.R, pin2.Color1.R, i, nSteps);
@@ -83,11 +86,11 @@ namespace fx
 				}
 			}
 
-			// add last color
-			AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
-
 			if (!lastPins)
 				return;
+
+			// add last color
+			AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 
 			while(static_cast<int>(colors.size()) < nColors)
 				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
