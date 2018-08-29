@@ -7,11 +7,11 @@ Next Up
 5) Display current index -ok
 
 6) work on serializing palette only, Save and open dialog -ok
-6.5) Allow editing name
-6.8) figure out if should allow last pin to have only one nStep left
+6.5) Allow editing name -ok
+6.8) figure out if should allow last pin to have only one nStep left -ok updated calc
 7) Add dialog to change individual pin color and position
 7.5) Implement deleting pin by pressing delete button?
-8) Add context menu
+8) Add context menu -ok
 
 9) Serialize whole object
 10) Serialize triangles to speed up

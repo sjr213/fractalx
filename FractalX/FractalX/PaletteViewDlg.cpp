@@ -287,6 +287,20 @@ protected:
 		CPaletteViewDlg::OnMouseMove(nFlags, point);
 	}
 
+	void OnRButtonUp(UINT nFlags, CPoint point)
+	{
+		CMenu pinMenu;
+		pinMenu.LoadMenu(IDR_PALETTE_VIEW_CONTEXT_MENU);
+		ClientToScreen(&point);
+
+		pinMenu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+	}
+
+	void OnDeletePin()
+	{
+
+	}
+
 	void OnKillfocusEdit()
 	{
 		UpdateData(TRUE);
@@ -379,11 +393,13 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_RBUTTONUP()
 	ON_BN_CLICKED(IDOK, &CPaletteViewDlgImp::OnOk)
 	ON_BN_CLICKED(IDCANCEL, &CPaletteViewDlgImp::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_IMPORT_BUT, &CPaletteViewDlgImp::OnImport)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
+	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)
