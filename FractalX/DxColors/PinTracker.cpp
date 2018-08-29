@@ -21,6 +21,8 @@ namespace DxColor
 	void CPinTracker::SetPins(const std::vector<ColorPin>& pins)
 	{
 		m_pins = pins;
+
+		SetPins();
 	}
 
 	int CPinTracker::GetNumberOfPins() const

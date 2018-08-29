@@ -111,13 +111,16 @@ protected:
 	{
 		CPaletteViewDlg::DoDataExchange(pDX);
 
-		if (!pDX->m_bSaveAndValidate)
-		{
-			auto name = m_palette.Name;
-			DDX_Text(pDX, IDC_PALETTE_NAME_EDIT, name);
+		auto name = m_palette.Name;
 
-			DDX_Text(pDX, IDC_STATIC_INDEX, m_indexText);
+		DDX_Text(pDX, IDC_PALETTE_NAME_EDIT, name);
+
+		if (pDX->m_bSaveAndValidate)
+		{
+			m_palette.Name = name;
 		}
+		else
+			DDX_Text(pDX, IDC_STATIC_INDEX, m_indexText);
 	}
 
 	DECLARE_MESSAGE_MAP()
@@ -216,6 +219,8 @@ protected:
 
 	void OnLButtonDown(UINT nFlags, CPoint point)
 	{
+		UpdateData(TRUE);
+
 		m_activePinIndex = m_pinTracker->GetIndex(point);
 
 		if (m_activePinIndex >= 0)
@@ -282,6 +287,11 @@ protected:
 		CPaletteViewDlg::OnMouseMove(nFlags, point);
 	}
 
+	void OnKillfocusEdit()
+	{
+		UpdateData(TRUE);
+	}
+
 	void OnImport()
 	{
 	
@@ -319,18 +329,20 @@ protected:
 		ar.Close();
 		colorFile.Close();
 
+		m_pinTracker->SetPins(m_palette.Pins);
+
 		PaletteChanged();
 	}
 
 	void OnExport()
 	{
-		CString fileName;
+		CString fileName = m_palette.Name;
 		CString fileExt(_T("pins"));
 		CString fileType;
 		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
 
 		// Open a Save As dialog to get a name
-		CFileDialog exportDlg(FALSE, fileExt, NULL, OFN_PATHMUSTEXIST, fileType);
+		CFileDialog exportDlg(FALSE, fileExt, fileName, OFN_PATHMUSTEXIST, fileType);
 
 		// Display as modal 
 		if (exportDlg.DoModal() != IDOK)
@@ -371,6 +383,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDCANCEL, &CPaletteViewDlgImp::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_IMPORT_BUT, &CPaletteViewDlgImp::OnImport)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
+	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)
