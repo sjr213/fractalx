@@ -53,7 +53,7 @@ namespace DxColor
 		}
 	}
 
-	void ExportPins(CArchive& ar, PinPalette& palette)
+	void SerializePalette(CArchive& ar, PinPalette& palette)
 	{
 		if (ar.IsStoring())
 		{

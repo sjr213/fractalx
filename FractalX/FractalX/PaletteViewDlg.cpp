@@ -291,14 +291,32 @@ protected:
 	{
 		CMenu pinMenu;
 		pinMenu.LoadMenu(IDR_PALETTE_VIEW_CONTEXT_MENU);
+
+		m_pinPt = point;
+
 		ClientToScreen(&point);
 
 		pinMenu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
 	}
 
+	void OnUpdateDeletePin(CCmdUI* cmdUI)
+	{
+		int nPin = m_pinTracker->GetIndex(m_pinPt);
+
+		cmdUI->Enable(nPin >= 0);
+	}
+
 	void OnDeletePin()
 	{
+		int nPin = m_pinTracker->GetIndex(m_pinPt);
+		if (nPin < 0)
+			return;
+		 
+		m_palette.Pins.erase(std::begin(m_palette.Pins) + nPin);
 
+		m_pinTracker->SetPins(m_palette.Pins);
+
+		PaletteChanged();
 	}
 
 	void OnKillfocusEdit()
@@ -337,7 +355,7 @@ protected:
 		}
 
 		CArchive ar(&colorFile, CArchive::load);
-		DxColor::ExportPins(ar, m_palette);
+		DxColor::SerializePalette(ar, m_palette);
 
 		// close up
 		ar.Close();
@@ -381,7 +399,7 @@ protected:
 
 		CArchive ar(&colorFile, CArchive::store);
 
-		DxColor::ExportPins(ar, m_palette);
+		DxColor::SerializePalette(ar, m_palette);
 
 		ar.Close();
 		colorFile.Close();
@@ -400,6 +418,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, OnUpdateDeletePin)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)

@@ -43,5 +43,5 @@ namespace DxColor
 	// Make sure the pins don't overlap
 	void SpacePins(PinPalette& palette);
 
-	void ExportPins(CArchive& ar, PinPalette& palette);
+	void SerializePalette(CArchive& ar, PinPalette& palette);
 }
