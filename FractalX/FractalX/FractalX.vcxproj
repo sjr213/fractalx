@@ -193,6 +193,7 @@
     <ClInclude Include="CancelException.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColorUtilities.h" />
+    <ClInclude Include="ctrls.h" />
     <ClInclude Include="FractalParamsPage.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="ModelSheet.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="FractalXView.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
+    <ClInclude Include="PinEditDlg.h" />
     <ClInclude Include="PositionRangePage.h" />
     <ClInclude Include="ProgressCancelSignaling.h" />
     <ClInclude Include="ProgressDlg.h" />
@@ -222,6 +224,7 @@
     <ClCompile Include="CancelException.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />
+    <ClCompile Include="ctrls.cpp" />
     <ClCompile Include="FractalParamsPage.cpp" />
     <ClCompile Include="Messages.cpp" />
     <ClCompile Include="ModelSheet.cpp" />
@@ -234,6 +237,7 @@
     <ClCompile Include="FractalXView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
+    <ClCompile Include="PinEditDlg.cpp" />
     <ClCompile Include="PositionRangePage.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />

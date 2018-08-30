@@ -96,6 +96,12 @@
     <ClInclude Include="PaletteViewDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PinEditDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ctrls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FractalX.cpp">
@@ -168,6 +174,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PaletteViewDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PinEditDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ctrls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
