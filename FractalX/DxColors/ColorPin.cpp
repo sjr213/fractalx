@@ -34,20 +34,19 @@ namespace DxColor
 
 		SerializeColorArgb(ar, pin.Color1);
 		SerializeColorArgb(ar, pin.Color2);
-		SerializeColorArgb(ar, pin.Color3);
 
 		if (ar.IsStoring())
 		{
 			ar << pin.Index;
 			ar << static_cast<int>(pin.CurveType);
-			ar << pin.IndexWidth1 << pin.IndexWidth2 << pin.IndexWidth3;
+			ar << pin.IndexWidth1 << pin.IndexWidth2;
 		}
 		else
 		{
 			int curveType = 1;
 			ar >> pin.Index;
 			ar >> curveType;
-			ar >> pin.IndexWidth1 >> pin.IndexWidth2 >> pin.IndexWidth3;
+			ar >> pin.IndexWidth1 >> pin.IndexWidth2;
 
 			pin.CurveType = static_cast<ColorCurveType>(curveType);
 		}

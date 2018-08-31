@@ -3,14 +3,14 @@
 #include "resource.h"
 #include "ctrls.h"
 #include "afxwin.h"
+#include "ColorPin.h"
 
-class CPinn;
-// CPinEditDlg dialog
+// notes for FractalX version
+// lets pretend the index is an int between 0 and 999, later convert it to double
 
-class AFX_EXT_CLASS CPinEditDlg : public CDialog
+
+class CPinEditDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CPinEditDlg)
-
 public:
 	CPinEditDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CPinEditDlg();
@@ -18,21 +18,28 @@ public:
 // Dialog Data
 	enum { IDD = IDD_PIN_EDIT_DLG };
 
-	int m_nPins;
-	CPinn *m_pPins;
-	int m_nBackUpPins;
-	CPinn *m_pBackUpPins;
-	
-	int m_nColors;	// number of colors ( Maximum pin index is m_nColors -1)
-	RGBQUAD* m_pColors;
-	RGBQUAD* m_pBackUpColors;
+	void SetPins(std::vector<DxColor::ColorPin>& pins);
 
-	int m_indexIndex;	// the index of m_pPin[] in the first position shown
+	std::vector<DxColor::ColorPin> GetPins() const;
 
 	// This enables the Update Button
 	void Dirty(BOOL makeDirty=TRUE);
 
-protected: // Special members
+protected: 
+	
+	int m_nPins;
+
+	std::vector<DxColor::ColorPin> m_pins;
+
+	int m_nBackUpPins;
+
+	std::vector<DxColor::ColorPin> m_backupPins;
+
+	int m_nColors = 1000;	// number of colors 
+
+	int m_indexIndex;	// the index of m_pPin[] in the first position shown
+	
+	// Special members
 	// m_indexIndex
 	CRect m_TopLfRect1;
 	CRect m_TopCtrRect1;
@@ -77,6 +84,41 @@ protected: // Special members
 	BOOL m_bParentChanged;	// true if an update was sent to the parent
 							// means OnOK, a backup can be made even if !m_bDirty
 
+	// Control fields
+	BOOL m_Connect1;
+	BOOL m_Connect2;
+
+	int m_PinNum1;
+	int m_PinNum2;
+	int m_PinNum3;
+
+	int m_PinIndex1;
+	int m_PinIndex2;
+	int m_PinIndex3;
+
+	int m_BandA1;
+	int m_BandA2;
+	int m_BandB1;
+	int m_BandB2;
+
+	double m_k1;
+	double m_k2;
+
+	BOOL m_Split1;
+	BOOL m_Split2;
+	BOOL m_Split3;
+
+	CColorEdit m_RedEdit;
+	CColorEdit m_GreenEdit;
+	CColorEdit m_BlueEdit;
+
+	CString m_red;
+	CString m_green;
+	CString m_blue;
+
+	int m_BandC1;
+	int m_BandC2;
+
 	void UpdateCtrls();
 
 	// Called by OnInitDialog() and when the number 
@@ -88,158 +130,67 @@ protected: // Special members
 	inline double curver(double k, double in);
 
 	// puts them in order of increasing color index
-	void SortPins(int count, CPinn *pPins);
+	void SortPins(int count, std::vector<DxColor::ColorPin>& pins);
 
 	// return true if there is a pin with the same index
 	BOOL DoesPinAlreadyExist(int index);
 
 protected:
+	
+	DECLARE_MESSAGE_MAP()
+
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
-public:
-	BOOL m_Connect2;
-public:
-	BOOL m_Connect1;
-public:
-	int m_PinNum1;
-public:
-	int m_PinNum2;
-public:
-	int m_PinNum3;
-public:
-	int m_PinIndex1;
-public:
-	int m_PinIndex2;
-public:
-	int m_PinIndex3;
-public:
-	int m_BandA1;
-public:
-	int m_BandA2;
-public:
-	int m_BandB1;
-public:
-	int m_BandB2;
-public:
-	double m_k1;
-public:
-	double m_k2;
-public:
-	BOOL m_Split1;
-public:
-	BOOL m_Split2;
-public:
-	BOOL m_Split3;
-public:
 	virtual BOOL OnInitDialog();
-public:
-	afx_msg void OnPaint();
-public:
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-public:
-	afx_msg void OnBnClickedNextBut();
-public:
-	afx_msg void OnBnClickedPreviousBut();
-protected:
+
 	virtual void OnOK();
+
 	virtual void OnCancel();
-public:
-	afx_msg void OnBnClickedConnectCheck1();
-public:
-	afx_msg void OnBnClickedConnectCheck2();
-public:
-	afx_msg void OnBnClickedSpreadNormRad1();
-public:
-	afx_msg void OnBnClickedSpreadNormRad2();
-public:
-	afx_msg void OnBnClickedSpreadStripeRad1();
-public:
-	afx_msg void OnBnClickedSpreadStripeRad2();
-public:
-	afx_msg void OnBnClickedSpreadCurveRad1();
-public:
-	afx_msg void OnBnClickedSpreadCurveRad2();
-public:
-	afx_msg void OnEnKillfocusBandaEdit1();
-public:
-	afx_msg void OnEnKillfocusBandaEdit2();
-public:
-	afx_msg void OnEnKillfocusBandbEdit1();
-public:
-	afx_msg void OnEnKillfocusBandbEdit2();
-public:
-	afx_msg void OnEnKillfocusCurveEdit1();
-public:
-	afx_msg void OnEnKillfocusCurveEdit2();
-public:
-	afx_msg void OnBnClickedShowBut();
-public:
-	afx_msg void OnBnClickedSplitCheck1();
-public:
-	afx_msg void OnBnClickedSplitCheck2();
-public:
-	afx_msg void OnBnClickedSplitCheck3();
-public:
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-public:
-	CColorEdit m_RedEdit;
-public:
-	CColorEdit m_GreenEdit;
-public:
-	CColorEdit m_BlueEdit;
-public:
+
+	afx_msg void OnPaint();
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-public:
-	CString m_red;
-public:
-	CString m_green;
-public:
-	CString m_blue;
-public:
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+
+	afx_msg void OnBnClickedNextBut();
+	afx_msg void OnBnClickedPreviousBut();
+	afx_msg void OnBnClickedConnectCheck1();
+	afx_msg void OnBnClickedConnectCheck2();
+	afx_msg void OnBnClickedSpreadNormRad1();
+	afx_msg void OnBnClickedSpreadNormRad2();
+	afx_msg void OnBnClickedSpreadStripeRad1();
+	afx_msg void OnBnClickedSpreadStripeRad2();
+	afx_msg void OnBnClickedSpreadCurveRad1();
+	afx_msg void OnBnClickedSpreadCurveRad2();
+	afx_msg void OnEnKillfocusBandaEdit1();
+	afx_msg void OnEnKillfocusBandaEdit2();
+	afx_msg void OnEnKillfocusBandbEdit1();
+	afx_msg void OnEnKillfocusBandbEdit2();
+	afx_msg void OnEnKillfocusCurveEdit1();
+	afx_msg void OnEnKillfocusCurveEdit2();
+	afx_msg void OnBnClickedShowBut();
+	afx_msg void OnBnClickedSplitCheck1();
+	afx_msg void OnBnClickedSplitCheck2();
+	afx_msg void OnBnClickedSplitCheck3();
 	afx_msg void OnBnClickedDeleteBut1();
-public:
 	afx_msg void OnBnClickedDeleteBut2();
-public:
 	afx_msg void OnBnClickedDeleteBut3();
-public:
 	afx_msg void OnBnClickedInsertBut1();
-public:
 	afx_msg void OnBnClickedInsertBut2();
-public:
 	afx_msg void OnEnKillfocusPinIndexEdit1();
-public:
 	afx_msg void OnEnKillfocusPinIndexEdit2();
-public:
 	afx_msg void OnEnKillfocusPinIndexEdit3();
-public:
 	afx_msg void OnEnChangePinIndexEdit1();
-public:
 	afx_msg void OnEnChangePinIndexEdit2();
-public:
 	afx_msg void OnEnChangePinIndexEdit3();
-public:
 	afx_msg void OnEnChangeBandaEdit1();
-public:
 	afx_msg void OnEnChangeBandbEdit1();
-public:
 	afx_msg void OnEnChangeBandaEdit2();
-public:
 	afx_msg void OnEnChangeBandbEdit2();
-public:
 	afx_msg void OnEnChangeCurveEdit1();
-public:
 	afx_msg void OnEnChangeCurveEdit2();
-public:
-	int m_BandC1;
-public:
-	int m_BandC2;
-public:
 	afx_msg void OnEnChangeBandcEdit1();
-public:
 	afx_msg void OnEnKillfocusBandcEdit1();
-public:
 	afx_msg void OnEnChangeBandcEdit2();
-public:
 	afx_msg void OnEnKillfocusBandcEdit2();
 };

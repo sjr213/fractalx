@@ -14,19 +14,14 @@
 // m_pColors[index-1] <-> m_pPin.SetIndex(index)
 
 #include "stdafx.h"
-#include "CibaseUserMsgs.h"
-#include "math.h"
-#include "pinn.h"
-#include "ColorView.h"
+
 #include "PinEditDlg.h"
+#include "math.h"
 
-
-// CPinEditDlg dialog
-
-IMPLEMENT_DYNAMIC(CPinEditDlg, CDialog)
+using namespace DxColor;
 
 CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CPinEditDlg::IDD, pParent)
+	: CDialogEx(CPinEditDlg::IDD, pParent)
 	, m_Connect2(FALSE)
 	, m_Connect1(FALSE)
 	, m_PinNum1(0)
@@ -52,27 +47,32 @@ CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	, m_nPins(0)
 	, m_nColors(0)
 	, m_bDirty(FALSE)
-	, m_pColors(NULL)
-	, m_pBackUpColors(NULL)
 	, m_BandC1(0)
 	, m_BandC2(0)
 	, m_bParentChanged(FALSE)
-{
-	
-}
+{}
 
 CPinEditDlg::~CPinEditDlg()
+{}
+
+void CPinEditDlg::SetPins(std::vector<ColorPin>& pins)
 {
-	delete [] m_pPins;
-	delete [] m_pBackUpPins;
-	delete [] m_pBackUpColors;	
-	// Note: m_pColors[] points to the colors in cImage and
-	// so they should not be deleted
+	m_pins = pins;
+	m_backupPins = pins;
+
+	m_nPins = m_nBackUpPins = static_cast<int>(pins.size());
+
+	m_indexIndex = 0;
+}
+
+std::vector<ColorPin> CPinEditDlg::GetPins() const
+{
+	return m_pins;
 }
 
 void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(pDX);
 	DDX_Check(pDX, IDC_CONNECT_CHECK2, m_Connect2);
 	DDX_Check(pDX, IDC_CONNECT_CHECK1, m_Connect1);
 	DDX_Text(pDX, IDC_PIN_NUM_EDIT1, m_PinNum1);
@@ -109,7 +109,7 @@ void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CPinEditDlg, CDialog)
+BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_NEXT_BUT, &CPinEditDlg::OnBnClickedNextBut)
@@ -213,14 +213,7 @@ BOOL CPinEditDlg::OnInitDialog()
 	m_GreenEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
 	m_BlueEdit.SetTextColor( RGB(0,0,255) );
 	m_BlueEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
-	m_red = m_green = m_blue = "";
-
-	if(m_nColors > 0)
-	{
-		m_pBackUpColors = new RGBQUAD[m_nColors];
-		for(int k=0; k<m_nColors; k++)
-			m_pBackUpColors[k] = m_pColors[k];
-	}
+	m_red = m_green = m_blue = _T("");
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -231,216 +224,70 @@ BOOL CPinEditDlg::OnInitDialog()
 
 void CPinEditDlg::OnPaint()
 {
-//	if(m_nPins < 1)
-//		return;
+	if(m_nPins < 1)
+		return;
 
 	CPaintDC dc(this); // device context for painting
 
 	CPen *pOldPen = (CPen*) dc.SelectStockObject(BLACK_PEN);
 
-	if(m_pPins[m_indexIndex].m_Spread == SPREAD_CURVE)		// curve graph 1
+	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::Curve)		// curve graph 1
 		DrawCurve(dc, TRUE);
 
-	if(m_nPins > 1 && m_pPins[m_indexIndex+1].m_Spread == SPREAD_CURVE)	// curve graph 2
+	if(m_nPins > 1 && m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::Curve)	// curve graph 2
 		DrawCurve(dc, FALSE);
 	
 
-	CBrush brush1;
-	brush1.CreateSolidBrush(m_pPins[m_indexIndex].m_TopLfColor);
-	CBrush *pOldBrush = (CBrush*) dc.SelectObject(&brush1);
+	CBrush brushTop1;
+	auto colortop1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
+	brushTop1.CreateSolidBrush(colortop1);
+	CBrush *pOldBrush = (CBrush*) dc.SelectObject(&brushTop1);
 
-	if(m_nPins >=1)
+	dc.SelectObject(&brushTop1);
+	dc.Rectangle(&m_TopCtrRect1);
+
+	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 	{
-		if(m_pPins[m_indexIndex].m_Split)
-		{
-			CBrush brushleft;
-			brushleft.CreateSolidBrush(m_pPins[m_indexIndex].m_TopLfColor);
-			dc.SelectObject(&brushleft);
-			dc.Rectangle(&m_TopLfRect1);
-
-			CBrush brushright;
-			brushright.CreateSolidBrush(m_pPins[m_indexIndex].m_TopRtColor);
-			dc.SelectObject(&brushright);
-			dc.Rectangle(&m_TopRtRect1);
-
-			if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushleft2;
-				brushleft2.CreateSolidBrush(m_pPins[m_indexIndex].m_BotLfColor);
-				dc.SelectObject(&brushleft2);
-				dc.Rectangle(&m_BotLfRect1);
-
-				CBrush brushright2;
-				brushright2.CreateSolidBrush(m_pPins[m_indexIndex].m_BotRtColor);
-				dc.SelectObject(&brushright2);
-				dc.Rectangle(&m_BotRtRect1);
-
-				if(m_pPins[m_indexIndex].m_Band3 > 0)
-				{
-					CBrush brushleft3;
-					brushleft3.CreateSolidBrush(m_pPins[m_indexIndex].m_ThirdLfColor);
-					dc.SelectObject(&brushleft3);
-					dc.Rectangle(&m_ThirdLfRect1);
-
-					CBrush brushright3;
-					brushright3.CreateSolidBrush(m_pPins[m_indexIndex].m_ThirdRtColor);
-					dc.SelectObject(&brushright3);
-					dc.Rectangle(&m_ThirdRtRect1);
-				}
-			}
-		}
-		else
-		{
-			CBrush brushctr;
-			brushctr.CreateSolidBrush(m_pPins[m_indexIndex].m_TopLfColor);
-			dc.SelectObject(&brushctr);
-			dc.Rectangle(&m_TopCtrRect1);
-
-			if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushctr2;
-				brushctr2.CreateSolidBrush(m_pPins[m_indexIndex].m_BotLfColor);
-				dc.SelectObject(&brushctr2);
-				dc.Rectangle(&m_BotCtrRect1);
-
-				if(m_pPins[m_indexIndex].m_Band3 > 0)
-				{
-					CBrush brushctr3;
-					brushctr3.CreateSolidBrush(m_pPins[m_indexIndex].m_ThirdLfColor);
-					dc.SelectObject(&brushctr3);
-					dc.Rectangle(&m_ThirdCtrRect1);
-				}
-			}
-		}
+		CBrush brushctr2;
+		auto colorBottom = ToColorRef(m_pins.at(m_indexIndex).Color2);
+		brushctr2.CreateSolidBrush(colorBottom);
+		dc.SelectObject(&brushctr2);
+		dc.Rectangle(&m_BotCtrRect1);
 	}
 
 	if(m_nPins > 1)
 	{
-		if(m_pPins[m_indexIndex+1].m_Split)
+		CBrush brushTop2;
+		auto colorTop2 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
+		brushTop2.CreateSolidBrush(colorTop2);
+		dc.SelectObject(&brushTop2);
+		dc.Rectangle(&m_TopCtrRect2);
+
+		if(m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 		{
-			CBrush brushleft;
-			brushleft.CreateSolidBrush(m_pPins[m_indexIndex+1].m_TopLfColor);
-			dc.SelectObject(&brushleft);
-			dc.Rectangle(&m_TopLfRect2);
-
-			CBrush brushright;
-			brushright.CreateSolidBrush(m_pPins[m_indexIndex+1].m_TopRtColor);
-			dc.SelectObject(&brushright);
-			dc.Rectangle(&m_TopRtRect2);
-
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushleft2;
-				brushleft2.CreateSolidBrush(m_pPins[m_indexIndex+1].m_BotLfColor);
-				dc.SelectObject(&brushleft2);
-				dc.Rectangle(&m_BotLfRect2);
-
-				CBrush brushright2;
-				brushright2.CreateSolidBrush(m_pPins[m_indexIndex+1].m_BotRtColor);
-				dc.SelectObject(&brushright2);
-				dc.Rectangle(&m_BotRtRect2);
-
-				if( (m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					CBrush brushleft3;
-					brushleft3.CreateSolidBrush(m_pPins[m_indexIndex+1].m_ThirdLfColor);
-					dc.SelectObject(&brushleft3);
-					dc.Rectangle(&m_ThirdLfRect2);
-
-					CBrush brushright3;
-					brushright3.CreateSolidBrush(m_pPins[m_indexIndex+1].m_ThirdRtColor);
-					dc.SelectObject(&brushright3);
-					dc.Rectangle(&m_ThirdRtRect2);
-				}
-			}
-		}
-		else
-		{
-			CBrush brushctr;
-			brushctr.CreateSolidBrush(m_pPins[m_indexIndex+1].m_TopLfColor);
-			dc.SelectObject(&brushctr);
-			dc.Rectangle(&m_TopCtrRect2);
-
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushctr2;
-				brushctr2.CreateSolidBrush(m_pPins[m_indexIndex+1].m_BotLfColor);
-				dc.SelectObject(&brushctr2);
-				dc.Rectangle(&m_BotCtrRect2);
-
-				if((m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					CBrush brushctr3;
-					brushctr3.CreateSolidBrush(m_pPins[m_indexIndex+1].m_ThirdLfColor);
-					dc.SelectObject(&brushctr3);
-					dc.Rectangle(&m_ThirdCtrRect2);
-				}
-			}
+			CBrush brushctr2;
+			auto colorBottom = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
+			brushctr2.CreateSolidBrush(colorBottom);
+			dc.SelectObject(&brushctr2);
+			dc.Rectangle(&m_BotCtrRect2);
 		}
 	}
 
 	if(m_nPins > 2)
 	{
-		if(m_pPins[m_indexIndex+2].m_Split)
+		CBrush brushTop3;
+		auto colorTop3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
+		brushTop3.CreateSolidBrush(colorTop3);
+		dc.SelectObject(&brushTop3);
+		dc.Rectangle(&m_TopCtrRect3);
+
+		if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::DoubleBand)
 		{
-			CBrush brushleft;
-			brushleft.CreateSolidBrush(m_pPins[m_indexIndex+2].m_TopLfColor);
-			dc.SelectObject(&brushleft);
-			dc.Rectangle(&m_TopLfRect3);
-
-			CBrush brushright;
-			brushright.CreateSolidBrush(m_pPins[m_indexIndex+2].m_TopRtColor);
-			dc.SelectObject(&brushright);
-			dc.Rectangle(&m_TopRtRect3);
-
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushleft2;
-				brushleft2.CreateSolidBrush(m_pPins[m_indexIndex+2].m_BotLfColor);
-				dc.SelectObject(&brushleft2);
-				dc.Rectangle(&m_BotLfRect3);
-
-				CBrush brushright2;
-				brushright2.CreateSolidBrush(m_pPins[m_indexIndex+2].m_BotRtColor);
-				dc.SelectObject(&brushright2);
-				dc.Rectangle(&m_BotRtRect3);
-
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					CBrush brushleft3;
-					brushleft3.CreateSolidBrush(m_pPins[m_indexIndex+2].m_ThirdLfColor);
-					dc.SelectObject(&brushleft3);
-					dc.Rectangle(&m_ThirdLfRect3);
-
-					CBrush brushright3;
-					brushright3.CreateSolidBrush(m_pPins[m_indexIndex+2].m_ThirdRtColor);
-					dc.SelectObject(&brushright3);
-					dc.Rectangle(&m_ThirdRtRect3);
-				}
-			}
-		}
-		else
-		{
-			CBrush brushctr;
-			brushctr.CreateSolidBrush(m_pPins[m_indexIndex+2].m_TopLfColor);
-			dc.SelectObject(&brushctr);
-			dc.Rectangle(&m_TopCtrRect3);
-
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				CBrush brushctr2;
-				brushctr2.CreateSolidBrush(m_pPins[m_indexIndex+2].m_BotLfColor);
-				dc.SelectObject(&brushctr2);
-				dc.Rectangle(&m_BotCtrRect3);
-
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					CBrush brushctr3;
-					brushctr3.CreateSolidBrush(m_pPins[m_indexIndex+2].m_ThirdLfColor);
-					dc.SelectObject(&brushctr3);
-					dc.Rectangle(&m_ThirdCtrRect3);
-				}
-			}
+			CBrush brushctr2;
+			auto colorBottom = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
+			brushctr2.CreateSolidBrush(colorBottom);
+			dc.SelectObject(&brushctr2);
+			dc.Rectangle(&m_BotCtrRect3);
 		}
 	}
 
@@ -455,183 +302,44 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		return;
 
 	// Group 1
-	// if split
-	if(m_pPins[m_indexIndex].m_Split)
+	// TOP CENTER - use left color 
+	if(m_TopCtrRect1.PtInRect(point))
 	{
-		// TOP LEFT 
-		if(m_TopLfRect1.PtInRect(point))
+		CColorDialog dlg;
+		dlg.m_cc.Flags |= CC_FULLOPEN;
+		dlg.m_cc.Flags |= CC_RGBINIT;
+		
+		auto colorTop1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
+		dlg.m_cc.lpCustColors = &colorTop1;
+
+		if(dlg.DoModal() == IDOK)
 		{
-			// show color dialog
-			CColorDialog dlg;
-			dlg.m_cc.Flags |= CC_FULLOPEN;
-			dlg.m_cc.Flags |= CC_RGBINIT;
-			dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_TopLfColor;
-			// if ok set new color
-			if(dlg.DoModal() == IDOK)
-			{
-				m_pPins[m_indexIndex].m_TopLfColor = dlg.GetColor();
-				Invalidate(TRUE);
-				Dirty();
-			}
-			return;
+			m_pins.at(m_indexIndex).Color1 = FromColorRef(dlg.GetColor());
+			Invalidate(TRUE);
+			Dirty();
 		}
-
-		// TOP RIGHT
-		if(m_TopRtRect1.PtInRect(point))
-		{
-			// show color dialog
-			CColorDialog dlg;
-			dlg.m_cc.Flags |= CC_FULLOPEN;
-			dlg.m_cc.Flags |= CC_RGBINIT;
-			dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_TopRtColor;
-			// if ok set new color
-			if(dlg.DoModal() == IDOK)
-			{
-				m_pPins[m_indexIndex].m_TopRtColor = dlg.GetColor();
-				Invalidate(TRUE);
-				Dirty();
-			}
-			return;
-		}
-		// if STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM LEFT
-			if(m_BotLfRect1.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_BotLfColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex].m_BotLfColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-
-			// BOTTOM RIGHT
-			if(m_BotRtRect1.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_BotRtColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex].m_BotRtColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-
-			if(m_pPins[m_indexIndex].m_Band3 > 0)
-			{
-				// BOTTOM LEFT
-				if(m_ThirdLfRect1.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_ThirdLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex].m_ThirdLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-
-				// BOTTOM RIGHT
-				if(m_ThirdRtRect1.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_ThirdRtColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex].m_ThirdRtColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-			}
-		}
+		return;
 	}
-	else // not split
+		
+	// not split but STRIPEs
+	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 	{
-		// TOP CENTER - use left color 
-		if(m_TopCtrRect1.PtInRect(point))
+		// BOTTOM CENTER - use left color
+		if(m_BotCtrRect1.PtInRect(point))
 		{
-			// show color dialog
 			CColorDialog dlg;
 			dlg.m_cc.Flags |= CC_FULLOPEN;
 			dlg.m_cc.Flags |= CC_RGBINIT;
-			dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_TopLfColor;
-			// if ok set new color
+			auto colorBottom1 = ToColorRef(m_pins.at(m_indexIndex).Color2);
+			dlg.m_cc.lpCustColors = &colorBottom1;
+			
 			if(dlg.DoModal() == IDOK)
 			{
-				m_pPins[m_indexIndex].m_TopLfColor = dlg.GetColor();
+				m_pins.at(m_indexIndex).Color2 = FromColorRef(dlg.GetColor());
 				Invalidate(TRUE);
 				Dirty();
 			}
 			return;
-		}
-		// not split but STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM CENTER - use left color
-			if(m_BotCtrRect1.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_BotLfColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex].m_BotLfColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-
-			if(m_pPins[m_indexIndex].m_Band3 > 0)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_ThirdCtrRect1.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex].m_ThirdLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex].m_ThirdLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-			}
 		}
 	}
 
