@@ -20,6 +20,8 @@ namespace DxColor
 
 		double Index = 0.0;
 
+		double Curve = 0.0;
+
 		ColorCurveType CurveType = ColorCurveType::Normal;
 
 		// When DoubleBand these describe the width of the stripes

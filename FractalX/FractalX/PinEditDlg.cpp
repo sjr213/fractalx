@@ -17,23 +17,24 @@
 
 #include "PinEditDlg.h"
 #include "math.h"
+#include <algorithm>
+#include "ColorUtils.h"
 
 using namespace DxColor;
+using namespace ColorUtils;
 
 CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPinEditDlg::IDD, pParent)
-	, m_Connect2(FALSE)
-	, m_Connect1(FALSE)
 	, m_PinNum1(0)
 	, m_PinNum2(0)
 	, m_PinNum3(0)
 	, m_PinIndex1(0)
 	, m_PinIndex2(0)
 	, m_PinIndex3(0)
-	, m_BandA1(1)
-	, m_BandA2(1)
-	, m_BandB1(1)
-	, m_BandB2(1)
+	, m_BandA1(DefaultBand)
+	, m_BandA2(DefaultBand)
+	, m_BandB1(DefaultBand)
+	, m_BandB2(DefaultBand)
 	, m_k1(0)
 	, m_k2(0)
 	, m_Split1(FALSE)
@@ -45,11 +46,8 @@ CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	, m_green(_T(""))
 	, m_blue(_T(""))
 	, m_nPins(0)
-	, m_nColors(0)
+	, m_nColors(MaxColorIndex)
 	, m_bDirty(FALSE)
-	, m_BandC1(0)
-	, m_BandC2(0)
-	, m_bParentChanged(FALSE)
 {}
 
 CPinEditDlg::~CPinEditDlg()
@@ -73,8 +71,6 @@ std::vector<ColorPin> CPinEditDlg::GetPins() const
 void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Check(pDX, IDC_CONNECT_CHECK2, m_Connect2);
-	DDX_Check(pDX, IDC_CONNECT_CHECK1, m_Connect1);
 	DDX_Text(pDX, IDC_PIN_NUM_EDIT1, m_PinNum1);
 	DDX_Text(pDX, IDC_PIN_NUM_EDIT2, m_PinNum2);
 	DDX_Text(pDX, IDC_PIN_NUM_EDIT3, m_PinNum3);
@@ -96,16 +92,12 @@ void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_RED_EDIT, m_red);
 	DDX_Text(pDX, IDC_GREEN_EDIT, m_green);
 	DDX_Text(pDX, IDC_BLUE_EDIT, m_blue);
-	DDV_MinMaxInt(pDX, m_BandA1, 1, 1000);
-	DDV_MinMaxInt(pDX, m_BandA2, 1, 1000);
-	DDV_MinMaxInt(pDX, m_BandB1, 1, 1000);
-	DDV_MinMaxInt(pDX, m_BandB2, 1, 1000);
+	DDV_MinMaxDouble(pDX, m_BandA1, MinBand, MaxBand);
+	DDV_MinMaxDouble(pDX, m_BandA2, MinBand, MaxBand);
+	DDV_MinMaxDouble(pDX, m_BandB1, MinBand, MaxBand);
+	DDV_MinMaxDouble(pDX, m_BandB2, MinBand, MaxBand);
 	// DDV_MinMaxDouble(pDX, m_k1, 0.0001, 1000.0);
 	// DDV_MinMaxDouble(pDX, m_k2, 0.001, 1000.0);
-	DDX_Text(pDX, IDC_BANDC_EDIT1, m_BandC1);
-	DDV_MinMaxInt(pDX, m_BandC1, 0, 1000);
-	DDX_Text(pDX, IDC_BANDC_EDIT2, m_BandC2);
-	DDV_MinMaxInt(pDX, m_BandC2, 0, 1000);
 }
 
 
@@ -114,8 +106,6 @@ BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_NEXT_BUT, &CPinEditDlg::OnBnClickedNextBut)
 	ON_BN_CLICKED(IDC_PREVIOUS_BUT, &CPinEditDlg::OnBnClickedPreviousBut)
-	ON_BN_CLICKED(IDC_CONNECT_CHECK1, &CPinEditDlg::OnBnClickedConnectCheck1)
-	ON_BN_CLICKED(IDC_CONNECT_CHECK2, &CPinEditDlg::OnBnClickedConnectCheck2)
 	ON_BN_CLICKED(IDC_SPREAD_NORM_RAD1, &CPinEditDlg::OnBnClickedSpreadNormRad1)
 	ON_BN_CLICKED(IDC_SPREAD_NORM_RAD2, &CPinEditDlg::OnBnClickedSpreadNormRad2)
 	ON_BN_CLICKED(IDC_SPREAD_STRIPE_RAD1, &CPinEditDlg::OnBnClickedSpreadStripeRad1)
@@ -128,10 +118,6 @@ BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_EN_KILLFOCUS(IDC_BANDB_EDIT2, &CPinEditDlg::OnEnKillfocusBandbEdit2)
 	ON_EN_KILLFOCUS(IDC_CURVE_EDIT1, &CPinEditDlg::OnEnKillfocusCurveEdit1)
 	ON_EN_KILLFOCUS(IDC_CURVE_EDIT2, &CPinEditDlg::OnEnKillfocusCurveEdit2)
-	ON_BN_CLICKED(IDC_SHOW_BUT, &CPinEditDlg::OnBnClickedShowBut)
-	ON_BN_CLICKED(IDC_SPLIT_CHECK1, &CPinEditDlg::OnBnClickedSplitCheck1)
-	ON_BN_CLICKED(IDC_SPLIT_CHECK2, &CPinEditDlg::OnBnClickedSplitCheck2)
-	ON_BN_CLICKED(IDC_SPLIT_CHECK3, &CPinEditDlg::OnBnClickedSplitCheck3)
 	ON_WM_RBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDC_DELETE_BUT1, &CPinEditDlg::OnBnClickedDeleteBut1)
@@ -151,10 +137,6 @@ BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_BANDB_EDIT2, &CPinEditDlg::OnEnChangeBandbEdit2)
 	ON_EN_CHANGE(IDC_CURVE_EDIT1, &CPinEditDlg::OnEnChangeCurveEdit1)
 	ON_EN_CHANGE(IDC_CURVE_EDIT2, &CPinEditDlg::OnEnChangeCurveEdit2)
-	ON_EN_CHANGE(IDC_BANDC_EDIT1, &CPinEditDlg::OnEnChangeBandcEdit1)
-	ON_EN_KILLFOCUS(IDC_BANDC_EDIT1, &CPinEditDlg::OnEnKillfocusBandcEdit1)
-	ON_EN_CHANGE(IDC_BANDC_EDIT2, &CPinEditDlg::OnEnChangeBandcEdit2)
-	ON_EN_KILLFOCUS(IDC_BANDC_EDIT2, &CPinEditDlg::OnEnKillfocusBandcEdit2)
 END_MESSAGE_MAP()
 
 
@@ -237,7 +219,6 @@ void CPinEditDlg::OnPaint()
 	if(m_nPins > 1 && m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::Curve)	// curve graph 2
 		DrawCurve(dc, FALSE);
 	
-
 	CBrush brushTop1;
 	auto colortop1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
 	brushTop1.CreateSolidBrush(colortop1);
@@ -321,7 +302,6 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		return;
 	}
 		
-	// not split but STRIPEs
 	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 	{
 		// BOTTOM CENTER - use left color
@@ -346,183 +326,40 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	// Group 2
 	if(m_nPins > 1)
 	{
-		// if split
-		if(m_pPins[m_indexIndex+1].m_Split)
+		if(m_TopCtrRect2.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect2.PtInRect(point))
+			CColorDialog dlg;
+			dlg.m_cc.Flags |= CC_FULLOPEN;
+			dlg.m_cc.Flags |= CC_RGBINIT;
+			auto colorTop2 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
+			dlg.m_cc.lpCustColors = &colorTop2;
+
+			if(dlg.DoModal() == IDOK)
 			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_TopLfColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex+1].m_TopLfColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
+				m_pins.at(m_indexIndex + 1).Color1 = FromColorRef(dlg.GetColor());
+				Invalidate(TRUE);
+				Dirty();
 			}
-
-			// TOP RIGHT
-			if(m_TopRtRect2.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_TopRtColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex+1].m_TopRtColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect2.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_BotLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+1].m_BotLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-
-				// BOTTOM RIGHT
-				if(m_BotRtRect2.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_BotRtColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+1].m_BotRtColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-
-				if((m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					// BOTTOM LEFT
-					if(m_ThirdLfRect2.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_ThirdLfColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+1].m_ThirdLfColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-
-					// BOTTOM RIGHT
-					if(m_ThirdRtRect2.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_ThirdRtColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+1].m_ThirdRtColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-				}
-			}
+			return;
 		}
-		else // not split
+
+		if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand)
 		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect2.PtInRect(point))
+			if(m_BotCtrRect2.PtInRect(point))
 			{
-				// show color dialog
 				CColorDialog dlg;
 				dlg.m_cc.Flags |= CC_FULLOPEN;
 				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_TopLfColor;
-				// if ok set new color
+				auto colorBottom2 = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
+				dlg.m_cc.lpCustColors = &colorBottom2;
+
 				if(dlg.DoModal() == IDOK)
 				{
-					m_pPins[m_indexIndex+1].m_TopLfColor = dlg.GetColor();
+					m_pins.at(m_indexIndex + 1).Color2 = FromColorRef(dlg.GetColor());
 					Invalidate(TRUE);
 					Dirty();
 				}
 				return;
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect2.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_BotLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+1].m_BotLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-
-				if((m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					// BOTTOM CENTER - use left color
-					if(m_ThirdCtrRect2.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+1].m_ThirdLfColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+1].m_ThirdLfColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-				}
 			}
 		}
 	}
@@ -530,185 +367,45 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	// Group 3
 	if(m_nPins > 2)
 	{	
-		// if split
-		if(m_pPins[m_indexIndex+2].m_Split)
+		if(m_TopCtrRect3.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect3.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_TopLfColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex+2].m_TopLfColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-			// TOP RIGHT
-			if(m_TopRtRect3.PtInRect(point))
-			{
-				// show color dialog
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_TopRtColor;
-				// if ok set new color
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pPins[m_indexIndex+2].m_TopRtColor = dlg.GetColor();
-					Invalidate(TRUE);
-					Dirty();
-				}
-				return;
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+2].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect3.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_BotLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+2].m_BotLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-				// BOTTOM RIGHT
-				if(m_BotRtRect3.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_BotRtColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+2].m_BotRtColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
+			CColorDialog dlg;
+			dlg.m_cc.Flags |= CC_FULLOPEN;
+			dlg.m_cc.Flags |= CC_RGBINIT;
+			auto colorTop3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
+			dlg.m_cc.lpCustColors = &colorTop3;
 
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					// BOTTOM LEFT
-					if(m_ThirdLfRect3.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_ThirdLfColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+2].m_ThirdLfColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-					// BOTTOM RIGHT
-					if(m_ThirdRtRect3.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_ThirdRtColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+2].m_ThirdRtColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-				}
+			if(dlg.DoModal() == IDOK)
+			{
+				m_pins.at(m_indexIndex + 2).Color1 = FromColorRef(dlg.GetColor());
+				Invalidate(TRUE);
+				Dirty();
 			}
+			return;
 		}
-		else // not split
+
+		if(m_pins.at(m_indexIndex+2).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::DoubleBand)
 		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect3.PtInRect(point))
+			if(m_BotCtrRect3.PtInRect(point))
 			{
-				// show color dialog
 				CColorDialog dlg;
 				dlg.m_cc.Flags |= CC_FULLOPEN;
 				dlg.m_cc.Flags |= CC_RGBINIT;
-				dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_TopLfColor;
-				// if ok set new color
+				auto colorBottom3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
+				dlg.m_cc.lpCustColors = &colorBottom3;
+					
 				if(dlg.DoModal() == IDOK)
 				{
-					m_pPins[m_indexIndex+2].m_TopLfColor = dlg.GetColor();
+					m_pins.at(m_indexIndex + 2).Color2 =FromColorRef(dlg.GetColor());
 					Invalidate(TRUE);
 					Dirty();
 				}
 				return;
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+2].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect3.PtInRect(point))
-				{
-					// show color dialog
-					CColorDialog dlg;
-					dlg.m_cc.Flags |= CC_FULLOPEN;
-					dlg.m_cc.Flags |= CC_RGBINIT;
-					dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_BotLfColor;
-					// if ok set new color
-					if(dlg.DoModal() == IDOK)
-					{
-						m_pPins[m_indexIndex+2].m_BotLfColor = dlg.GetColor();
-						Invalidate(TRUE);
-						Dirty();
-					}
-					return;
-				}
-
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					// BOTTOM CENTER - use left color
-					if(m_ThirdCtrRect3.PtInRect(point))
-					{
-						// show color dialog
-						CColorDialog dlg;
-						dlg.m_cc.Flags |= CC_FULLOPEN;
-						dlg.m_cc.Flags |= CC_RGBINIT;
-						dlg.m_cc.lpCustColors = &m_pPins[m_indexIndex+2].m_ThirdLfColor;
-						// if ok set new color
-						if(dlg.DoModal() == IDOK)
-						{
-							m_pPins[m_indexIndex+2].m_ThirdLfColor = dlg.GetColor();
-							Invalidate(TRUE);
-							Dirty();
-						}
-						return;
-					}
-				}
 			}
 		}
 	}
 
-	CDialog::OnLButtonUp(nFlags, point);
+	CDialogEx::OnLButtonUp(nFlags, point);
 }
 
 void CPinEditDlg::OnBnClickedNextBut()
@@ -731,44 +428,12 @@ void CPinEditDlg::OnBnClickedPreviousBut()
 
 void CPinEditDlg::OnOK()
 {
-	WPARAM wparam = 0;	// no pins changed so just close dialog
-	if(m_bDirty)
-		wparam = 2;		// update pins and make backup before closing the dialog
-	else if(m_bParentChanged)	
-		wparam = 3;		// the pins have already been changed but we still need to 
-						// make a backup before closing the dialog
-	if(m_pParentWnd)
-		m_pParentWnd->SendMessage(ia_PinDlgUpdate, wparam, 0);
+	CDialogEx::OnOK();
 }
 
 void CPinEditDlg::OnCancel()
 {
-	if(m_pParentWnd)	
-		m_pParentWnd->SendMessage(ia_PinDlgUpdate, 1, 0);
-}
-
-void CPinEditDlg::OnBnClickedConnectCheck1()
-{
-	UpdateData(TRUE);
-	if(m_nPins > 1)
-	{
-		m_pPins[m_indexIndex].m_right = m_Connect1;
-		m_pPins[m_indexIndex+1].m_left = m_Connect1;
-		Dirty();
-		UpdateCtrls();
-	}
-}
-
-void CPinEditDlg::OnBnClickedConnectCheck2()
-{
-	UpdateData(TRUE);
-	if(m_nPins > 2)
-	{
-		m_pPins[m_indexIndex+1].m_right = m_Connect2;
-		m_pPins[m_indexIndex+2].m_left = m_Connect2;
-		Dirty();
-		UpdateCtrls();
-	}
+	CDialogEx::OnCancel();
 }
 
 void CPinEditDlg::OnBnClickedSpreadNormRad1()
@@ -776,7 +441,7 @@ void CPinEditDlg::OnBnClickedSpreadNormRad1()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Spread = SPREAD_NORMAL;
+		m_pins.at(m_indexIndex).CurveType = ColorCurveType::Normal;
 		UpdateCtrls();
 		Dirty();
 	}
@@ -787,7 +452,7 @@ void CPinEditDlg::OnBnClickedSpreadNormRad2()
 	if(m_nPins > 2)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Spread = SPREAD_NORMAL;
+		m_pins.at(m_indexIndex+1).CurveType = ColorCurveType::Normal;
 		UpdateCtrls();
 		Dirty();
 	}
@@ -798,7 +463,7 @@ void CPinEditDlg::OnBnClickedSpreadStripeRad1()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Spread = SPREAD_STRIPE;
+		m_pins.at(m_indexIndex).CurveType = ColorCurveType::DoubleBand;
 		UpdateCtrls();	
 		Dirty();
 	}
@@ -809,7 +474,7 @@ void CPinEditDlg::OnBnClickedSpreadStripeRad2()
 	if(m_nPins > 2)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Spread = SPREAD_STRIPE;
+		m_pins.at(m_indexIndex+1).CurveType = ColorCurveType::DoubleBand;
 		UpdateCtrls();
 		Dirty();
 	}	
@@ -820,7 +485,7 @@ void CPinEditDlg::OnBnClickedSpreadCurveRad1()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Spread = SPREAD_CURVE;
+		m_pins.at(m_indexIndex).CurveType = ColorCurveType::Curve;
 		UpdateCtrls();	
 		Dirty();
 	}
@@ -831,7 +496,7 @@ void CPinEditDlg::OnBnClickedSpreadCurveRad2()
 	if(m_nPins > 2)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Spread = SPREAD_CURVE;
+		m_pins.at(m_indexIndex+1).CurveType = ColorCurveType::Curve;
 		UpdateCtrls();
 		Dirty();
 	}
@@ -842,7 +507,7 @@ void CPinEditDlg::OnEnKillfocusBandaEdit1()
 	if(m_nPins > 0)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Band1 = m_BandA1;
+		m_pins.at(m_indexIndex).IndexWidth1 = m_BandA1;
 		Dirty();
 	}
 }
@@ -852,7 +517,7 @@ void CPinEditDlg::OnEnKillfocusBandaEdit2()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Band1 = m_BandA2;
+		m_pins.at(m_indexIndex+1).IndexWidth1 = m_BandA2;
 		Dirty();
 	}
 }
@@ -862,7 +527,7 @@ void CPinEditDlg::OnEnKillfocusBandbEdit1()
 	if(m_nPins > 0)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Band2 = m_BandB1;
+		m_pins.at(m_indexIndex).IndexWidth2 = m_BandB1;
 		Dirty();
 	}
 }
@@ -872,7 +537,7 @@ void CPinEditDlg::OnEnKillfocusBandbEdit2()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Band2 = m_BandB2;
+		m_pins.at(m_indexIndex+1).IndexWidth2 = m_BandB2;
 		Dirty();
 	}
 }
@@ -882,7 +547,7 @@ void CPinEditDlg::OnEnKillfocusCurveEdit1()
 	if(m_nPins > 0)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_curveK = m_k1;
+		m_pins.at(m_indexIndex).Curve = m_k1;
 		Invalidate(TRUE);
 		Dirty();
 	}
@@ -893,26 +558,10 @@ void CPinEditDlg::OnEnKillfocusCurveEdit2()
 	if(m_nPins > 1)
 	{
 		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_curveK = m_k2;
+		m_pins.at(m_indexIndex+1).Curve = m_k2;
 		Invalidate(TRUE);
 		Dirty();
 	}
-}
-
-// wparam's
-// 0 just close the dialog, don't update the doc, can be an ok or cancel
-// 1 cancel - update doc with backup pins and close dialog
-// 2 ok - update doc with m_pPins, make backup and close dialog
-// 3 ok - don't update the doc but do make backup and close dialog
-// 4 just update the doc with m_pPins - do NOT close the dialog
-void CPinEditDlg::OnBnClickedShowBut()
-{
-	if(m_pParentWnd)
-		m_pParentWnd->SendMessage(ia_PinDlgUpdate, 4, 0);
-
-	m_bParentChanged = TRUE;
-	// Should no longer be dirty so disable the update button
-	Dirty(FALSE);
 }
 
 void CPinEditDlg::UpdateCtrls()
@@ -936,75 +585,49 @@ void CPinEditDlg::UpdateCtrls()
 	if(m_nPins > 0)	// first slot will be filled as long as there is one pin
 	{
 		m_PinNum1 = m_indexIndex + 1; // since m_indexIndex is zero based
-		m_PinIndex1 = m_pPins[m_indexIndex].GetIndex() ;
-		m_Connect1 = m_pPins[m_indexIndex].m_right;
-		m_Split1 = m_pPins[m_indexIndex].m_Split;
-		m_BandA1 = m_pPins[m_indexIndex].m_Band1;
-		if(m_BandA1 < 1 || m_BandA1 > 10000)
-			m_BandA1 = 10;
-		m_BandB1 = m_pPins[m_indexIndex].m_Band2;
-		if(m_BandB1 < 1 || m_BandB1 > 10000)
-			m_BandB1 = 10;
-		m_BandC1 = m_pPins[m_indexIndex].m_Band3;
-		if(m_BandC1 < 0 || m_BandC1 > 10000)
-			m_BandB1 = 10;
-		m_k1 = m_pPins[m_indexIndex].m_curveK;
+		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * MaxColorIndex);
+		m_BandA1 = m_pins.at(m_indexIndex).IndexWidth1;
+		if(m_BandA1 < MinBand || m_BandA1 > MaxBand)
+			m_BandA1 = DefaultBand;
+		m_BandB1 = m_pins.at(m_indexIndex).IndexWidth2;
+		if(m_BandB1 < MinBand || m_BandB1 > MaxBand)
+			m_BandB1 = DefaultBand;
+		m_k1 = m_pins.at(m_indexIndex).Curve;
 		if(m_k1 < 0.00001 || m_k1 > 10000)
 			m_k1 = 1.0;
 
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
+		if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 		{
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+			
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect1);
-			}
-			pWnd = GetDlgItem(IDC_BANDA_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect1);
-			pWnd = GetDlgItem(IDC_BANDB_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect1);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect1);
+			
 			pWnd = GetDlgItem(IDC_CURVE_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
 		}
-		else if(m_pPins[m_indexIndex].m_Spread == SPREAD_CURVE)
+		else if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::Curve)
 		{
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+			
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pWnd = GetDlgItem(IDC_BANDA_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
@@ -1014,30 +637,21 @@ void CPinEditDlg::UpdateCtrls()
 			pWnd = GetDlgItem(IDC_BANDC_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_CURVE_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect1);
 		}
-		else // SPREAD_NORMAL
+		else if (m_pins.at(m_indexIndex).CurveType == ColorCurveType::Normal)
 		{
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD1);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect1);
-			}
+
 			pWnd = GetDlgItem(IDC_BANDA_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
@@ -1056,120 +670,78 @@ void CPinEditDlg::UpdateCtrls()
 
 	if(m_nPins > 1)	// first slot will be filled as long as there is one pin
 	{
-		m_PinNum2 = m_indexIndex + 2; // since m_indexIndex is zero based
-		m_PinIndex2 = m_pPins[m_indexIndex+1].GetIndex() ;
-		m_pPins[m_indexIndex+1].m_left = m_Connect1;
-		m_Connect2 = m_pPins[m_indexIndex+1].m_right;
-		m_Split2 = m_pPins[m_indexIndex+1].m_Split;
-		m_BandA2 = m_pPins[m_indexIndex+1].m_Band1;
-		if(m_BandA2 < 1 || m_BandA2 > 10000)
-			m_BandA2 = 10;
-		m_BandB2 = m_pPins[m_indexIndex+1].m_Band2;
-		if(m_BandB2 < 1 || m_BandB2 > 10000)
-			m_BandB2 = 10;
-		m_BandC2 = m_pPins[m_indexIndex+1].m_Band3;
-		if(m_BandC2 < 0 || m_BandC2 > 10000)
-			m_BandC2 = 10;
-		m_k2 = m_pPins[m_indexIndex+1].m_curveK;
+		m_PinNum2 = m_indexIndex + 2; 
+		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex+1).Index * MaxColorIndex);
+		m_BandA2 = m_pins.at(m_indexIndex+1).IndexWidth1;
+		if(m_BandA2 < MinBand || m_BandA2 > MaxBand)
+			m_BandA2 = DefaultBand;
+		m_BandB2 = m_pins.at(m_indexIndex+1).IndexWidth2;
+		if(m_BandB2 < MinBand || m_BandB2 > MaxBand)
+			m_BandB2 = DefaultBand;
+		m_k2 = m_pins.at(m_indexIndex+1).Curve;
 		if(m_k2 < 0.00001 || m_k2 > 10000)
 			m_k2 = 1.0;
 
+		if(m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand)
+		{
+			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD2);
+			if(pBut)
+				pBut->SetCheck(FALSE);
 
-		if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-		{
-			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD2);
-			if(pBut)
-			{
-				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect2);
-			}
-			pWnd = GetDlgItem(IDC_BANDA_EDIT2);
-			if(pWnd)
-			pWnd->EnableWindow(m_Connect2);
-			pWnd = GetDlgItem(IDC_BANDB_EDIT2);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect2);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT2);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect2);
+
 			pWnd = GetDlgItem(IDC_CURVE_EDIT2);
 			if(pWnd)
-			pWnd->EnableWindow(FALSE);
+				pWnd->EnableWindow(FALSE);
 		}
-		else if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_CURVE)
+		else if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::Curve)
 		{
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pWnd = GetDlgItem(IDC_BANDA_EDIT2);
 			if(pWnd)
-			pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_BANDB_EDIT2);
+				pWnd->EnableWindow(FALSE);
+				pWnd = GetDlgItem(IDC_BANDB_EDIT2);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT2);
-			if(pWnd)
-				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_CURVE_EDIT2);
-			if(pWnd)
-				pWnd->EnableWindow(m_Connect2);
 		}
-		else // SPREAD_NORMAL
+		else if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::Normal)
 		{
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_STRIPE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_CURVE_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(FALSE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pBut = (CButton*)GetDlgItem(IDC_SPREAD_NORM_RAD2);
 			if(pBut)
-			{
 				pBut->SetCheck(TRUE);
-				pBut->EnableWindow(m_Connect2);
-			}
+
 			pWnd = GetDlgItem(IDC_BANDA_EDIT2);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
 			pWnd = GetDlgItem(IDC_BANDB_EDIT2);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT2);
-			if(pWnd)
-				pWnd->EnableWindow(FALSE);
+
 			pWnd = GetDlgItem(IDC_CURVE_EDIT2);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
@@ -1179,9 +751,7 @@ void CPinEditDlg::UpdateCtrls()
 	if(m_nPins > 2)	// first slot will be filled as long as there is one pin
 	{
 		m_PinNum3 = m_indexIndex + 3; // since m_indexIndex is zero based
-		m_PinIndex3 = m_pPins[m_indexIndex+2].GetIndex() ;
-		m_Split3 = m_pPins[m_indexIndex+2].m_Split;
-		m_pPins[m_indexIndex+2].m_left = m_Connect2;
+		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 2).Index * MaxColorIndex);
 	}
 	
 	UpdateData(FALSE);
@@ -1189,9 +759,9 @@ void CPinEditDlg::UpdateCtrls()
 }
 
 // if bTop is true use m_rectCurve1
-void CPinEditDlg::DrawCurve(CDC &dc,BOOL bTop)
+void CPinEditDlg::DrawCurve(CDC &dc, BOOL bTop)
 {
-	double k = m_k1;	// for now keep it simple - late calc from bTop
+	double k = m_k1;	
 
 	CRect *pRect = &m_CurveRect1; // temp as above
 
@@ -1240,39 +810,6 @@ double CPinEditDlg::curver(double k, double in)
 	return pow(in,k);
 }
 
-void CPinEditDlg::OnBnClickedSplitCheck1()
-{
-	if(m_nPins > 0)
-	{
-		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Split = m_Split1;
-		Invalidate();
-		Dirty();
-	}
-}
-
-void CPinEditDlg::OnBnClickedSplitCheck2()
-{
-	if(m_nPins > 1)
-	{
-		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Split = m_Split2;
-		Invalidate();
-		Dirty();
-	}
-}
-
-void CPinEditDlg::OnBnClickedSplitCheck3()
-{
-	if(m_nPins > 2)
-	{
-		UpdateData(TRUE);
-		m_pPins[m_indexIndex+2].m_Split = m_Split3;
-		Invalidate();
-		Dirty();
-	}
-}
-
 // If the control key is pressed then paste m_CopiedColor if m_IsCopiedColor
 // else copy the color if the button is in an active rectangle
 void CPinEditDlg::OnRButtonUp(UINT nFlags, CPoint point)
@@ -1281,128 +818,42 @@ void CPinEditDlg::OnRButtonUp(UINT nFlags, CPoint point)
 		return;
 
 	// Group 1
-	// if split
-	if(m_pPins[m_indexIndex].m_Split)
+	if(m_TopCtrRect1.PtInRect(point))
 	{
-		// TOP LEFT 
-		if(m_TopLfRect1.PtInRect(point))
+		if(nFlags & MK_CONTROL)	// paste
 		{
-			if(nFlags & MK_CONTROL)	// paste
+			if(m_IsCopiedColor)
 			{
-				if(m_IsCopiedColor)
-				{
-					m_pPins[m_indexIndex].m_TopLfColor = m_CopiedColor;
-					Invalidate(TRUE);
-					Dirty();
-				}
-			}
-			else	// copy
-			{
-				m_CopiedColor = m_pPins[m_indexIndex].m_TopLfColor;
-				m_IsCopiedColor = TRUE;
+				m_pins.at(m_indexIndex).Color1 = FromColorRef(m_CopiedColor);
+				Invalidate(TRUE);
+				Dirty();
 			}
 		}
-
-		// TOP RIGHT
-		if(m_TopRtRect1.PtInRect(point))
+		else	// copy
 		{
-			if(nFlags & MK_CONTROL)	// paste
-			{
-				if(m_IsCopiedColor)
-				{
-					m_pPins[m_indexIndex].m_TopRtColor = m_CopiedColor;
-					Invalidate(TRUE);
-					Dirty();
-				}
-			}
-			else	// copy
-			{
-				m_CopiedColor = m_pPins[m_indexIndex].m_TopRtColor;
-				m_IsCopiedColor = TRUE;
-			}
-		}
-		// if STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM LEFT
-			if(m_BotLfRect1.PtInRect(point))
-			{
-				if(nFlags & MK_CONTROL)	// paste
-				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex].m_BotLfColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex].m_BotLfColor;
-					m_IsCopiedColor = TRUE;
-				}
-			}
-
-			// BOTTOM RIGHT
-			if(m_BotRtRect1.PtInRect(point))
-			{
-				if(nFlags & MK_CONTROL)	// paste
-				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex].m_BotRtColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex].m_BotRtColor;
-					m_IsCopiedColor = TRUE;
-				}
-			}
+			m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex).Color1);
+			m_IsCopiedColor = TRUE;
 		}
 	}
-	else // not split
+		
+	// not split but STRIPEs
+	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 	{
-		// TOP CENTER - use left color 
-		if(m_TopCtrRect1.PtInRect(point))
+		if(m_BotCtrRect1.PtInRect(point))
 		{
 			if(nFlags & MK_CONTROL)	// paste
 			{
 				if(m_IsCopiedColor)
 				{
-					m_pPins[m_indexIndex].m_TopLfColor = m_CopiedColor;
+					m_pins.at(m_indexIndex).Color2 = FromColorRef(m_CopiedColor);
 					Invalidate(TRUE);
 					Dirty();
 				}
 			}
 			else	// copy
 			{
-				m_CopiedColor = m_pPins[m_indexIndex].m_TopLfColor;
+				m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex).Color2);
 				m_IsCopiedColor = TRUE;
-			}
-		}
-		// not split but STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM CENTER - use left color
-			if(m_BotCtrRect1.PtInRect(point))
-			{
-				if(nFlags & MK_CONTROL)	// paste
-				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex].m_BotLfColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex].m_BotLfColor;
-					m_IsCopiedColor = TRUE;
-				}
 			}
 		}
 	}
@@ -1410,128 +861,41 @@ void CPinEditDlg::OnRButtonUp(UINT nFlags, CPoint point)
 	// Group 2
 	if(m_nPins > 1)
 	{
-		// if split
-		if(m_pPins[m_indexIndex+1].m_Split)
+		if(m_TopCtrRect2.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect2.PtInRect(point))
+			if(nFlags & MK_CONTROL)	// paste
 			{
-				if(nFlags & MK_CONTROL)	// paste
+				if(m_IsCopiedColor)
 				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex+1].m_TopLfColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex+1].m_TopLfColor;
-					m_IsCopiedColor = TRUE;
+					m_pins.at(m_indexIndex+1).Color1 = FromColorRef(m_CopiedColor);
+					Invalidate(TRUE);
+					Dirty();
 				}
 			}
-
-			// TOP RIGHT
-			if(m_TopRtRect2.PtInRect(point))
+			else	// copy
 			{
-				if(nFlags & MK_CONTROL)	// paste
-				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex+1].m_TopRtColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex+1].m_TopRtColor;
-					m_IsCopiedColor = TRUE;
-				}
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect2.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+1].m_BotLfColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+1].m_BotLfColor;
-						m_IsCopiedColor = TRUE;
-					}
-				}
-
-				// BOTTOM RIGHT
-				if(m_BotRtRect2.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+1].m_BotRtColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+1].m_BotRtColor;
-						m_IsCopiedColor = TRUE;
-					}
-				}
+				m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
+				m_IsCopiedColor = TRUE;
 			}
 		}
-		else // not split
+
+		if(m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect2.PtInRect(point))
+			if(m_BotCtrRect2.PtInRect(point))
 			{
 				if(nFlags & MK_CONTROL)	// paste
 				{
 					if(m_IsCopiedColor)
 					{
-						m_pPins[m_indexIndex+1].m_TopLfColor = m_CopiedColor;
+						m_pins.at(m_indexIndex+1).Color2 = FromColorRef(m_CopiedColor);
 						Invalidate(TRUE);
 						Dirty();
 					}
 				}
 				else	// copy
 				{
-					m_CopiedColor = m_pPins[m_indexIndex+1].m_TopLfColor;
+					m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex + 1).Color2);
 					m_IsCopiedColor = TRUE;
-				}
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect2.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+1].m_BotLfColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+1].m_BotLfColor;
-						m_IsCopiedColor = TRUE;
-					}
 				}
 			}
 		}
@@ -1540,131 +904,46 @@ void CPinEditDlg::OnRButtonUp(UINT nFlags, CPoint point)
 	// Group 3
 	if(m_nPins > 2)
 	{	
-		// if split
-		if(m_pPins[m_indexIndex+2].m_Split)
+		if(m_TopCtrRect3.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect3.PtInRect(point))
+			if(nFlags & MK_CONTROL)	// paste
 			{
-				if(nFlags & MK_CONTROL)	// paste
+				if(m_IsCopiedColor)
 				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex+2].m_TopLfColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex+2].m_TopLfColor;
-					m_IsCopiedColor = TRUE;
+					m_pins.at(m_indexIndex + 2).Color1 = FromColorRef(m_CopiedColor);
+					Invalidate(TRUE);
+					Dirty();
 				}
 			}
-			// TOP RIGHT
-			if(m_TopRtRect3.PtInRect(point))
+			else	// copy
 			{
-				if(nFlags & MK_CONTROL)	// paste
-				{
-					if(m_IsCopiedColor)
-					{
-						m_pPins[m_indexIndex+2].m_TopRtColor = m_CopiedColor;
-						Invalidate(TRUE);
-						Dirty();
-					}
-				}
-				else	// copy
-				{
-					m_CopiedColor = m_pPins[m_indexIndex+2].m_TopRtColor;
-					m_IsCopiedColor = TRUE;
-				}
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+2].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect3.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+2].m_BotLfColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+2].m_BotLfColor;
-						m_IsCopiedColor = TRUE;
-					}
-				}
-				// BOTTOM RIGHT
-				if(m_BotRtRect3.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+2].m_BotRtColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+2].m_BotRtColor;
-						m_IsCopiedColor = TRUE;
-					}
-				}
+				m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
+				m_IsCopiedColor = TRUE;
 			}
 		}
-		else // not split
+
+		if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex+2).CurveType == ColorCurveType::DoubleBand)
 		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect3.PtInRect(point))
+			if(m_BotCtrRect3.PtInRect(point))
 			{
 				if(nFlags & MK_CONTROL)	// paste
 				{
 					if(m_IsCopiedColor)
 					{
-						m_pPins[m_indexIndex+2].m_TopLfColor = m_CopiedColor;
+						m_pins.at(m_indexIndex + 2).Color2 = FromColorRef(m_CopiedColor);
 						Invalidate(TRUE);
 						Dirty();
 					}
 				}
 				else	// copy
 				{
-					m_CopiedColor = m_pPins[m_indexIndex+2].m_TopLfColor;
-					m_IsCopiedColor = TRUE;
-				}
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+2].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect3.PtInRect(point))
-				{
-					if(nFlags & MK_CONTROL)	// paste
-					{
-						if(m_IsCopiedColor)
-						{
-							m_pPins[m_indexIndex+2].m_BotLfColor = m_CopiedColor;
-							Invalidate(TRUE);
-							Dirty();
-						}
-					}
-					else	// copy
-					{
-						m_CopiedColor = m_pPins[m_indexIndex+2].m_BotLfColor;
+					m_CopiedColor = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
 						m_IsCopiedColor = TRUE;
-					}
 				}
 			}
 		}
 	}
-	CDialog::OnRButtonUp(nFlags, point);
+	CDialogEx::OnRButtonUp(nFlags, point);
 }
 
 // If the mouse is over a color box, show the RGB values in the edit controls
@@ -1673,226 +952,57 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	if(m_nPins < 1)
 		return;
 
-	m_red = "";
-	m_green = "";
-	m_blue = "";
+	m_red = _T("");
+	m_green = _T("");
+	m_blue = _T("");
+
 	// Group 1
-	// if split
-	if(m_pPins[m_indexIndex].m_Split)
+	if(m_TopCtrRect1.PtInRect(point))
 	{
-		// TOP LEFT 
-		if(m_TopLfRect1.PtInRect(point))
-		{
-			m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_TopLfColor) );
-			m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_TopLfColor));
-			m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_TopLfColor));
-			UpdateData(FALSE);
-			return CDialog::OnMouseMove(nFlags, point);
-		}
-
-		// TOP RIGHT
-		if(m_TopRtRect1.PtInRect(point))
-		{
-			m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_TopRtColor) );
-			m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_TopRtColor));
-			m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_TopRtColor));
-			UpdateData(FALSE);
-			return CDialog::OnMouseMove(nFlags, point);
-		}
-		// if STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM LEFT
-			if(m_BotLfRect1.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_BotLfColor));
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_BotLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_BotLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-
-			// BOTTOM RIGHT
-			if(m_BotRtRect1.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_BotRtColor));
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_BotRtColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_BotRtColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-
-			if(m_pPins[m_indexIndex].m_Band3 > 0)
-			{
-				// BOTTOM LEFT
-				if(m_ThirdLfRect1.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_ThirdLfColor));
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_ThirdLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_ThirdLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-
-				// BOTTOM RIGHT
-				if(m_ThirdRtRect1.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_ThirdRtColor));
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_ThirdRtColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_ThirdRtColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-			}
-		}
+		COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
+		m_red.Format(_T("%d"), GetRValue(color1));
+		m_green.Format(_T("%d"),GetGValue(color1));
+		m_blue.Format(_T("%d"), GetBValue(color1));
+		UpdateData(FALSE);
+		return CDialogEx::OnMouseMove(nFlags, point);
 	}
-	else // not split
-	{
-		// TOP CENTER - use left color 
-		if(m_TopCtrRect1.PtInRect(point))
-		{
-			m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_TopLfColor) );
-			m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_TopLfColor));
-			m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_TopLfColor));
-			UpdateData(FALSE);
-			return CDialog::OnMouseMove(nFlags, point);
-		}
-		// not split but STRIPEs
-		if(m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-		{
-			// BOTTOM CENTER - use left color
-			if(m_BotCtrRect1.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_BotLfColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_BotLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_BotLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point); 
-			}
 
-			if(m_pPins[m_indexIndex].m_Band3 > 0)
-			{
-				// Third CENTER - use left color
-				if(m_ThirdCtrRect1.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex].m_ThirdLfColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex].m_ThirdLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex].m_ThirdLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point); 
-				}
-			}
+	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
+	{
+		if(m_BotCtrRect1.PtInRect(point))
+		{
+			COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex).Color2);
+			m_red.Format(_T("%d"), GetRValue(color2));
+			m_green.Format(_T("%d"), GetGValue(color2));
+			m_blue.Format(_T("%d"), GetBValue(color2));
+			UpdateData(FALSE);
+			return CDialogEx::OnMouseMove(nFlags, point); 
 		}
 	}
 
 	// Group 2
 	if(m_nPins > 1)
 	{
-		// if split
-		if(m_pPins[m_indexIndex+1].m_Split)
+		if(m_TopCtrRect2.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect2.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_TopLfColor));
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_TopLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_TopLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-
-			// TOP RIGHT
-			if(m_TopRtRect2.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_TopRtColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_TopRtColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_TopRtColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect2.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_BotLfColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_BotLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_BotLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-
-				// BOTTOM RIGHT
-				if(m_BotRtRect2.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_BotRtColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_BotRtColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_BotRtColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-
-				if((m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					// Third LEFT
-					if(m_ThirdLfRect2.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_ThirdLfColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_ThirdLfColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_ThirdLfColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-
-					// BOTTOM RIGHT
-					if(m_ThirdRtRect2.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_ThirdRtColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_ThirdRtColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_ThirdRtColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-				}
-			}
+			COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
+			m_red.Format(_T("%d"), GetRValue(color1));
+			m_green.Format(_T("%d"), GetGValue(color1));
+			m_blue.Format(_T("%d"), GetBValue(color1));
+			UpdateData(FALSE);
+			return CDialogEx::OnMouseMove(nFlags, point);
 		}
-		else // not split
-		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect2.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_TopLfColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_TopLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_TopLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE || m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect2.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_BotLfColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_BotLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_BotLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
 
-				if((m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex+1].m_Band3 > 0) || (m_pPins[m_indexIndex].m_Spread == SPREAD_STRIPE && m_pPins[m_indexIndex].m_Band3 > 0))
-				{
-					// Third CENTER - use left color
-					if(m_ThirdCtrRect2.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+1].m_ThirdLfColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+1].m_ThirdLfColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+1].m_ThirdLfColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-				}
+		if(m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
+		{
+			if(m_BotCtrRect2.PtInRect(point))
+			{
+				COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
+				m_red.Format(_T("%d"), GetRValue(color2) );
+				m_green.Format(_T("%d"), GetGValue(color2));
+				m_blue.Format(_T("%d"), GetBValue(color2));
+				UpdateData(FALSE);
+				return CDialogEx::OnMouseMove(nFlags, point);
 			}
 		}
 	}
@@ -1900,114 +1010,32 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	// Group 3
 	if(m_nPins > 2)
 	{	
-		// if split
-		if(m_pPins[m_indexIndex+2].m_Split)
+		if(m_TopCtrRect3.PtInRect(point))
 		{
-			// TOP LEFT 
-			if(m_TopLfRect3.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_TopLfColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_TopLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_TopLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-			// TOP RIGHT
-			if(m_TopRtRect3.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_TopRtColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_TopRtColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_TopRtColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-			// if STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM LEFT
-				if(m_BotLfRect3.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_BotLfColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_BotLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_BotLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-				// BOTTOM RIGHT
-				if(m_BotRtRect3.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_BotRtColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_BotRtColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_BotRtColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
-
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					// Third LEFT
-					if(m_ThirdLfRect3.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_ThirdLfColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_ThirdLfColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_ThirdLfColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-					// Third RIGHT
-					if(m_ThirdRtRect3.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_ThirdRtColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_ThirdRtColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_ThirdRtColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-				}
-			}
+			COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
+			m_red.Format(_T("%d"), GetRValue(color1));
+			m_green.Format(_T("%d"),GetGValue(color1));
+			m_blue.Format(_T("%d"), GetBValue(color1));
+			UpdateData(FALSE);
+			return CDialogEx::OnMouseMove(nFlags, point);
 		}
-		else // not split
-		{
-			// TOP CENTER - use left color 
-			if(m_TopCtrRect3.PtInRect(point))
-			{
-				m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_TopLfColor) );
-				m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_TopLfColor));
-				m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_TopLfColor));
-				UpdateData(FALSE);
-				return CDialog::OnMouseMove(nFlags, point);
-			}
-			// not split but STRIPEs
-			if(m_pPins[m_indexIndex+1].m_Spread == SPREAD_STRIPE)
-			{
-				// BOTTOM CENTER - use left color
-				if(m_BotCtrRect3.PtInRect(point))
-				{
-					m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_BotLfColor) );
-					m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_BotLfColor));
-					m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_BotLfColor));
-					UpdateData(FALSE);
-					return CDialog::OnMouseMove(nFlags, point);
-				}
 
-				if(m_pPins[m_indexIndex+1].m_Band3 > 0)
-				{
-					// Third CENTER - use left color
-					if(m_ThirdCtrRect3.PtInRect(point))
-					{
-						m_red.Format("%d", GetRValue(m_pPins[m_indexIndex+2].m_ThirdLfColor) );
-						m_green.Format("%d",GetGValue(m_pPins[m_indexIndex+2].m_ThirdLfColor));
-						m_blue.Format("%d", GetBValue(m_pPins[m_indexIndex+2].m_ThirdLfColor));
-						UpdateData(FALSE);
-						return CDialog::OnMouseMove(nFlags, point);
-					}
-				}
+		if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::DoubleBand)
+		{
+			if(m_BotCtrRect3.PtInRect(point))
+			{
+				COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
+				m_red.Format(_T("%d"), GetRValue(color2) );
+				m_green.Format(_T("%d"),GetGValue(color2));
+				m_blue.Format(_T("%d"), GetBValue(color2));
+				UpdateData(FALSE);
+				return CDialogEx::OnMouseMove(nFlags, point);
 			}
 		}
 	}
 
 	UpdateData(FALSE);
-	CDialog::OnMouseMove(nFlags, point);
+	CDialogEx::OnMouseMove(nFlags, point);
 }
 
 void CPinEditDlg::OnBnClickedDeleteBut1()
@@ -2016,35 +1044,15 @@ void CPinEditDlg::OnBnClickedDeleteBut1()
 		return;
 
 	CString message;
-	message.Format("Are you sure you want to delete pin number %d, at color index %d ?",m_indexIndex+1,m_pPins[m_indexIndex].GetIndex());
+	message.Format(_T("Are you sure you want to delete pin number %d, at color index %f ?"), m_indexIndex+1, m_PinIndex1);
 	if(AfxMessageBox(message, MB_ICONQUESTION + MB_YESNO) == IDYES)
 	{
-		CPinn *pNewPins = new CPinn[m_nPins-1];
-		ASSERT(pNewPins);
-		for(int i=0; i< m_indexIndex; i++)
-			pNewPins[i] = m_pPins[i];
-		for(int j=m_indexIndex+1; j< m_nPins; j++)
-			pNewPins[j-1] = m_pPins[j];
+		m_pins.erase(std::begin(m_pins) + m_indexIndex);
+		m_nPins = static_cast<int>(m_pins.size());
 
-		delete [] m_pPins;
-		m_pPins = pNewPins;
-		pNewPins=0;
-		m_nPins -= 1;
-
-		while(m_indexIndex > 0 && m_nPins < m_indexIndex + 3)
-			m_indexIndex--;
-
-		// Make sure connections are consistant after deletion
-		if(m_nPins > 0)
-		{
-			if(m_indexIndex > 0) // then there will be a pin to the left of the first slot
-				m_pPins[m_indexIndex].m_left = m_pPins[m_indexIndex-1].m_right;
-			else
-				m_pPins[m_indexIndex].m_left = FALSE;
-		}
+		m_indexIndex = 0;
 
 		Dirty();
-
 		UpdatePinNumber();
 		UpdateCtrls();
 		Invalidate(FALSE);
@@ -2057,32 +1065,15 @@ void CPinEditDlg::OnBnClickedDeleteBut2()
 		return;
 
 	CString message;
-	message.Format("Are you sure you want to delete pin number %d, at color index %d ?",m_indexIndex+2,m_pPins[m_indexIndex+1].GetIndex());
+	message.Format(_T("Are you sure you want to delete pin number %d, at color index %f ?") , m_indexIndex+2, m_PinIndex2);
 	if(AfxMessageBox(message, MB_ICONQUESTION + MB_YESNO) == IDYES)
 	{
-		CPinn *pNewPins = new CPinn[m_nPins-1];
-		ASSERT(pNewPins);
-		for(int i=0; i< m_indexIndex+1; i++)
-			pNewPins[i] = m_pPins[i];
-		for(int j=m_indexIndex+2; j< m_nPins; j++)
-			pNewPins[j-1] = m_pPins[j];
+		m_pins.erase(std::begin(m_pins) + 1 + m_indexIndex);
+		m_nPins = static_cast<int>(m_pins.size());
 
-		delete [] m_pPins;
-		m_pPins = pNewPins;
-		pNewPins=0;
-		m_nPins -= 1;
-
-		while(m_indexIndex > 0 && m_nPins < m_indexIndex + 3)
-			m_indexIndex--;
-
-		// Make sure connections are consistant after deletion
-		if(m_nPins > 1) // Then slots one and two are occupied
-			m_pPins[m_indexIndex+1].m_left = m_pPins[m_indexIndex].m_right;
-		else
-			m_pPins[m_indexIndex].m_left = FALSE;
+		m_indexIndex = 0;
 
 		Dirty();
-
 		UpdatePinNumber();
 		UpdateCtrls();
 	}
@@ -2094,34 +1085,15 @@ void CPinEditDlg::OnBnClickedDeleteBut3()
 		return;
 
 	CString message;
-	CPinn *pPin = &m_pPins[m_indexIndex+2];
-	message.Format("Are you sure you want to delete pin number %d, at color index %d ?",m_indexIndex+3,pPin->GetIndex());
-	pPin = NULL;
+	message.Format(_T("Are you sure you want to delete pin number %d, at color index %f ?") ,m_indexIndex+3, m_PinIndex3);
 	if(AfxMessageBox(message, MB_ICONQUESTION + MB_YESNO) == IDYES)
 	{
-		CPinn *pNewPins = new CPinn[m_nPins-1];
-		ASSERT(pNewPins);
-		for(int i=0; i< m_indexIndex+2; i++)
-			pNewPins[i] = m_pPins[i];
-		for(int j=m_indexIndex+3; j< m_nPins; j++)
-			pNewPins[j-1] = m_pPins[j];
+		m_pins.erase(std::begin(m_pins) + 2 + m_indexIndex);
+		m_nPins = static_cast<int>(m_pins.size());
 
-		delete [] m_pPins;
-		m_pPins = pNewPins;
-		pNewPins=0;
-		m_nPins -= 1;
-
-		while(m_indexIndex > 0 && m_nPins < m_indexIndex + 3)
-		m_indexIndex--;
-
-		// Make sure connections are consistant after deletion
-		if(m_nPins > 2) // Then slots one, two and three are occupied
-			m_pPins[m_indexIndex+2].m_left = m_pPins[m_indexIndex+1].m_right;
-		else
-			m_pPins[m_indexIndex+1].m_left = FALSE;
+		m_indexIndex = 0;
 
 		Dirty();
-
 		UpdatePinNumber();
 		UpdateCtrls();
 	}
@@ -2131,45 +1103,40 @@ void CPinEditDlg::OnBnClickedDeleteBut3()
 // of pins changes (Inserted or deleted)
 void CPinEditDlg::UpdatePinNumber()
 {
-//	while(m_indexIndex > 0 && m_nPins < m_indexIndex + 3)
-//		m_indexIndex--;
-
 	CWnd *pWnd;
 
-	// More than 2 pins needed
-	pWnd = GetDlgItem(IDC_CONNECT_CHECK2);
-	if(pWnd)
-		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
 	pWnd = GetDlgItem(IDC_SPREAD_NORM_RAD2);	
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_SPREAD_STRIPE_RAD2);	
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_SPREAD_CURVE_RAD2);	// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_BANDA_EDIT2);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_BANDB_EDIT2);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
-	pWnd = GetDlgItem(IDC_BANDC_EDIT2);			// disable
-	if(pWnd)
-		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_CURVE_EDIT2);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>2);
+
 	pWnd = GetDlgItem(IDC_PIN_NUM_EDIT3);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_PIN_INDEX_EDIT3);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
-	pWnd = GetDlgItem(IDC_SPLIT_CHECK3);
-	if(pWnd)
-		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_DELETE_BUT3);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
@@ -2177,56 +1144,53 @@ void CPinEditDlg::UpdatePinNumber()
 	pWnd = GetDlgItem(IDC_INSERT_BUT2);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<3)? SW_HIDE : SW_SHOW);
-	// end more than 2 pins needed
 
 	// Need more than 1 pin
 	pWnd = GetDlgItem(IDC_PIN_NUM_EDIT2);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<2)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_PIN_INDEX_EDIT2);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<2)? SW_HIDE : SW_SHOW);
-	pWnd = GetDlgItem(IDC_SPLIT_CHECK2);
-	if(pWnd)
-		pWnd->ShowWindow((m_nPins<2)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_DELETE_BUT2);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<2)? SW_HIDE : SW_SHOW);
-	pWnd = GetDlgItem(IDC_CONNECT_CHECK1);
-	if(pWnd)
-		pWnd->ShowWindow((m_nPins<2)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_SPREAD_NORM_RAD1);	// disable
-	if(pWnd)
-		pWnd->EnableWindow(m_nPins>1);
+	if (pWnd)
+		pWnd->EnableWindow(m_nPins > 1);
+
 	pWnd = GetDlgItem(IDC_SPREAD_STRIPE_RAD1);	// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>1);
+
 	pWnd = GetDlgItem(IDC_SPREAD_CURVE_RAD1);	// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>1);
+
 	pWnd = GetDlgItem(IDC_BANDA_EDIT1);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>1);
+
 	pWnd = GetDlgItem(IDC_BANDB_EDIT1);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>1);
-	pWnd = GetDlgItem(IDC_BANDC_EDIT1);			// disable
-	if(pWnd)
-		pWnd->EnableWindow(m_nPins>1);
+
 	pWnd = GetDlgItem(IDC_CURVE_EDIT1);			// disable
 	if(pWnd)
 		pWnd->EnableWindow(m_nPins>1);
 
 	// No Pins
-	pWnd = GetDlgItem(IDC_SPLIT_CHECK1);
-	if(pWnd)
-		pWnd->ShowWindow((m_nPins<1)? SW_HIDE : SW_SHOW);
 	pWnd = GetDlgItem(IDC_DELETE_BUT1);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<1)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_PIN_NUM_EDIT1);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<1)? SW_HIDE : SW_SHOW);
+
 	pWnd = GetDlgItem(IDC_PIN_INDEX_EDIT1);
 	if(pWnd)
 		pWnd->ShowWindow((m_nPins<1)? SW_HIDE : SW_SHOW);
@@ -2238,68 +1202,42 @@ void CPinEditDlg::OnBnClickedInsertBut1()
 	{
 		// check m_nColors and calculate a new index
 		int newColorIndex;
-		int lastIndex = m_pPins[m_indexIndex].GetIndex();
+		int lastIndex = m_PinIndex1;
 		if(m_nPins < 2)
 		{
 			if(lastIndex == m_nColors )
 			{
-				AfxMessageBox("Sorry, not enough colors to add a new pin after the last!",MB_ICONWARNING);
+				AfxMessageBox(_T("Sorry, not enough colors to add a new pin after the last!"), MB_ICONWARNING);
 				return;
 			}
 			newColorIndex =  (lastIndex + m_nColors)/2;
 		}
 		else // more than 1 pin
 		{
-			int nextIndex = m_pPins[m_indexIndex+1].GetIndex();
+			int nextIndex = m_PinIndex2;
 			if(nextIndex - lastIndex < 2)
 			{
-				AfxMessageBox("Sorry, not enough colors in between these pins to insert another!",MB_ICONWARNING);
+				AfxMessageBox(_T("Sorry, not enough colors in between these pins to insert another!"),MB_ICONWARNING);
 				return;
 			}
 			newColorIndex =  (lastIndex + nextIndex)/2;
 		}
 
-		CPinn *pNewPins = new CPinn[m_nPins+1];
-		ASSERT(pNewPins);
-		for(int i=0; i<= m_indexIndex; i++)
-			pNewPins[i] = m_pPins[i];
-		pNewPins[m_indexIndex+1]=m_pPins[m_indexIndex];
-		pNewPins[m_indexIndex+1].SetIndex(newColorIndex);
-		for(int j=m_indexIndex+1; j< m_nPins; j++)
-			pNewPins[j+1] = m_pPins[j];
-
-		delete [] m_pPins;
-		m_pPins = pNewPins;
-		pNewPins=0;
-		m_nPins += 1;
-
-		// By default set the connection on the right of the new pin to FALSE
-		// Which means setting m_left of the pin on the right of the new pin to FALSE also
-		m_pPins[m_indexIndex+1].m_left = m_pPins[m_indexIndex].m_right;
-		m_pPins[m_indexIndex+1].m_right = FALSE;
-		if(m_nPins > 2)
-			m_pPins[m_indexIndex+2].m_left = FALSE;
-
-		// Set all colors to the existing one at this index
-		COLORREF color = RGB(m_pColors[newColorIndex-1].rgbRed,m_pColors[newColorIndex-1].rgbGreen,m_pColors[newColorIndex-1].rgbBlue);
-		m_pPins[m_indexIndex+1].m_TopLfColor=m_pPins[m_indexIndex+1].m_TopRtColor=m_pPins[m_indexIndex+1].m_BotLfColor=m_pPins[m_indexIndex+1].m_BotRtColor=color;
-
-	}	// NO PINS YET so ADD ONE
-	else
+		ColorPin newPin = m_pins.at(m_indexIndex);
+		newPin.Index = static_cast<double>(newColorIndex) / MaxColorIndex;
+		m_pins.insert(std::begin(m_pins) + m_indexIndex, newPin);
+		m_nPins = static_cast<int>(m_pins.size());
+	}	
+	else // NO PINS YET so ADD ONE
 	{
-		m_nPins = 1;
-		delete [ ] m_pPins;	// just in case
-		m_pPins = new CPinn[m_nPins];
-		m_pPins[0].SetIndex(1);
+		ColorPin newPin;
+		newPin.Index = 0.0;
+		m_pins.push_back(newPin);
 
-		// Set all colors to the existing one at this index
-		COLORREF color = RGB(m_pColors[0].rgbRed,m_pColors[0].rgbGreen,m_pColors[0].rgbBlue);
-		m_pPins[0].m_TopLfColor=m_pPins[0].m_TopRtColor=m_pPins[0].m_BotLfColor=m_pPins[0].m_BotRtColor=color;
-		m_indexIndex = 0;
+		m_nPins = static_cast<int>(m_pins.size());
 	}
 
 	Dirty();
-
 	UpdatePinNumber();
 	UpdateCtrls();
 }
@@ -2311,55 +1249,33 @@ void CPinEditDlg::OnBnClickedInsertBut2()
 
 	// check m_nColors and calculate a new index
 	int newColorIndex;
-	int lastIndex = m_pPins[m_indexIndex+1].GetIndex();
+	int lastIndex = m_PinIndex2;
 	if(m_nPins < 3)
 	{
 		if(lastIndex == m_nColors)
 		{
-			AfxMessageBox("Sorry, not enough colors to add a new pin after the last!",MB_ICONWARNING);
+			AfxMessageBox(_T("Sorry, not enough colors to add a new pin after the last!"),MB_ICONWARNING);
 			return;
 		}
-		newColorIndex =  (lastIndex + m_nColors)/2;
+		newColorIndex = (lastIndex + m_nColors)/2;
 	}
 	else // more than 2 pin
 	{
-		int nextIndex = m_pPins[m_indexIndex+2].GetIndex();
+		int nextIndex = m_PinIndex3;
 		if(nextIndex - lastIndex < 2)
 		{
-			AfxMessageBox("Sorry, not enough colors in between these pins to insert another!",MB_ICONWARNING);
+			AfxMessageBox(_T("Sorry, not enough colors in between these pins to insert another!"),MB_ICONWARNING);
 			return;
 		}
-		newColorIndex =  (lastIndex + nextIndex)/2;
+		newColorIndex = (lastIndex + nextIndex)/2;
 	}
 
-	CPinn *pNewPins = new CPinn[m_nPins+1];
-	ASSERT(pNewPins);
-	for(int i=0; i<= m_indexIndex+1; i++)
-			pNewPins[i] = m_pPins[i];
-	pNewPins[m_indexIndex+2]=m_pPins[m_indexIndex+1];
-	pNewPins[m_indexIndex+2].SetIndex(newColorIndex);
-	for(int j=m_indexIndex+2; j< m_nPins; j++)
-			pNewPins[j+1] = m_pPins[j];
-
-	delete [] m_pPins;
-	m_pPins = pNewPins;
-	pNewPins=0;
-	m_nPins += 1;
-
-	// By default set the connection on the right of the new pin to FALSE
-	// Which means setting m_left of the pin on the right of the new pin to FALSE also
-	m_pPins[m_indexIndex+2].m_left = m_pPins[m_indexIndex+1].m_right;
-	m_pPins[m_indexIndex+2].m_right = FALSE;
-	if(m_nPins > m_indexIndex + 3)
-		m_pPins[m_indexIndex+3].m_left = FALSE;
-
-	// Set all colors to the existing one at this index
-	COLORREF color = RGB(m_pColors[newColorIndex-1].rgbRed,m_pColors[newColorIndex-1].rgbGreen,m_pColors[newColorIndex-1].rgbBlue);
-	m_pPins[m_indexIndex+2].m_TopLfColor=m_pPins[m_indexIndex+2].m_TopRtColor=m_pPins[m_indexIndex+2].m_BotLfColor=m_pPins[m_indexIndex+2].m_BotRtColor=color;
-
+	ColorPin newPin = m_pins.at(m_indexIndex+1);
+	newPin.Index = static_cast<double>(newColorIndex) / MaxColorIndex;
+	m_pins.insert(std::begin(m_pins) + m_indexIndex + 1, newPin);
+	m_nPins = static_cast<int>(m_pins.size());
 
 	Dirty();
-
 	UpdatePinNumber();
 	UpdateCtrls();
 }
@@ -2367,26 +1283,13 @@ void CPinEditDlg::OnBnClickedInsertBut2()
 // puts them in order of increasing color index
 // Using pointer would have been faster but we already started with
 // arrays of objects and speed not critical for a dozen or so objects
-void CPinEditDlg::SortPins(int count, CPinn *pPins)
+void CPinEditDlg::SortPins(std::vector<DxColor::ColorPin>& pins)
 {
-	// Now sort
-	CPinn TempPin;
-
-	for(int a=1; a<count; a++)
-		for(int b=count-1; b>=a; b--)
-			if(pPins[b-1].GetIndex() > pPins[b].GetIndex())
-			{
-				TempPin =pPins[b-1];
-				pPins[b-1]=pPins[b];
-				pPins[b]=TempPin;
-			}
-
-	// synchronize m_lefts and m_rights
-	for(int i=0; i < m_nPins-1; i++)
-		pPins[i+1].m_left = pPins[i].m_right;
-	
-	pPins= NULL;
+	std::sort(std::begin(m_pins), std::end(m_pins), 
+		[&](const ColorPin& lf, const ColorPin& rt)
+		{ return lf.Index < rt.Index; });
 }
+
 void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 {
 	if(m_nPins<1)
@@ -2394,35 +1297,33 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex1 == m_pPins[m_indexIndex].GetIndex())
+	if(m_PinIndex1 == static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1)))
 		return;		// no change
 
-	if(m_PinIndex1 < 1 || m_PinIndex1 > m_nColors)
+	if(m_PinIndex1 < 0 || m_PinIndex1 >= m_nColors)
 	{
 		CString mes;
-		mes.Format("Value out of Range! Pick a color index between 1 and %d.",m_nColors);
+		mes.Format(_T("Value out of Range! Pick a color index between 0 and %d."), m_nColors-1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex1 = m_pPins[m_indexIndex].GetIndex();
+		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1));
 		UpdateData(FALSE);
 		return;
 	}
 	else if( DoesPinAlreadyExist(m_PinIndex1) )
 	{
 		CString mes;
-		mes.Format("Choose another value. A pin already exists with this index: %d.",m_PinIndex1);
+		mes.Format(_T("Choose another value. A pin already exists with this index: %d."), m_PinIndex1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex1 = m_pPins[m_indexIndex].GetIndex();
+		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1));
 		UpdateData(FALSE);
 		return;
 	}
 
-	m_pPins[m_indexIndex].SetIndex(m_PinIndex1);
-	SortPins(m_nPins,m_pPins);
+	m_pins.at(m_indexIndex).Index = static_cast<double>(m_PinIndex1) / (MaxColorIndex - 1);
+	SortPins(m_pins);
 
 	UpdatePinNumber();
 	UpdateCtrls();
-
-	// enable update button
 	Dirty();
 }
 
@@ -2433,30 +1334,30 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit2()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex2 == m_pPins[m_indexIndex+1].GetIndex())
+	if(m_PinIndex2 == static_cast<int>(m_pins.at(m_indexIndex+1).Index * (MaxColorIndex - 1)))
 		return;		// no change
 
-	if(m_PinIndex2 < 1 || m_PinIndex2 > m_nColors)
+	if(m_PinIndex2 < 0 || m_PinIndex2 >= m_nColors)
 	{
 		CString mes;
-		mes.Format("Value out of Range! Pick a color index between 1 and %d.",m_nColors);
+		mes.Format(_T("Value out of Range! Pick a color index between 1 and %d."), m_nColors-1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex2 = m_pPins[m_indexIndex+1].GetIndex();
+		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex+1).Index * (MaxColorIndex - 1));
 		UpdateData(FALSE);
 		return;
 	}
 	else if( DoesPinAlreadyExist(m_PinIndex2) )
 	{
 		CString mes;
-		mes.Format("Choose another value. A pin already exists with this index: %d.",m_PinIndex2);
+		mes.Format(_T("Choose another value. A pin already exists with this index: %d."),m_PinIndex2);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex2 = m_pPins[m_indexIndex+1].GetIndex();
+		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex + 1).Index * (MaxColorIndex - 1));
 		UpdateData(FALSE);
 		return;
 	}
 
-	m_pPins[m_indexIndex+1].SetIndex(m_PinIndex2);
-	SortPins(m_nPins,m_pPins);
+	m_pins.at(m_indexIndex+1).Index = static_cast<double>(m_PinIndex2) / (MaxColorIndex - 1);
+	SortPins(m_pins);
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -2472,29 +1373,30 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit3()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex3 == m_pPins[m_indexIndex+2].GetIndex())
+	if(m_PinIndex3 == static_cast<int>(m_pins.at(m_indexIndex + 2).Index * (MaxColorIndex - 1)))
 		return;		// no change
 
-	if(m_PinIndex3 < 1 || m_PinIndex3 > m_nColors)
+	if(m_PinIndex3 < 0 || m_PinIndex3 >= m_nColors)
 	{
 		CString mes;
-		mes.Format("Value out of Range! Pick a color index between 1 and %d.",m_nColors);
+		mes.Format(_T("Value out of Range! Pick a color index between 1 and %d."), m_nColors - 1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex3 = m_pPins[m_indexIndex+2].GetIndex();
+		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 2).Index * (MaxColorIndex - 1));
 		UpdateData(FALSE);
 		return;
 	}
 	else if( DoesPinAlreadyExist(m_PinIndex3) )
 	{
 		CString mes;
-		mes.Format("Choose another value. A pin already exists with this index: %d.",m_PinIndex3);
+		mes.Format(_T("Choose another value. A pin already exists with this index: %d."), m_PinIndex3);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex3 = m_pPins[m_indexIndex+2].GetIndex();
+		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 1).Index * (MaxColorIndex - 1));
 		UpdateData(FALSE);
 		return;
 	}
-	m_pPins[m_indexIndex+2].SetIndex(m_PinIndex3);
-	SortPins(m_nPins,m_pPins);
+
+	m_pins.at(m_indexIndex + 2).Index = static_cast<double>(m_PinIndex3) / (MaxColorIndex - 1);
+	SortPins(m_pins);
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -2567,44 +1469,15 @@ void CPinEditDlg::OnEnChangeCurveEdit2()
 }
 
 // return true if there is a pin with the same index
-BOOL CPinEditDlg::DoesPinAlreadyExist(int index)
+bool CPinEditDlg::DoesPinAlreadyExist(int index)
 {
-	for(int i=0; i < m_nPins; i++)
-		if(m_pPins[i].GetIndex() == index)
-			return TRUE;
-
-	return FALSE;
-}
-void CPinEditDlg::OnEnChangeBandcEdit1()
-{
-	UpdateData(TRUE);
-	Dirty();
-}
-
-void CPinEditDlg::OnEnKillfocusBandcEdit1()
-{
-	if(m_nPins > 0)
+	for (const auto& pin : m_pins)
 	{
-		UpdateData(TRUE);
-		m_pPins[m_indexIndex].m_Band3 = m_BandC1;
-		Dirty();
-		Invalidate(TRUE);
+		int pinIndex = static_cast<int>(pin.Index * (MaxColorIndex - 1));
+		if (pinIndex == index)
+			return true;
 	}
+
+	return false;
 }
 
-void CPinEditDlg::OnEnChangeBandcEdit2()
-{
-	UpdateData(TRUE);
-	Dirty();
-}
-
-void CPinEditDlg::OnEnKillfocusBandcEdit2()
-{
-	if(m_nPins > 1)
-	{
-		UpdateData(TRUE);
-		m_pPins[m_indexIndex+1].m_Band3 = m_BandC2;
-		Dirty();
-		Invalidate(TRUE);
-	}
-}

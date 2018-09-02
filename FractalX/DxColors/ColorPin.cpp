@@ -39,6 +39,7 @@ namespace DxColor
 		{
 			ar << pin.Index;
 			ar << static_cast<int>(pin.CurveType);
+			ar << pin.Curve;
 			ar << pin.IndexWidth1 << pin.IndexWidth2;
 		}
 		else
@@ -46,6 +47,7 @@ namespace DxColor
 			int curveType = 1;
 			ar >> pin.Index;
 			ar >> curveType;
+			ar >> pin.Curve;
 			ar >> pin.IndexWidth1 >> pin.IndexWidth2;
 
 			pin.CurveType = static_cast<ColorCurveType>(curveType);

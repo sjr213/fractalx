@@ -5,20 +5,11 @@
 //#include "ImageApp.h"
 #include "ctrls.h"
 
-
-// CRedEdit
-
-IMPLEMENT_DYNAMIC(CColorEdit, CEdit)
-
 CColorEdit::CColorEdit():m_TextColor(RGB(255,0,0)), m_BkColor(RGB(255,255,255))
-{
-
-}
+{}
 
 CColorEdit::~CColorEdit()
-{
-}
-
+{}
 
 BEGIN_MESSAGE_MAP(CColorEdit, CEdit)
 //	ON_WM_PAINT()

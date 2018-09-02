@@ -2,10 +2,8 @@
 
 // CColorEdit
 
-class AFX_EXT_CLASS CColorEdit : public CEdit
+class CColorEdit : public CEdit
 {
-	DECLARE_DYNAMIC(CColorEdit)
-
 public:
 	CColorEdit();
 	virtual ~CColorEdit();

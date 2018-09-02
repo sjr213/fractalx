@@ -26,6 +26,12 @@ public:
 	void Dirty(BOOL makeDirty=TRUE);
 
 protected: 
+
+	// maybe add something to set this later
+	const int MaxColorIndex = 1000;
+	const double MinBand = 0.0;
+	const double MaxBand = 1.0;
+	const double DefaultBand = 0.005;
 	
 	int m_nPins;
 
@@ -81,13 +87,8 @@ protected:
 	COLORREF m_CopiedColor;
 
 	BOOL m_bDirty;	// whether to enable the update button
-	BOOL m_bParentChanged;	// true if an update was sent to the parent
-							// means OnOK, a backup can be made even if !m_bDirty
 
 	// Control fields
-	BOOL m_Connect1;
-	BOOL m_Connect2;
-
 	int m_PinNum1;
 	int m_PinNum2;
 	int m_PinNum3;
@@ -96,10 +97,10 @@ protected:
 	int m_PinIndex2;
 	int m_PinIndex3;
 
-	int m_BandA1;
-	int m_BandA2;
-	int m_BandB1;
-	int m_BandB2;
+	double m_BandA1;
+	double m_BandA2;
+	double m_BandB1;
+	double m_BandB2;
 
 	double m_k1;
 	double m_k2;
@@ -116,9 +117,6 @@ protected:
 	CString m_green;
 	CString m_blue;
 
-	int m_BandC1;
-	int m_BandC2;
-
 	void UpdateCtrls();
 
 	// Called by OnInitDialog() and when the number 
@@ -130,10 +128,10 @@ protected:
 	inline double curver(double k, double in);
 
 	// puts them in order of increasing color index
-	void SortPins(int count, std::vector<DxColor::ColorPin>& pins);
+	void SortPins(std::vector<DxColor::ColorPin>& pins);
 
 	// return true if there is a pin with the same index
-	BOOL DoesPinAlreadyExist(int index);
+	bool DoesPinAlreadyExist(int index);
 
 protected:
 	
@@ -154,8 +152,6 @@ protected:
 
 	afx_msg void OnBnClickedNextBut();
 	afx_msg void OnBnClickedPreviousBut();
-	afx_msg void OnBnClickedConnectCheck1();
-	afx_msg void OnBnClickedConnectCheck2();
 	afx_msg void OnBnClickedSpreadNormRad1();
 	afx_msg void OnBnClickedSpreadNormRad2();
 	afx_msg void OnBnClickedSpreadStripeRad1();
@@ -168,10 +164,6 @@ protected:
 	afx_msg void OnEnKillfocusBandbEdit2();
 	afx_msg void OnEnKillfocusCurveEdit1();
 	afx_msg void OnEnKillfocusCurveEdit2();
-	afx_msg void OnBnClickedShowBut();
-	afx_msg void OnBnClickedSplitCheck1();
-	afx_msg void OnBnClickedSplitCheck2();
-	afx_msg void OnBnClickedSplitCheck3();
 	afx_msg void OnBnClickedDeleteBut1();
 	afx_msg void OnBnClickedDeleteBut2();
 	afx_msg void OnBnClickedDeleteBut3();
@@ -189,8 +181,4 @@ protected:
 	afx_msg void OnEnChangeBandbEdit2();
 	afx_msg void OnEnChangeCurveEdit1();
 	afx_msg void OnEnChangeCurveEdit2();
-	afx_msg void OnEnChangeBandcEdit1();
-	afx_msg void OnEnKillfocusBandcEdit1();
-	afx_msg void OnEnChangeBandcEdit2();
-	afx_msg void OnEnKillfocusBandcEdit2();
 };
