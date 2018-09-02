@@ -37,9 +37,6 @@ CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	, m_BandB2(DefaultBand)
 	, m_k1(0)
 	, m_k2(0)
-	, m_Split1(FALSE)
-	, m_Split2(FALSE)
-	, m_Split3(FALSE)
 	, m_indexIndex(0)
 	, m_IsCopiedColor(FALSE)
 	, m_red(_T(""))
@@ -83,9 +80,6 @@ void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BANDB_EDIT2, m_BandB2);
 	DDX_Text(pDX, IDC_CURVE_EDIT1, m_k1);
 	DDX_Text(pDX, IDC_CURVE_EDIT2, m_k2);
-	DDX_Check(pDX, IDC_SPLIT_CHECK1, m_Split1);
-	DDX_Check(pDX, IDC_SPLIT_CHECK2, m_Split2);
-	DDX_Check(pDX, IDC_SPLIT_CHECK3, m_Split3);
 	DDX_Control(pDX, IDC_RED_EDIT, m_RedEdit);
 	DDX_Control(pDX, IDC_GREEN_EDIT, m_GreenEdit);
 	DDX_Control(pDX, IDC_BLUE_EDIT, m_BlueEdit);
@@ -653,9 +647,6 @@ void CPinEditDlg::UpdateCtrls()
 			pWnd = GetDlgItem(IDC_BANDB_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(FALSE);
 		}
 		else if (m_pins.at(m_indexIndex).CurveType == ColorCurveType::Normal)
 		{
@@ -675,9 +666,6 @@ void CPinEditDlg::UpdateCtrls()
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
 			pWnd = GetDlgItem(IDC_BANDB_EDIT1);
-			if(pWnd)
-				pWnd->EnableWindow(FALSE);
-			pWnd = GetDlgItem(IDC_BANDC_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
 

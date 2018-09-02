@@ -105,10 +105,6 @@ protected:
 	double m_k1;
 	double m_k2;
 
-	BOOL m_Split1;
-	BOOL m_Split2;
-	BOOL m_Split3;
-
 	CColorEdit m_RedEdit;
 	CColorEdit m_GreenEdit;
 	CColorEdit m_BlueEdit;
