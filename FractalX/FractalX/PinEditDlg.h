@@ -133,6 +133,10 @@ protected:
 	// return true if there is a pin with the same index
 	bool DoesPinAlreadyExist(int index);
 
+	int CalcPinIndex(int nPin);
+
+	double CalcPinIndexValue(int nPin);
+
 protected:
 	
 	DECLARE_MESSAGE_MAP()

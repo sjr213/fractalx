@@ -6,6 +6,7 @@
 #include "DoubleBuffer.h"
 #include "ColorUtilities.h"
 #include "PinTracker.h"
+#include "PinEditDlg.h"
 
 using namespace DxColor;
 
@@ -404,6 +405,20 @@ protected:
 		ar.Close();
 		colorFile.Close();
 	}
+
+	void OnUpdateEditPin(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(TRUE);
+	}
+
+	void OnEditPin()
+	{
+		CPinEditDlg pinDlg(this);
+		pinDlg.SetPins(m_palette.Pins);
+
+		if (pinDlg.DoModal() == IDOK)
+			;
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
@@ -418,7 +433,9 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
-	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, OnUpdateDeletePin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)
+	ON_COMMAND(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnEditPin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)

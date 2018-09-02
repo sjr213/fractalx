@@ -564,6 +564,25 @@ void CPinEditDlg::OnEnKillfocusCurveEdit2()
 	}
 }
 
+int CPinEditDlg::CalcPinIndex(int nPin)
+{
+	int pinPos = nPin - 1;
+	return static_cast<int>(m_pins.at(m_indexIndex + pinPos).Index * (m_nColors - 1));
+}
+
+double CPinEditDlg::CalcPinIndexValue(int nPin)
+{
+	int pinIndex = 0;
+	if (nPin == 1)
+		pinIndex = m_PinIndex1;
+	else if (nPin == 2)
+		pinIndex = m_PinIndex2;
+	else if (pinIndex == 3)
+		pinIndex = m_PinIndex3;
+
+	return static_cast<double>(pinIndex) / (m_nColors - 1);
+}
+
 void CPinEditDlg::UpdateCtrls()
 {
 	CWnd *pWnd;
@@ -585,7 +604,7 @@ void CPinEditDlg::UpdateCtrls()
 	if(m_nPins > 0)	// first slot will be filled as long as there is one pin
 	{
 		m_PinNum1 = m_indexIndex + 1; // since m_indexIndex is zero based
-		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * MaxColorIndex);
+		m_PinIndex1 = CalcPinIndex(1);
 		m_BandA1 = m_pins.at(m_indexIndex).IndexWidth1;
 		if(m_BandA1 < MinBand || m_BandA1 > MaxBand)
 			m_BandA1 = DefaultBand;
@@ -671,7 +690,7 @@ void CPinEditDlg::UpdateCtrls()
 	if(m_nPins > 1)	// first slot will be filled as long as there is one pin
 	{
 		m_PinNum2 = m_indexIndex + 2; 
-		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex+1).Index * MaxColorIndex);
+		m_PinIndex2 = CalcPinIndex(2);
 		m_BandA2 = m_pins.at(m_indexIndex+1).IndexWidth1;
 		if(m_BandA2 < MinBand || m_BandA2 > MaxBand)
 			m_BandA2 = DefaultBand;
@@ -751,7 +770,7 @@ void CPinEditDlg::UpdateCtrls()
 	if(m_nPins > 2)	// first slot will be filled as long as there is one pin
 	{
 		m_PinNum3 = m_indexIndex + 3; // since m_indexIndex is zero based
-		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 2).Index * MaxColorIndex);
+		m_PinIndex3 = CalcPinIndex(3);
 	}
 	
 	UpdateData(FALSE);
@@ -1297,7 +1316,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex1 == static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1)))
+	if(m_PinIndex1 == CalcPinIndex(1))
 		return;		// no change
 
 	if(m_PinIndex1 < 0 || m_PinIndex1 >= m_nColors)
@@ -1305,7 +1324,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 		CString mes;
 		mes.Format(_T("Value out of Range! Pick a color index between 0 and %d."), m_nColors-1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1));
+		m_PinIndex1 = CalcPinIndex(1);
 		UpdateData(FALSE);
 		return;
 	}
@@ -1314,12 +1333,12 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 		CString mes;
 		mes.Format(_T("Choose another value. A pin already exists with this index: %d."), m_PinIndex1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex1 = static_cast<int>(m_pins.at(m_indexIndex).Index * (MaxColorIndex-1));
+		m_PinIndex1 = CalcPinIndex(1);
 		UpdateData(FALSE);
 		return;
 	}
 
-	m_pins.at(m_indexIndex).Index = static_cast<double>(m_PinIndex1) / (MaxColorIndex - 1);
+	m_pins.at(m_indexIndex).Index = CalcPinIndexValue(1);
 	SortPins(m_pins);
 
 	UpdatePinNumber();
@@ -1334,15 +1353,15 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit2()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex2 == static_cast<int>(m_pins.at(m_indexIndex+1).Index * (MaxColorIndex - 1)))
-		return;		// no change
+	if (m_PinIndex2 == CalcPinIndex(2))
+		return;
 
 	if(m_PinIndex2 < 0 || m_PinIndex2 >= m_nColors)
 	{
 		CString mes;
 		mes.Format(_T("Value out of Range! Pick a color index between 1 and %d."), m_nColors-1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex+1).Index * (MaxColorIndex - 1));
+		m_PinIndex2 = CalcPinIndex(2);
 		UpdateData(FALSE);
 		return;
 	}
@@ -1351,12 +1370,12 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit2()
 		CString mes;
 		mes.Format(_T("Choose another value. A pin already exists with this index: %d."),m_PinIndex2);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex2 = static_cast<int>(m_pins.at(m_indexIndex + 1).Index * (MaxColorIndex - 1));
+		m_PinIndex2 = CalcPinIndex(2);
 		UpdateData(FALSE);
 		return;
 	}
 
-	m_pins.at(m_indexIndex+1).Index = static_cast<double>(m_PinIndex2) / (MaxColorIndex - 1);
+	m_pins.at(m_indexIndex + 1).Index = CalcPinIndexValue(2);
 	SortPins(m_pins);
 
 	UpdatePinNumber();
@@ -1373,7 +1392,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit3()
 
 	UpdateData(TRUE);
 
-	if(m_PinIndex3 == static_cast<int>(m_pins.at(m_indexIndex + 2).Index * (MaxColorIndex - 1)))
+	if(m_PinIndex3 == CalcPinIndex(3))
 		return;		// no change
 
 	if(m_PinIndex3 < 0 || m_PinIndex3 >= m_nColors)
@@ -1381,7 +1400,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit3()
 		CString mes;
 		mes.Format(_T("Value out of Range! Pick a color index between 1 and %d."), m_nColors - 1);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 2).Index * (MaxColorIndex - 1));
+		m_PinIndex3 = CalcPinIndex(3);
 		UpdateData(FALSE);
 		return;
 	}
@@ -1390,12 +1409,12 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit3()
 		CString mes;
 		mes.Format(_T("Choose another value. A pin already exists with this index: %d."), m_PinIndex3);
 		AfxMessageBox(mes, MB_ICONWARNING);
-		m_PinIndex3 = static_cast<int>(m_pins.at(m_indexIndex + 1).Index * (MaxColorIndex - 1));
+		m_PinIndex3 = CalcPinIndex(3);
 		UpdateData(FALSE);
 		return;
 	}
 
-	m_pins.at(m_indexIndex + 2).Index = static_cast<double>(m_PinIndex3) / (MaxColorIndex - 1);
+	m_pins.at(m_indexIndex + 2).Index = CalcPinIndexValue(3);
 	SortPins(m_pins);
 
 	UpdatePinNumber();
