@@ -47,37 +47,16 @@ protected:
 	
 	// Special members
 	// m_indexIndex
-	CRect m_TopLfRect1;
 	CRect m_TopCtrRect1;
-	CRect m_TopRtRect1;
-	CRect m_BotLfRect1;
 	CRect m_BotCtrRect1;
-	CRect m_BotRtRect1;
-	CRect m_ThirdLfRect1;
-	CRect m_ThirdCtrRect1;
-	CRect m_ThirdRtRect1;
 
 	// m_indexIndex + 1 
-	CRect m_TopLfRect2;
 	CRect m_TopCtrRect2;
-	CRect m_TopRtRect2;
-	CRect m_BotLfRect2;
 	CRect m_BotCtrRect2;
-	CRect m_BotRtRect2;
-	CRect m_ThirdLfRect2;
-	CRect m_ThirdCtrRect2;
-	CRect m_ThirdRtRect2;
 
 	// m_indexIndex + 2
-	CRect m_TopLfRect3;
 	CRect m_TopCtrRect3;
-	CRect m_TopRtRect3;
-	CRect m_BotLfRect3;
 	CRect m_BotCtrRect3;
-	CRect m_BotRtRect3;
-	CRect m_ThirdLfRect3;
-	CRect m_ThirdCtrRect3;
-	CRect m_ThirdRtRect3;
 
 	CRect m_CurveRect1;
 	CRect m_CurveRect2;

@@ -148,37 +148,16 @@ BOOL CPinEditDlg::OnInitDialog()
 	int group3 = 277;	// distance from left of pin 1 to left of pin 3
 
 	// m_indexIndex
-	m_TopLfRect1 = CRect(left, top, left+width, top+width);
 	m_TopCtrRect1 = CRect(left+20, top, left+width+20, top+width);
-	m_TopRtRect1 = CRect(left+width+gap, top, left+2*width+gap, top+width);
-	m_BotLfRect1 = CRect(left, top+width+gap, left+width, top+2*width+gap);
 	m_BotCtrRect1 = CRect(left+20, top+width+gap, left+width+20, top+2*width+gap);
-	m_BotRtRect1 = CRect(left+width+gap, top+width+gap, left+2*width+gap, top+2*width+gap);
-	m_ThirdLfRect1 = CRect(left, top+2*(width+gap), left+width, top+3*width+2*gap);
-	m_ThirdCtrRect1 = CRect(left+20, top+2*(width+gap), left+width+20, top+3*width+2*gap);
-	m_ThirdRtRect1 = CRect(left+width+gap, top+2*(width+gap), left+2*width+gap, top+3*width+2*gap);
 	
 	// m_indexIndex + 1 
-	m_TopLfRect2 = CRect(left+group2, top, left+width+group2, top+width);
 	m_TopCtrRect2 = CRect(left+20+group2, top, left+width+20+group2, top+width);
-	m_TopRtRect2 = CRect(left+width+gap+group2, top, left+2*width+gap+group2, top+width);
-	m_BotLfRect2 = CRect(left+group2, top+width+gap, left+width+group2, top+2*width+gap);
 	m_BotCtrRect2 = CRect(left+20+group2, top+width+gap, left+width+20+group2, top+2*width+gap);
-	m_BotRtRect2 = CRect(left+width+gap+group2, top+width+gap, left+2*width+gap+group2, top+2*width+gap);
-	m_ThirdLfRect2 = CRect(left+group2, top+2*(width+gap), left+width+group2, top+3*width+2*gap);
-	m_ThirdCtrRect2 = CRect(left+20+group2, top+2*(width+gap), left+width+20+group2, top+3*width+2*gap);
-	m_ThirdRtRect2 = CRect(left+width+gap+group2, top+2*(width+gap), left+2*width+gap+group2, top+3*width+2*gap);
 
 	// m_indexIndex + 2
-	m_TopLfRect3 = CRect(left+group3, top, left+width+group3, top+width);
 	m_TopCtrRect3 = CRect(left+20+group3, top, left+width+20+group3, top+width);
-	m_TopRtRect3 = CRect(left+width+gap+group3, top, left+2*width+gap+group3, top+width);
-	m_BotLfRect3 = CRect(left+group3, top+width+gap, left+width+group3, top+2*width+gap);
 	m_BotCtrRect3 = CRect(left+20+group3, top+width+gap, left+width+20+group3, top+2*width+gap);
-	m_BotRtRect3 = CRect(left+width+gap+group3, top+width+gap, left+2*width+gap+group3, top+2*width+gap);
-	m_ThirdLfRect3 = CRect(left+group3, top+2*(width+gap), left+width+group3, top+3*width+2*gap);
-	m_ThirdCtrRect3 = CRect(left+20+group3, top+2*(width+gap), left+width+20+group3, top+3*width+2*gap);
-	m_ThirdRtRect3 = CRect(left+width+gap+group3, top+2*(width+gap), left+2*width+gap+group3, top+3*width+2*gap);
 
 	m_CurveRect1 = CRect(196,343,241,388); // x-22,y+38
 	m_CurveRect2 = CRect(437,343,482,388);
