@@ -140,12 +140,12 @@ BOOL CPinEditDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	int left = 124;		// left of left most color boxes
-	int top = 88;		// top of the top most color boxes
-	int width = 35;		// width AND HEIGHT of each box
-	int gap = 5;		// space between boxes for the same pin
-	int group2 = 138;	// distance from left of pin 1 to left of pin 2
-	int group3 = 277;	// distance from left of pin 1 to left of pin 3
+	const int left = 84;		// left of left most color boxes
+	const int top = 88;		// top of the top most color boxes
+	const int width = 35;		// width AND HEIGHT of each box
+	const int gap = 5;		// space between boxes for the same pin
+	const int group2 = 100;	// distance from left of pin 1 to left of pin 2
+	const int group3 = 201;	// distance from left of pin 1 to left of pin 3
 
 	// m_indexIndex
 	m_TopCtrRect1 = CRect(left+20, top, left+width+20, top+width);
@@ -159,8 +159,10 @@ BOOL CPinEditDlg::OnInitDialog()
 	m_TopCtrRect3 = CRect(left+20+group3, top, left+width+20+group3, top+width);
 	m_BotCtrRect3 = CRect(left+20+group3, top+width+gap, left+width+20+group3, top+2*width+gap);
 
-	m_CurveRect1 = CRect(196,343,241,388); // x-22,y+38
-	m_CurveRect2 = CRect(437,343,482,388);
+	const int curveWt = 45;
+	const int curveTop = 313;
+	m_CurveRect1 = CRect(168, curveTop, 168 + curveWt, curveTop + curveWt); // x-22,y+38
+	m_CurveRect2 = CRect(345, curveTop, 345 + curveWt, curveTop + curveWt);
 	
 	m_RedEdit.SetTextColor( RGB(255,0,0) );
 	m_RedEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
