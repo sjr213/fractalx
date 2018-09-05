@@ -327,7 +327,6 @@ protected:
 
 	void OnImport()
 	{
-	
 		CString fileName;
 		CString fileExt(_T("pins"));
 		CString fileType;
@@ -417,7 +416,12 @@ protected:
 		pinDlg.SetPins(m_palette.Pins);
 
 		if (pinDlg.DoModal() == IDOK)
-			;
+		{
+			m_palette.Pins = pinDlg.GetPins();
+			m_pinTracker->SetPins(m_palette.Pins);
+
+			PaletteChanged();
+		}
 	}
 };
 
