@@ -1213,7 +1213,7 @@ void CPinEditDlg::OnBnClickedInsertBut1()
 
 		ColorPin newPin = m_pins.at(m_indexIndex);
 		newPin.Index = static_cast<double>(newColorIndex) / MaxColorIndex;
-		m_pins.insert(std::begin(m_pins) + m_indexIndex, newPin);
+		m_pins.insert(std::begin(m_pins) + m_indexIndex + 1, newPin);
 		m_nPins = static_cast<int>(m_pins.size());
 	}	
 	else // NO PINS YET so ADD ONE
@@ -1260,7 +1260,7 @@ void CPinEditDlg::OnBnClickedInsertBut2()
 
 	ColorPin newPin = m_pins.at(m_indexIndex+1);
 	newPin.Index = static_cast<double>(newColorIndex) / MaxColorIndex;
-	m_pins.insert(std::begin(m_pins) + m_indexIndex + 1, newPin);
+	m_pins.insert(std::begin(m_pins) + m_indexIndex + 2, newPin);
 	m_nPins = static_cast<int>(m_pins.size());
 
 	Dirty();
