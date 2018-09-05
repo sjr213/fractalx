@@ -552,7 +552,7 @@ double CPinEditDlg::CalcPinIndexValue(int nPin)
 		pinIndex = m_PinIndex1;
 	else if (nPin == 2)
 		pinIndex = m_PinIndex2;
-	else if (pinIndex == 3)
+	else if (nPin == 3)
 		pinIndex = m_PinIndex3;
 
 	return static_cast<double>(pinIndex) / (m_nColors - 1);
