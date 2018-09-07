@@ -30,7 +30,15 @@ namespace fx
 			double eRange = static_cast<double>(end) - static_cast<double>(start);
 			double eStretch = static_cast<double>(nStep) / nSteps;
 			double result = eStart + eStretch * eRange;
-			return static_cast<bite>(result + 0.5);
+			return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
+		}
+
+		static bite CurveBite(bite start, bite end, double difference)
+		{
+			double eStart = start;
+			double eRange = static_cast<double>(end) - static_cast<double>(start);
+			double result = eStart + difference * eRange;
+			return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
 		}
 
 		static int ColorsRemaining(std::vector<uint32_t>& colors, int nColors)
@@ -50,11 +58,37 @@ namespace fx
 				AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
 		}
 
+		static void StretchPinsCurved(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		{
+			// add intermediate colors
+			for (int i = 1; i < nSteps; ++i)
+			{
+				double fractionalPosition = static_cast<double>(i) / nSteps;
+				double colorDifference = pow(fractionalPosition, pin1.Curve);
+
+				bite a = CurveBite(pin1.Color1.A, pin2.Color1.A, colorDifference);
+				bite r = CurveBite(pin1.Color1.R, pin2.Color1.R, colorDifference);
+				bite g = CurveBite(pin1.Color1.G, pin2.Color1.G, colorDifference);
+				bite b = CurveBite(pin1.Color1.B, pin2.Color1.B, colorDifference);
+				AddColor(colors, a, r, g, b);
+			}
+		}
+
+		static void StretchPinsNormal(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		{
+			// add intermediate colors
+			for (int i = 1; i < nSteps; ++i)
+			{
+				bite a = StretchBite(pin1.Color1.A, pin2.Color1.A, i, nSteps);
+				bite r = StretchBite(pin1.Color1.R, pin2.Color1.R, i, nSteps);
+				bite g = StretchBite(pin1.Color1.G, pin2.Color1.G, i, nSteps);
+				bite b = StretchBite(pin1.Color1.B, pin2.Color1.B, i, nSteps);
+				AddColor(colors, a, r, g, b);
+			}
+		}
+
 		static void StretchPins(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, bool lastPins)
 		{
-			if (pin1.CurveType != DxColor::ColorCurveType::Normal)
-				throw std::exception("Only Normal curve type is implemented");
-
 			int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
 
 			int colorsRemaining = ColorsRemaining(colors, nColors);
@@ -70,21 +104,13 @@ namespace fx
 				--nSteps;
 			}
 
-			// always add one color for each pin
+			// always add one color for first pin
 			AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
 
-			// add intermediate colors
-			if (nSteps > 1)
-			{
-				for (int i = 1; i < nSteps; ++i)
-				{
-					bite a = StretchBite(pin1.Color1.A, pin2.Color1.A, i, nSteps);
-					bite r = StretchBite(pin1.Color1.R, pin2.Color1.R, i, nSteps);
-					bite g = StretchBite(pin1.Color1.G, pin2.Color1.G, i, nSteps);
-					bite b = StretchBite(pin1.Color1.B, pin2.Color1.B, i, nSteps);
-					AddColor(colors, a, r, g, b);
-				}
-			}
+			if (pin1.CurveType == DxColor::ColorCurveType::Curve)
+				StretchPinsCurved(pin1, pin2, colors, nSteps);
+			else
+				StretchPinsNormal(pin1, pin2, colors, nSteps);
 
 			if (!lastPins)
 				return;
@@ -92,7 +118,7 @@ namespace fx
 			// add last color
 			AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 
-			while(static_cast<int>(colors.size()) < nColors)
+			while (static_cast<int>(colors.size()) < nColors)
 				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 		}
 
