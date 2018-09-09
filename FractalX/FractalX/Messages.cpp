@@ -10,6 +10,10 @@ const UINT cMessage::tm_render = RegisterWindowMessage(_T("Render 3D if needed")
 
 const UINT cMessage::tm_killPaletteView = RegisterWindowMessage(_T("Kill palette view"));
 
+const UINT cMessage::tm_pinsChanged = RegisterWindowMessage(_T("Pins changed"));
+
+const UINT cMessage::tm_pinEditDlgClosed = RegisterWindowMessage(_T("Pin edit dlg closed"));
+
 const double PROGRESS_SIZE = 10000;
 
 WPARAM cMessage::MakeWPARAMProgress(double progress)

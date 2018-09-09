@@ -32,6 +32,8 @@ protected:
 	const double MinBand = 0.0;
 	const double MaxBand = 1.0;
 	const double DefaultBand = 0.005;
+
+	CWnd* m_parent = nullptr;
 	
 	int m_nPins;
 
@@ -148,6 +150,7 @@ protected:
 	afx_msg void OnBnClickedDeleteBut3();
 	afx_msg void OnBnClickedInsertBut1();
 	afx_msg void OnBnClickedInsertBut2();
+	afx_msg void OnBnClickedShow();
 	afx_msg void OnEnKillfocusPinIndexEdit1();
 	afx_msg void OnEnKillfocusPinIndexEdit2();
 	afx_msg void OnEnKillfocusPinIndexEdit3();
@@ -158,6 +161,4 @@ protected:
 	afx_msg void OnEnChangeBandbEdit1();
 	afx_msg void OnEnChangeBandaEdit2();
 	afx_msg void OnEnChangeBandbEdit2();
-	afx_msg void OnEnChangeCurveEdit1();
-	afx_msg void OnEnChangeCurveEdit2();
 };

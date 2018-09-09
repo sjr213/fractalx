@@ -19,12 +19,14 @@
 #include "math.h"
 #include <algorithm>
 #include "ColorUtils.h"
+#include "Messages.h"
 
 using namespace DxColor;
 using namespace ColorUtils;
 
 CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPinEditDlg::IDD, pParent)
+	, m_parent(pParent)
 	, m_PinNum1(0)
 	, m_PinNum2(0)
 	, m_PinNum3(0)
@@ -129,8 +131,7 @@ BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_BANDB_EDIT1, &CPinEditDlg::OnEnChangeBandbEdit1)
 	ON_EN_CHANGE(IDC_BANDA_EDIT2, &CPinEditDlg::OnEnChangeBandaEdit2)
 	ON_EN_CHANGE(IDC_BANDB_EDIT2, &CPinEditDlg::OnEnChangeBandbEdit2)
-//	ON_EN_CHANGE(IDC_CURVE_EDIT1, &CPinEditDlg::OnEnChangeCurveEdit1)
-//	ON_EN_CHANGE(IDC_CURVE_EDIT2, &CPinEditDlg::OnEnChangeCurveEdit2)
+	ON_BN_CLICKED(IDC_SHOW_BUT, &CPinEditDlg::OnBnClickedShow)
 END_MESSAGE_MAP()
 
 
@@ -403,12 +404,18 @@ void CPinEditDlg::OnBnClickedPreviousBut()
 
 void CPinEditDlg::OnOK()
 {
-	CDialogEx::OnOK();
+	if (m_parent)
+		m_parent->PostMessage(cMessage::tm_pinEditDlgClosed, m_bDirty);
+	else
+		CDialogEx::OnOK();
 }
 
 void CPinEditDlg::OnCancel()
 {
-	CDialogEx::OnCancel();
+	if (m_parent)
+		m_parent->PostMessage(cMessage::tm_pinEditDlgClosed, 0);
+	else
+		CDialogEx::OnCancel();
 }
 
 void CPinEditDlg::OnBnClickedSpreadNormRad1()
@@ -1466,18 +1473,6 @@ void CPinEditDlg::OnEnChangeBandbEdit2()
 	Dirty();
 }
 
-void CPinEditDlg::OnEnChangeCurveEdit1()
-{
-	UpdateData(TRUE);
-	Dirty();
-}
-
-void CPinEditDlg::OnEnChangeCurveEdit2()
-{
-	UpdateData(TRUE);
-	Dirty();
-}
-
 // return true if there is a pin with the same index
 bool CPinEditDlg::DoesPinAlreadyExist(int index)
 {
@@ -1489,5 +1484,11 @@ bool CPinEditDlg::DoesPinAlreadyExist(int index)
 	}
 
 	return false;
+}
+
+void CPinEditDlg::OnBnClickedShow()
+{
+	if (m_parent)
+		m_parent->PostMessage(cMessage::tm_pinsChanged, 0, 0);
 }
 

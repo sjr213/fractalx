@@ -27,6 +27,7 @@ private:
 	int m_activePinIndex = -1;
 	CPoint m_pinPt;
 	CString m_indexText;
+	std::unique_ptr<CPinEditDlg> m_pinEditDlg;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
@@ -412,16 +413,45 @@ protected:
 
 	void OnEditPin()
 	{
-		CPinEditDlg pinDlg(this);
-		pinDlg.SetPins(m_palette.Pins);
+		if (m_pinEditDlg)
+			return;
 
-		if (pinDlg.DoModal() == IDOK)
+		m_pinEditDlg = std::make_unique<CPinEditDlg>(this);
+		m_pinEditDlg->SetPins(m_palette.Pins);
+
+		m_pinEditDlg->Create(IDD_PIN_EDIT_DLG, NULL);
+	}
+
+	LRESULT OnPinsChanged(WPARAM, LPARAM)
+	{
+		if (!m_pinEditDlg)
+			return 0;
+
+		m_palette.Pins = m_pinEditDlg->GetPins();
+		m_pinTracker->SetPins(m_palette.Pins);
+
+		PaletteChanged();
+
+		return 0;
+	}
+
+	LRESULT OnPinEditDlgClosed(WPARAM wparam, LPARAM)
+	{
+		// OK
+		if (wparam == 1 && m_pinEditDlg)
 		{
-			m_palette.Pins = pinDlg.GetPins();
+			m_palette.Pins = m_pinEditDlg->GetPins();
 			m_pinTracker->SetPins(m_palette.Pins);
 
 			PaletteChanged();
 		}
+
+		if (m_pinEditDlg)
+		{
+			m_pinEditDlg.reset();
+		}
+
+		return 0;
 	}
 };
 
@@ -440,6 +470,8 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)
 	ON_COMMAND(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnEditPin)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
+	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
+	ON_REGISTERED_MESSAGE(cMessage::tm_pinEditDlgClosed, &CPaletteViewDlgImp::OnPinEditDlgClosed)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)

@@ -16,6 +16,10 @@ public:
 
 	static const UINT tm_killPaletteView;
 
+	static const UINT tm_pinsChanged;
+
+	static const UINT tm_pinEditDlgClosed;
+
 	static WPARAM MakeWPARAMProgress(double progress);
 
 	static double MakeDoubleProgress(WPARAM progress);
