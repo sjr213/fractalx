@@ -90,8 +90,8 @@ void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_BandA2, MinBand, MaxBand);
 	DDV_MinMaxDouble(pDX, m_BandB1, MinBand, MaxBand);
 	DDV_MinMaxDouble(pDX, m_BandB2, MinBand, MaxBand);
-	// DDV_MinMaxDouble(pDX, m_k1, 0.0001, 1000.0);
-	// DDV_MinMaxDouble(pDX, m_k2, 0.001, 1000.0);
+	DDV_MinMaxDouble(pDX, m_k1, 0.001, 1000.0);
+	DDV_MinMaxDouble(pDX, m_k2, 0.001, 1000.0);
 }
 
 
@@ -129,8 +129,8 @@ BEGIN_MESSAGE_MAP(CPinEditDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_BANDB_EDIT1, &CPinEditDlg::OnEnChangeBandbEdit1)
 	ON_EN_CHANGE(IDC_BANDA_EDIT2, &CPinEditDlg::OnEnChangeBandaEdit2)
 	ON_EN_CHANGE(IDC_BANDB_EDIT2, &CPinEditDlg::OnEnChangeBandbEdit2)
-	ON_EN_CHANGE(IDC_CURVE_EDIT1, &CPinEditDlg::OnEnChangeCurveEdit1)
-	ON_EN_CHANGE(IDC_CURVE_EDIT2, &CPinEditDlg::OnEnChangeCurveEdit2)
+//	ON_EN_CHANGE(IDC_CURVE_EDIT1, &CPinEditDlg::OnEnChangeCurveEdit1)
+//	ON_EN_CHANGE(IDC_CURVE_EDIT2, &CPinEditDlg::OnEnChangeCurveEdit2)
 END_MESSAGE_MAP()
 
 
@@ -604,8 +604,15 @@ void CPinEditDlg::UpdateCtrls()
 			if(pBut)
 				pBut->SetCheck(TRUE);
 			
+			pWnd = GetDlgItem(IDC_BANDA_EDIT1);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 1);
+			pWnd = GetDlgItem(IDC_BANDB_EDIT1);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 1);
+
 			pWnd = GetDlgItem(IDC_CURVE_EDIT1);
-			if(pWnd)
+			if (pWnd)
 				pWnd->EnableWindow(FALSE);
 		}
 		else if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::Curve)
@@ -628,6 +635,10 @@ void CPinEditDlg::UpdateCtrls()
 			pWnd = GetDlgItem(IDC_BANDB_EDIT1);
 			if(pWnd)
 				pWnd->EnableWindow(FALSE);
+
+			pWnd = GetDlgItem(IDC_CURVE_EDIT1);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 1);
 		}
 		else if (m_pins.at(m_indexIndex).CurveType == ColorCurveType::Normal)
 		{
@@ -684,8 +695,15 @@ void CPinEditDlg::UpdateCtrls()
 			if(pBut)
 				pBut->SetCheck(TRUE);
 
+			pWnd = GetDlgItem(IDC_BANDA_EDIT2);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 2);
+			pWnd = GetDlgItem(IDC_BANDB_EDIT2);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 2);
+
 			pWnd = GetDlgItem(IDC_CURVE_EDIT2);
-			if(pWnd)
+			if (pWnd)
 				pWnd->EnableWindow(FALSE);
 		}
 		else if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::Curve)
@@ -703,11 +721,15 @@ void CPinEditDlg::UpdateCtrls()
 				pBut->SetCheck(TRUE);
 
 			pWnd = GetDlgItem(IDC_BANDA_EDIT2);
-			if(pWnd)
+			if (pWnd)
 				pWnd->EnableWindow(FALSE);
-				pWnd = GetDlgItem(IDC_BANDB_EDIT2);
-			if(pWnd)
+			pWnd = GetDlgItem(IDC_BANDB_EDIT2);
+			if (pWnd)
 				pWnd->EnableWindow(FALSE);
+
+			pWnd = GetDlgItem(IDC_CURVE_EDIT2);
+			if (pWnd)
+				pWnd->EnableWindow(m_nPins > 2);
 		}
 		else if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::Normal)
 		{
