@@ -74,6 +74,53 @@ namespace fx
 			}
 		}
 
+		static bool IsSecondBand(double band1, double band2, double index)
+		{
+			double currentIndex = band1;
+
+			bool secondBand = false;
+
+			while (currentIndex < index)
+			{
+				currentIndex += band2;
+				if (currentIndex >
+					index)
+				{
+					secondBand = true;
+					break;
+				}
+
+				currentIndex += band1;
+				secondBand = false;
+			}
+
+			return secondBand;
+		}
+
+		static void StretchPinsBanded(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		{
+			double band1 = pin1.IndexWidth1;
+			double band2 = pin1.IndexWidth2;
+
+			double indexRange = pin2.Index - pin1.Index;
+
+			for (int i = 1; i < nSteps; ++i)
+			{
+				double currentIndex = i * indexRange / nSteps;
+
+				bool secondBand = IsSecondBand(band1, band2, currentIndex);
+
+				DxColor::ColorArgb color1 = secondBand ? pin1.Color2 : pin1.Color1;
+				DxColor::ColorArgb color2 = secondBand ? pin2.Color2 : pin2.Color1;
+
+				bite a = StretchBite(color1.A, color2.A, i, nSteps);
+				bite r = StretchBite(color1.R, color2.R, i, nSteps);
+				bite g = StretchBite(color1.G, color2.G, i, nSteps);
+				bite b = StretchBite(color1.B, color2.B, i, nSteps);
+				AddColor(colors, a, r, g, b);
+			}
+		}
+
 		static void StretchPinsNormal(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
 		{
 			// add intermediate colors
@@ -109,6 +156,8 @@ namespace fx
 
 			if (pin1.CurveType == DxColor::ColorCurveType::Curve)
 				StretchPinsCurved(pin1, pin2, colors, nSteps);
+			else if (pin1.CurveType == DxColor::ColorCurveType::DoubleBand)
+				StretchPinsBanded(pin1, pin2, colors, nSteps);
 			else
 				StretchPinsNormal(pin1, pin2, colors, nSteps);
 
