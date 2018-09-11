@@ -33,12 +33,12 @@ namespace DXF
 			double theta = acos(z.z / r);
 			double phi = atan2(z.y, z.x);
 
-			dr = pow(r, m_traceParams.Power - 1.0) *  m_traceParams.Power * dr + m_traceParams.ConstantC;
+			dr = pow(r, m_traceParams.Fractal.Power - 1.0) *  m_traceParams.Fractal.Power * dr + m_traceParams.Fractal.ConstantC;
 
 			// scale and rotate the point
-			double zr = pow(r, m_traceParams.Power);
-			theta = theta * m_traceParams.Power;
-			phi = phi * m_traceParams.Power;
+			double zr = pow(r, m_traceParams.Fractal.Power);
+			theta = theta * m_traceParams.Fractal.Power;
+			phi = phi * m_traceParams.Fractal.Power;
 
 			// convert back to Cartesian coordinates
 			z = static_cast<float>(zr) * Vector3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
@@ -50,10 +50,10 @@ namespace DXF
 			double dr = 1.0;
 			double r = 0.0;
 
-			for (int i = 0; i < m_traceParams.Iterations; ++i)
+			for (int i = 0; i < m_traceParams.Bulb.Iterations; ++i)
 			{
 				r = z.Length();
-				if (r > m_traceParams.Bailout)
+				if (r > m_traceParams.Fractal.Bailout)
 					break;
 
 				CalculateNextCycle(z, r, dr);
@@ -75,18 +75,18 @@ namespace DXF
 
 			double lastDistance = std::numeric_limits<double>::max();
 
-			for (steps = 0; steps < m_traceParams.MaxRaySteps; steps++)
+			for (steps = 0; steps < m_traceParams.Bulb.MaxRaySteps; steps++)
 			{
 				p = static_cast<float>(totalDistance) * direction + start;
 				double distance = EstimateDistance(p);
-				totalDistance += distance / m_traceParams.StepDivisor;                      // note change 
-				if (distance < m_traceParams.MinRayDistance || distance > lastDistance)
+				totalDistance += distance / m_traceParams.Bulb.StepDivisor;                      // note change 
+				if (distance < m_traceParams.Bulb.MinRayDistance || distance > lastDistance)
 					break;
 
 				lastDistance = distance;
 			}
 
-			return 1.0 - ((double)steps) / m_traceParams.MaxRaySteps;
+			return 1.0 - ((double)steps) / m_traceParams.Bulb.MaxRaySteps;
 		}
 
 		double RayMarchFractional(const Vector3& start, const Vector3& direction, Vector3& p)
@@ -97,24 +97,24 @@ namespace DXF
 
 			double lastDistance = std::numeric_limits<double>::max();
 
-			for (steps = 0; steps < m_traceParams.MaxRaySteps; ++steps)
+			for (steps = 0; steps < m_traceParams.Bulb.MaxRaySteps; ++steps)
 			{
 				p = static_cast<float>(totalDistance) * direction + start;
 				distance = EstimateDistance(p);
-				totalDistance += distance / m_traceParams.StepDivisor;                     
-				if (distance < m_traceParams.MinRayDistance) // || distance > lastDistance)
+				totalDistance += distance / m_traceParams.Bulb.StepDivisor;                     
+				if (distance < m_traceParams.Bulb.MinRayDistance) // || distance > lastDistance)
 					break;
 
 				lastDistance = distance;
 			}
 
 			double delta = steps;
-			if (steps < m_traceParams.MaxRaySteps - 1 && distance < m_traceParams.MinRayDistance)
-				delta = steps + distance / m_traceParams.MinRayDistance;
+			if (steps < m_traceParams.Bulb.MaxRaySteps - 1 && distance < m_traceParams.Bulb.MinRayDistance)
+				delta = steps + distance / m_traceParams.Bulb.MinRayDistance;
 
-			delta = std::min(delta, static_cast<double>(m_traceParams.MaxRaySteps));
+			delta = std::min(delta, static_cast<double>(m_traceParams.Bulb.MaxRaySteps));
 
-			return 1.0 - delta / m_traceParams.MaxRaySteps;
+			return 1.0 - delta / m_traceParams.Bulb.MaxRaySteps;
 		}
 
 		double RayMarchDistance(const Vector3& start, const Vector3& direction, Vector3& p)
@@ -124,12 +124,12 @@ namespace DXF
 
 			double lastDistance = std::numeric_limits<double>::max();
 
-			for (steps = 0; steps < m_traceParams.MaxRaySteps; steps++)
+			for (steps = 0; steps < m_traceParams.Bulb.MaxRaySteps; steps++)
 			{
 				p = static_cast<float>(totalDistance) * direction + start;
 				double distance = EstimateDistance(p);
-				totalDistance += distance / m_traceParams.StepDivisor;                      // note change 
-				if (distance < m_traceParams.MinRayDistance || distance > lastDistance)
+				totalDistance += distance / m_traceParams.Bulb.StepDivisor;                      // note change 
+				if (distance < m_traceParams.Bulb.MinRayDistance || distance > lastDistance)
 					break;
 
 				lastDistance = distance;
@@ -163,7 +163,7 @@ namespace DXF
 			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
 			{
 				const Vector3& v = data.Vertices.at(nVertex);
-				Vector3 pt = MakeStartingPoint(m_traceParams.Distance, m_traceParams.Origin, v);
+				Vector3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				Vector3 direction = -1.0f * v;
 				Vector3 p;
@@ -176,7 +176,7 @@ namespace DXF
 					setProgress(static_cast<double>(nVertex) / nVertices);
 			}
 
-			StretchDistanceParams stretchParams = m_traceParams.StretchParams;
+			StretchDistanceParams stretchParams = m_traceParams.Stretch;
 			stretchParams.MinDistance = minDistance;
 			stretchParams.MaxDistance = maxDistance;
 
@@ -204,7 +204,7 @@ namespace DXF
 			m_traceParams = traceParams;
 
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
-			vData->StretchParams = traceParams.StretchParams;
+			vData->StretchParams = traceParams.Stretch;
 
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
@@ -214,7 +214,7 @@ namespace DXF
 			{
 				return RayMarch(start, direction, p);
 			};
-			if (traceParams.Fractional)
+			if (traceParams.Bulb.Fractional)
 				marcher = [this](const Vector3& start, const Vector3& direction, Vector3& p)
 			{
 				return RayMarchFractional(start, direction, p);
@@ -222,13 +222,13 @@ namespace DXF
 
 			for (const Vector3& v : data.Vertices)
 			{
-				Vector3 pt = MakeStartingPoint(traceParams.Distance, traceParams.Origin, v);
+				Vector3 pt = MakeStartingPoint(traceParams.Bulb.Distance, traceParams.Bulb.Origin, v);
 
 				Vector3 direction = -1.0f * v;
 				Vector3 p;
 				double distance = marcher(pt, direction, p);
 
-				auto normal = CalculateNormal(p, m_traceParams.NormalDelta);
+				auto normal = CalculateNormal(p, m_traceParams.Bulb.NormalDelta);
 
 				vData->Vertices.emplace_back(p, normal, Vector2(static_cast<float>(distance), 0.0f));
 
@@ -256,34 +256,34 @@ namespace DXF
 
 			auto setLocalProgress = setProgress;
 
-			if (m_traceParams.StretchParams.EstimateMinMax)
+			if (m_traceParams.Stretch.EstimateMinMax)
 			{
 				setLocalProgress = [&](double progress)
 				{
 					setProgress(0.25 + 3.0*progress / 4.0);
 				};
 
-				m_traceParams.StretchParams = EstimateStretchRange(data, [&](double progress)
+				m_traceParams.Stretch = EstimateStretchRange(data, [&](double progress)
 				{
 					setProgress(progress / 4.0);
 				});
 			}
 				
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
-			vData->StretchParams = m_traceParams.StretchParams;
+			vData->StretchParams = m_traceParams.Stretch;
 
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
 
 			for (const Vector3& v : data.Vertices)
 			{
-				Vector3 pt = MakeStartingPoint(m_traceParams.Distance, m_traceParams.Origin, v);
+				Vector3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				Vector3 direction = -1.0f * v;
 				Vector3 p;
-				double distance = CalculateStretchDistance(pt, direction, p, m_traceParams.StretchParams);
+				double distance = CalculateStretchDistance(pt, direction, p, m_traceParams.Stretch);
 
-				auto normal = CalculateNormal(p, m_traceParams.NormalDelta);
+				auto normal = CalculateNormal(p, m_traceParams.Bulb.NormalDelta);
 
 				vData->Vertices.emplace_back(p, normal, Vector2(static_cast<float>(distance), 0.0f));
 

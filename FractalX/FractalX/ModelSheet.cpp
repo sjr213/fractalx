@@ -52,11 +52,11 @@ void CModelSheet::SetTraceParams(const DXF::TraceParams& traceParams)
 {
 	m_traceParams = traceParams;
 	m_traceParamsPage.SetTraceParams(m_traceParams);
-	m_fractalParamsPage.SetBailOut(m_traceParams.Bailout);
-	m_fractalParamsPage.SetConstantC(m_traceParams.ConstantC);
-	m_fractalParamsPage.SetPower(m_traceParams.Power);
-	m_positionRangePage.SetOrigin(m_traceParams.Origin);
-	m_positionRangePage.SetStretchParams(m_traceParams.StretchParams);
+	m_fractalParamsPage.SetBailOut(m_traceParams.Fractal.Bailout);
+	m_fractalParamsPage.SetConstantC(m_traceParams.Fractal.ConstantC);
+	m_fractalParamsPage.SetPower(m_traceParams.Fractal.Power);
+	m_positionRangePage.SetOrigin(m_traceParams.Bulb.Origin);
+	m_positionRangePage.SetStretchParams(m_traceParams.Stretch);
 }
 
 DXF::TraceParams CModelSheet::GetTraceParams() const
@@ -70,9 +70,9 @@ void CModelSheet::OnOk()
 	m_data.TriangleSeeds = m_vertexPage.GetSeedTriangles();
 
 	m_traceParams = m_traceParamsPage.GetTraceParams();
-	m_traceParams.Bailout = m_fractalParamsPage.GetBailOut();
-	m_traceParams.ConstantC = m_fractalParamsPage.GetConstantC();
-	m_traceParams.Power = m_fractalParamsPage.GetPower();
-	m_traceParams.Origin = m_positionRangePage.GetOrigin();
-	m_traceParams.StretchParams = m_positionRangePage.GetStretchParams();
+	m_traceParams.Fractal.Bailout = m_fractalParamsPage.GetBailOut();
+	m_traceParams.Fractal.ConstantC = m_fractalParamsPage.GetConstantC();
+	m_traceParams.Fractal.Power = m_fractalParamsPage.GetPower();
+	m_traceParams.Bulb.Origin = m_positionRangePage.GetOrigin();
+	m_traceParams.Stretch = m_positionRangePage.GetStretchParams();
 }

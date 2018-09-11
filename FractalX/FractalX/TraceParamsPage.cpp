@@ -37,24 +37,24 @@ void CTraceParamsPage::DoDataExchange(CDataExchange* pDX)
 {
 	CMFCPropertyPage::DoDataExchange(pDX);
 
-	DDX_Text(pDX, IDC_MAX_RAY_STEPS_EDIT, m_traceParams.MaxRaySteps);
-	DDV_MinMaxInt(pDX, m_traceParams.MaxRaySteps, 1, 10000000);
+	DDX_Text(pDX, IDC_MAX_RAY_STEPS_EDIT, m_traceParams.Bulb.MaxRaySteps);
+	DDV_MinMaxInt(pDX, m_traceParams.Bulb.MaxRaySteps, 1, 10000000);
 
-	DDX_Text(pDX, IDC_MIN_RAY_DISTANCE_EDIT, m_traceParams.MinRayDistance);
-	DDV_MinMaxDouble(pDX, m_traceParams.MinRayDistance, 1e-9, 0.01);
+	DDX_Text(pDX, IDC_MIN_RAY_DISTANCE_EDIT, m_traceParams.Bulb.MinRayDistance);
+	DDV_MinMaxDouble(pDX, m_traceParams.Bulb.MinRayDistance, 1e-9, 0.01);
 
-	DDX_Text(pDX, IDC_STEP_DIVISOR_EDIT, m_traceParams.StepDivisor);
-	DDV_MinMaxDouble(pDX, m_traceParams.StepDivisor, 0.1, 10000);
+	DDX_Text(pDX, IDC_STEP_DIVISOR_EDIT, m_traceParams.Bulb.StepDivisor);
+	DDV_MinMaxDouble(pDX, m_traceParams.Bulb.StepDivisor, 0.1, 10000);
 
-	DDX_Text(pDX, IDC_ITERATIONS_EDIT, m_traceParams.Iterations);
-	DDV_MinMaxInt(pDX, m_traceParams.Iterations, 1, 1000000);
+	DDX_Text(pDX, IDC_ITERATIONS_EDIT, m_traceParams.Bulb.Iterations);
+	DDV_MinMaxInt(pDX, m_traceParams.Bulb.Iterations, 1, 1000000);
 
-	DDX_Text(pDX, IDC_NORMAL_DELTA_EDIT, m_traceParams.NormalDelta);
-	DDV_MinMaxFloat(pDX, m_traceParams.NormalDelta, 1e-5f, 0.1f);
+	DDX_Text(pDX, IDC_NORMAL_DELTA_EDIT, m_traceParams.Bulb.NormalDelta);
+	DDV_MinMaxFloat(pDX, m_traceParams.Bulb.NormalDelta, 1e-5f, 0.1f);
 
-	BOOL fractional = m_traceParams.Fractional;
+	BOOL fractional = m_traceParams.Bulb.Fractional;
 	DDX_Check(pDX, IDC_FRACTIONAL_CHECK, fractional);
-	m_traceParams.Fractional = fractional ? true : false;
+	m_traceParams.Bulb.Fractional = fractional ? true : false;
 }
 
 BOOL CTraceParamsPage::OnSetActive()

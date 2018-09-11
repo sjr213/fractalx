@@ -92,7 +92,7 @@ namespace DXF
 
 		std::shared_ptr<BasicRayTracer> rayTracer = BasicRayTracer::CreateBasicRayTracer();
 
-		if (traceParams.StretchParams.StretchDistance)
+		if (traceParams.Stretch.StretchDistance)
 		{
 			return rayTracer->RayTraceStretch(tData, traceParams, [&](double progress)
 			{
