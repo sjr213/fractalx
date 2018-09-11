@@ -28,6 +28,10 @@ Whole serialization
 		ModelData -ok
 		DxVertexData -ok
 		TraceParams -ok
-		Palette 
-	Connect to view
+		Palette - ok
+	Connect to view -ok
 	Serialize
+
+Need SetModified in handlers
+Need to add mutex to set/get in doc because it can be accessed from another thread. Maybe just vertex data
+Rethink color conversion from palette so we don't need to pass non-const palette all the time
