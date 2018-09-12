@@ -12,4 +12,6 @@ namespace DXF
 		std::vector<unsigned int> Indices;
 		StretchDistanceParams StretchParams;
 	};
+
+	void SerializeVertexData(CArchive& ar, DxVertexData& vextexData);
 }
