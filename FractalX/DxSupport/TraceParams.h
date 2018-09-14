@@ -20,7 +20,7 @@ namespace DXF
 
 	struct BulbParams
 	{
-		DirectX::SimpleMath::Vector3 Origin = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+		DirectX::XMFLOAT3 Origin = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		float Distance = 10.0f;
 
 		// Distance estimate params

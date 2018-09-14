@@ -66,6 +66,12 @@
     <ClInclude Include="VertexStatistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DxSerialize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceParamsSerialize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -104,7 +110,10 @@
     <ClCompile Include="ModelData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertexData.cpp">
+    <ClCompile Include="TraceParamsSerialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DxSerialize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
