@@ -10,7 +10,9 @@ namespace DXF
 
 	struct DxVertexData;
 
-	void Serialize(CArchive& ar, size_t n);
+	void Serialize(CArchive& ar, size_t& n);
+
+	void Serialize(CArchive& ar, unsigned int& n);
 
 	template<typename T, typename Allocator>
 	void Serialize(CArchive& ar, std::vector<T, Allocator>& Vector)

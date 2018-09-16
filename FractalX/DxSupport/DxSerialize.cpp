@@ -5,7 +5,15 @@
 
 namespace DXF
 {
-	void Serialize(CArchive& ar, size_t n)
+	void Serialize(CArchive& ar, size_t& n)
+	{
+		if (ar.IsStoring())
+			ar << n;
+		else
+			ar >> n;
+	}
+
+	void Serialize(CArchive& ar, unsigned int& n)
 	{
 		if (ar.IsStoring())
 			ar << n;
