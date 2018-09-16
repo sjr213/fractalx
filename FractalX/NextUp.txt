@@ -14,7 +14,7 @@ Next Up
 7.5) Implement Add pin - forgot - put off until after serialization
 8) Add context menu -ok
 
-9) Serialize whole object
+9) Serialize whole object -ok
 10) Serialize triangles to speed up
 
 11) Dialog that displays mini palette for each palette file in folder
@@ -30,8 +30,8 @@ Whole serialization
 		TraceParams -ok
 		Palette - ok
 	Connect to view -ok
-	Serialize
+	Serialize -ok
 
-Need SetModified in handlers
-Need to add mutex to set/get in doc because it can be accessed from another thread. Maybe just vertex data
+Need SetModified in handlers -ok
+Need to add mutex to set/get in doc because it can be accessed from another thread. Maybe just vertex data -ok
 Rethink color conversion from palette so we don't need to pass non-const palette all the time
