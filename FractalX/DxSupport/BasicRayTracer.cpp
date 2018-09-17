@@ -15,7 +15,7 @@ using namespace DirectX::SimpleMath;
 
 namespace DXF
 {
-	static DirectX::SimpleMath::Vector3 MakeStartingPoint(float distance, const Vector3& origin, const Vector3& direction)
+	static DirectX::XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
 	{
 		return distance * direction + origin;
 	}
@@ -27,7 +27,7 @@ namespace DXF
 
 	protected:
 
-		void CalculateNextCycle(Vector3& z, double& r, double& dr)
+		void CalculateNextCycle(XMFLOAT3& z, double& r, double& dr)
 		{
 			// convert to polar coordinates
 			double theta = acos(z.z / r);
@@ -41,10 +41,10 @@ namespace DXF
 			phi = phi * m_traceParams.Fractal.Power;
 
 			// convert back to Cartesian coordinates
-			z = static_cast<float>(zr) * Vector3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
 		}
 
-		double EstimateDistance(Vector3& pos)
+		double EstimateDistance(XMFLOAT3& pos)
 		{
 			Vector3 z = pos;
 			double dr = 1.0;
@@ -68,7 +68,7 @@ namespace DXF
 		}
 
 
-		double RayMarch(const Vector3& start, const Vector3& direction, Vector3& p)
+		double RayMarch(const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 		{
 			double totalDistance = 0.0;
 			int steps;
@@ -89,7 +89,7 @@ namespace DXF
 			return 1.0 - ((double)steps) / m_traceParams.Bulb.MaxRaySteps;
 		}
 
-		double RayMarchFractional(const Vector3& start, const Vector3& direction, Vector3& p)
+		double RayMarchFractional(const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 		{
 			double totalDistance = 0.0;
 			double distance = 0.0;
@@ -117,7 +117,7 @@ namespace DXF
 			return 1.0 - delta / m_traceParams.Bulb.MaxRaySteps;
 		}
 
-		double RayMarchDistance(const Vector3& start, const Vector3& direction, Vector3& p)
+		double RayMarchDistance(const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 		{
 			double totalDistance = 0.0;
 			int steps;
@@ -139,7 +139,7 @@ namespace DXF
 			return lastDistance;
 		}
 
-		Vector3 CalculateNormal(const Vector3& pos, float normalDelta)
+		XMFLOAT3 CalculateNormal(const XMFLOAT3& pos, float normalDelta)
 		{
 			double plusX = EstimateDistance(AddScaler(pos, normalDelta));
 			double minusX = EstimateDistance(AddScaler(pos, -1.0f * normalDelta));
@@ -162,11 +162,11 @@ namespace DXF
 
 			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
 			{
-				const Vector3& v = data.Vertices.at(nVertex);
-				Vector3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+				const XMFLOAT3& v = data.Vertices.at(nVertex);
+				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
-				Vector3 direction = -1.0f * v;
-				Vector3 p;
+				XMFLOAT3 direction = -1.0f * v;
+				XMFLOAT3 p;
 				double distance = RayMarchDistance(pt, direction, p);
 
 				minDistance = std::min(minDistance, distance);
@@ -183,7 +183,7 @@ namespace DXF
 			return stretchParams;
 		}
 
-		double CalculateStretchDistance(const Vector3& start, const Vector3& direction, Vector3& p, const StretchDistanceParams& stretchParams)
+		double CalculateStretchDistance(const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p, const StretchDistanceParams& stretchParams)
 		{
 			double distance = RayMarchDistance(start, direction, p);
 
@@ -209,22 +209,22 @@ namespace DXF
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
 
-			std::function<double(const Vector3&, const Vector3&, Vector3&)> marcher = 
-				[this](const Vector3& start, const Vector3& direction, Vector3& p)
+			std::function<double(const XMFLOAT3&, const XMFLOAT3&, XMFLOAT3&)> marcher =
+				[this](const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 			{
 				return RayMarch(start, direction, p);
 			};
 			if (traceParams.Bulb.Fractional)
-				marcher = [this](const Vector3& start, const Vector3& direction, Vector3& p)
+				marcher = [this](const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 			{
 				return RayMarchFractional(start, direction, p);
 			};
 
-			for (const Vector3& v : data.Vertices)
+			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3 pt = MakeStartingPoint(traceParams.Bulb.Distance, traceParams.Bulb.Origin, v);
+				XMFLOAT3 pt = MakeStartingPoint(traceParams.Bulb.Distance, traceParams.Bulb.Origin, v);
 
-				Vector3 direction = -1.0f * v;
+				XMFLOAT3 direction = -1.0f * v;
 				Vector3 p;
 				double distance = marcher(pt, direction, p);
 
@@ -275,12 +275,12 @@ namespace DXF
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
 
-			for (const Vector3& v : data.Vertices)
+			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
-				Vector3 direction = -1.0f * v;
-				Vector3 p;
+				XMFLOAT3 direction = -1.0f * v;
+				XMFLOAT3 p;
 				double distance = CalculateStretchDistance(pt, direction, p, m_traceParams.Stretch);
 
 				auto normal = CalculateNormal(p, m_traceParams.Bulb.NormalDelta);

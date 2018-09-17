@@ -11,23 +11,23 @@ using namespace DirectX::SimpleMath;
 namespace DXF
 {
 
-	static std::vector<Vector3> CreateSeedVertices(SeedTriangles seeds)
+	static std::vector<XMFLOAT3> CreateSeedVertices(SeedTriangles seeds)
 	{
-		std::vector<Vector3> seedVerices
+		std::vector<XMFLOAT3> seedVerices
 		{
-			Vector3(0.0f, 1.0f, 0.0f),
-			Vector3(1.0f, 0.0f, 0.0f),
-			Vector3(0.0f, 0.0f, -1.0f)
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(1.0f, 0.0f, 0.0f),
+			XMFLOAT3(0.0f, 0.0f, -1.0f)
 		};
 
 		if (seeds > SeedTriangles::One)
-			seedVerices.push_back(Vector3(-1.0f, 0.0f, 0.0f));
+			seedVerices.push_back(XMFLOAT3(-1.0f, 0.0f, 0.0f));
 
 		if (seeds > SeedTriangles::Two)
-			seedVerices.push_back(Vector3(0.0f, 0.0f, 1.0f));
+			seedVerices.push_back(XMFLOAT3(0.0f, 0.0f, 1.0f));
 
 		if (seeds > SeedTriangles::Four)
-			seedVerices.push_back(Vector3(0.0f, -1.0f, 0.0f));
+			seedVerices.push_back(XMFLOAT3(0.0f, -1.0f, 0.0f));
 
 		return seedVerices;
 	}
@@ -59,18 +59,18 @@ namespace DXF
 		return seedTriangles;
 	}
 
-	Vector3 CalculateMidPoint(const Vector3& first, const Vector3& second)
+	XMFLOAT3 CalculateMidPoint(const XMFLOAT3& first, const XMFLOAT3& second)
 	{
-		return Vector3((first.x + second.x) / 2, (first.y + second.y) / 2, (first.z + second.z) / 2);
+		return XMFLOAT3((first.x + second.x) / 2, (first.y + second.y) / 2, (first.z + second.z) / 2);
 	}
 
 	// try passing in the end of the old vertices to be more efficient
-	unsigned int GetVertexIndex(std::vector<Vector3>& vertices, Vector3& vertex)
+	unsigned int GetVertexIndex(std::vector<XMFLOAT3>& vertices, XMFLOAT3& vertex)
 	{
 		constexpr float minDif = 2 * std::numeric_limits<float>::min();
 
 		auto iter = find_if(vertices.begin(), vertices.end(),
-			[&](const Vector3& v)
+			[&](const XMFLOAT3& v)
 			{
 				return fabs(v.x - vertex.x) < minDif &&
 						fabs(v.y - vertex.y) < minDif &&
@@ -99,13 +99,13 @@ namespace DXF
 		for (const Triangle& oldTriangle : data.Triangles)
 		{
 			// for each new vertex we need to determine if it already exist or if we should add it
-			Vector3 newV1 = CalculateMidPoint(data.Vertices.at(oldTriangle.one), data.Vertices.at(oldTriangle.two));
+			XMFLOAT3 newV1 = CalculateMidPoint(data.Vertices.at(oldTriangle.one), data.Vertices.at(oldTriangle.two));
 			unsigned int newIndex1 = GetVertexIndex(newData.Vertices, newV1);
 
-			Vector3 newV2 = CalculateMidPoint(data.Vertices.at(oldTriangle.two), data.Vertices.at(oldTriangle.three));
+			XMFLOAT3 newV2 = CalculateMidPoint(data.Vertices.at(oldTriangle.two), data.Vertices.at(oldTriangle.three));
 			unsigned int newIndex2 = GetVertexIndex(newData.Vertices, newV2);
 
-			Vector3 newV3 = CalculateMidPoint(data.Vertices.at(oldTriangle.three), data.Vertices.at(oldTriangle.one));
+			XMFLOAT3 newV3 = CalculateMidPoint(data.Vertices.at(oldTriangle.three), data.Vertices.at(oldTriangle.one));
 			unsigned int newIndex3 = GetVertexIndex(newData.Vertices, newV3);
 
 			newData.Triangles.emplace_back(oldTriangle.one, newIndex1, newIndex3);
@@ -133,7 +133,7 @@ namespace DXF
 		int total = GetProgressSize(depth);
 		total += 2;
 
-		std::vector<Vector3> vertices = CreateSeedVertices(seeds);
+		std::vector<XMFLOAT3> vertices = CreateSeedVertices(seeds);
 		setProgress(1.0 / total);
 
 		std::vector<Triangle> triangles = CreateSeedTriangle(seeds);
@@ -150,17 +150,19 @@ namespace DXF
 		return data;
 	}
 
-	void NormalizeVector(const DirectX::SimpleMath::Vector3& start, DirectX::SimpleMath::Vector3& end)
+	void NormalizeVector(const XMFLOAT3& start, XMFLOAT3& end)
 	{
-		end = end - start;
+		Vector3 newEnd = end - start;
 
-		end.Normalize();
+		newEnd.Normalize();
+
+		end = newEnd;
 	}
 
 	void NormalizeVectors(TriangleData& data)
 	{
-		Vector3 origin(0, 0, 0);
-		for (DirectX::SimpleMath::Vector3& v : data.Vertices)
+		XMFLOAT3 origin(0, 0, 0);
+		for (XMFLOAT3& v : data.Vertices)
 		{
 			NormalizeVector(origin, v);
 		}
@@ -171,7 +173,7 @@ namespace DXF
 	{
 		std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
 
-		for (const Vector3& v : data.Vertices)
+		for (const XMFLOAT3& v : data.Vertices)
 		{
 			float t0 = (1.0f + v.y) / 2.0f;
 			vData->Vertices.emplace_back(v, v, Vector2(t0, 0.0f));

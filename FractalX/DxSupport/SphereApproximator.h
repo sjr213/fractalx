@@ -30,13 +30,13 @@ namespace DXF
 
 	struct TriangleData
 	{
-		std::vector<DirectX::SimpleMath::Vector3> Vertices;
+		std::vector<DirectX::XMFLOAT3> Vertices;
 		std::vector<Triangle> Triangles;
 	};
 
 	TriangleData GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress);
 
-	void NormalizeVector(const DirectX::SimpleMath::Vector3& start, DirectX::SimpleMath::Vector3& end);
+	void NormalizeVector(const DirectX::XMFLOAT3& start, DirectX::XMFLOAT3& end);
 
 	void NormalizeVectors(TriangleData& data);
 
