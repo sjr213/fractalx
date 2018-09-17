@@ -55,25 +55,25 @@ namespace DxTests
 		TEST_METHOD(TestGenerateCrudeTriangles1)
 		{
 			auto prog = [](double) { };
-			TriangleData data0 = GenerateCrudeTriangles(0, SeedTriangles::Eight, prog);
-			Assert::AreEqual(6, static_cast<int>(data0.Vertices.size()), L"zero iterations should have 6 vertices", LINE_INFO());
-			Assert::AreEqual(8, static_cast<int>(data0.Triangles.size()), L"zero iterations should have 8 triangles", LINE_INFO());
+			auto data0 = GenerateCrudeTriangles(0, SeedTriangles::Eight, prog);
+			Assert::AreEqual(6, static_cast<int>(data0->Vertices.size()), L"zero iterations should have 6 vertices", LINE_INFO());
+			Assert::AreEqual(8, static_cast<int>(data0->Triangles.size()), L"zero iterations should have 8 triangles", LINE_INFO());
 
-			TriangleData data1 = GenerateCrudeTriangles(1, SeedTriangles::Eight, prog);
-			Assert::AreEqual(18, static_cast<int>(data1.Vertices.size()), L"one iterations should have 28 vertices", LINE_INFO());
-			Assert::AreEqual(32, static_cast<int>(data1.Triangles.size()), L"one iterations should have 32 triangles", LINE_INFO());
+			auto data1 = GenerateCrudeTriangles(1, SeedTriangles::Eight, prog);
+			Assert::AreEqual(18, static_cast<int>(data1->Vertices.size()), L"one iterations should have 28 vertices", LINE_INFO());
+			Assert::AreEqual(32, static_cast<int>(data1->Triangles.size()), L"one iterations should have 32 triangles", LINE_INFO());
 
-			TriangleData data2 = GenerateCrudeTriangles(2, SeedTriangles::Eight, prog);
-			Assert::AreEqual(66, static_cast<int>(data2.Vertices.size()), L"two iterations should have 66 vertices", LINE_INFO());
-			Assert::AreEqual(128, static_cast<int>(data2.Triangles.size()), L"two iterations should have 128 triangles", LINE_INFO());
+			auto data2 = GenerateCrudeTriangles(2, SeedTriangles::Eight, prog);
+			Assert::AreEqual(66, static_cast<int>(data2->Vertices.size()), L"two iterations should have 66 vertices", LINE_INFO());
+			Assert::AreEqual(128, static_cast<int>(data2->Triangles.size()), L"two iterations should have 128 triangles", LINE_INFO());
 
-			TriangleData data3 = GenerateCrudeTriangles(3, SeedTriangles::Eight, prog);
-			Assert::AreEqual(258, static_cast<int>(data3.Vertices.size()), L"three iterations should have 258 vertices", LINE_INFO());
-			Assert::AreEqual(512, static_cast<int>(data3.Triangles.size()), L"three iterations should have 512 triangles", LINE_INFO());
+			auto data3 = GenerateCrudeTriangles(3, SeedTriangles::Eight, prog);
+			Assert::AreEqual(258, static_cast<int>(data3->Vertices.size()), L"three iterations should have 258 vertices", LINE_INFO());
+			Assert::AreEqual(512, static_cast<int>(data3->Triangles.size()), L"three iterations should have 512 triangles", LINE_INFO());
 
-			TriangleData data5 = GenerateCrudeTriangles(5, SeedTriangles::Eight, prog);
-			Assert::AreEqual(4098, static_cast<int>(data5.Vertices.size()), L"five iterations should have 4098 vertices", LINE_INFO());
-			Assert::AreEqual(8192, static_cast<int>(data5.Triangles.size()), L"five iterations should have 8192  triangles", LINE_INFO());
+			auto data5 = GenerateCrudeTriangles(5, SeedTriangles::Eight, prog);
+			Assert::AreEqual(4098, static_cast<int>(data5->Vertices.size()), L"five iterations should have 4098 vertices", LINE_INFO());
+			Assert::AreEqual(8192, static_cast<int>(data5->Triangles.size()), L"five iterations should have 8192  triangles", LINE_INFO());
 		}
 /*
 		TEST_METHOD(TestFailure)

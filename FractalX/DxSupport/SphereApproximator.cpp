@@ -87,10 +87,10 @@ namespace DXF
 		return static_cast<unsigned int>(iter - vertices.begin());
 	}
 
-	TriangleData ExpandTriangles(const TriangleData& data)
+	std::shared_ptr<TriangleData> ExpandTriangles(const TriangleData& data)
 	{
-		TriangleData newData;
-		newData.Vertices = data.Vertices;
+		std::shared_ptr<TriangleData> newData = std::make_shared<TriangleData>();
+		newData->Vertices = data.Vertices;
 
 		// not sure if this will work
 		//auto lastVertex = data.Vertices.end();
@@ -100,18 +100,18 @@ namespace DXF
 		{
 			// for each new vertex we need to determine if it already exist or if we should add it
 			XMFLOAT3 newV1 = CalculateMidPoint(data.Vertices.at(oldTriangle.one), data.Vertices.at(oldTriangle.two));
-			unsigned int newIndex1 = GetVertexIndex(newData.Vertices, newV1);
+			unsigned int newIndex1 = GetVertexIndex(newData->Vertices, newV1);
 
 			XMFLOAT3 newV2 = CalculateMidPoint(data.Vertices.at(oldTriangle.two), data.Vertices.at(oldTriangle.three));
-			unsigned int newIndex2 = GetVertexIndex(newData.Vertices, newV2);
+			unsigned int newIndex2 = GetVertexIndex(newData->Vertices, newV2);
 
 			XMFLOAT3 newV3 = CalculateMidPoint(data.Vertices.at(oldTriangle.three), data.Vertices.at(oldTriangle.one));
-			unsigned int newIndex3 = GetVertexIndex(newData.Vertices, newV3);
+			unsigned int newIndex3 = GetVertexIndex(newData->Vertices, newV3);
 
-			newData.Triangles.emplace_back(oldTriangle.one, newIndex1, newIndex3);
-			newData.Triangles.emplace_back(newIndex1, oldTriangle.two, newIndex2);
-			newData.Triangles.emplace_back(newIndex3, newIndex2, oldTriangle.three);
-			newData.Triangles.emplace_back(newIndex1, newIndex2, newIndex3);
+			newData->Triangles.emplace_back(oldTriangle.one, newIndex1, newIndex3);
+			newData->Triangles.emplace_back(newIndex1, oldTriangle.two, newIndex2);
+			newData->Triangles.emplace_back(newIndex3, newIndex2, oldTriangle.three);
+			newData->Triangles.emplace_back(newIndex1, newIndex2, newIndex3);
 		}
 
 		return newData;
@@ -128,7 +128,7 @@ namespace DXF
 		return size;
 	}
 
-	TriangleData GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress)
+	std::shared_ptr<TriangleData> GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress)
 	{
 		int total = GetProgressSize(depth);
 		total += 2;
@@ -139,11 +139,13 @@ namespace DXF
 		std::vector<Triangle> triangles = CreateSeedTriangle(seeds);
 		setProgress(2.0 / total);
 
-		TriangleData data{ vertices, triangles };
+		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
+		data->Vertices = vertices;
+		data->Triangles = triangles;
 
 		for (int i = 0; i < depth; ++i)
 		{
-			data = ExpandTriangles(data);
+			data = ExpandTriangles(*data);
 			setProgress((3.0 + i) / total);
 		}
 

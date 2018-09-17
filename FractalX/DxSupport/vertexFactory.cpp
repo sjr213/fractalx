@@ -75,33 +75,53 @@ namespace DXF
 
 	std::shared_ptr<DxVertexData> CreateSphereModel(int n, SeedTriangles seeds, const std::function<void(double)>& setProgress)
 	{
-		TriangleData tData = GenerateCrudeTriangles(n, seeds, setProgress);
-		NormalizeVectors(tData);
+		auto tData = GenerateCrudeTriangles(n, seeds, setProgress);
+		NormalizeVectors(*tData);
 
-		return CreateModelFromSphereApproximation(tData);
+		return CreateModelFromSphereApproximation(*tData);
 	}
 
-	std::shared_ptr<DxVertexData> CreateBulb(ModelData modelData, TraceParams traceParams, const std::function<void(double)>& setProgress)
+	std::shared_ptr<DxVertexData> CreateBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
 	{
-		TriangleData tData = GenerateCrudeTriangles(modelData.VertexIterations, modelData.TriangleSeeds, [&](double progress)
-		{
-			setProgress(progress / 3.0);
-		});
-
-		NormalizeVectors(tData);
-
 		std::shared_ptr<BasicRayTracer> rayTracer = BasicRayTracer::CreateBasicRayTracer();
 
 		if (traceParams.Stretch.StretchDistance)
 		{
 			return rayTracer->RayTraceStretch(tData, traceParams, [&](double progress)
 			{
-				setProgress(0.333 + 2.0*progress / 3.0);
+				setProgress(progress);
 			});
 		}
 		else
 		{
 			return rayTracer->RayTrace(tData, traceParams, [&](double progress)
+			{
+				setProgress(progress);
+			});
+		}
+	}
+
+	std::shared_ptr<DxVertexData> CreateBulb(ModelData modelData, TraceParams traceParams, const std::function<void(double)>& setProgress)
+	{
+		auto tData = GenerateCrudeTriangles(modelData.VertexIterations, modelData.TriangleSeeds, [&](double progress)
+		{
+			setProgress(progress / 3.0);
+		});
+
+		NormalizeVectors(*tData);
+
+		std::shared_ptr<BasicRayTracer> rayTracer = BasicRayTracer::CreateBasicRayTracer();
+
+		if (traceParams.Stretch.StretchDistance)
+		{
+			return rayTracer->RayTraceStretch(*tData, traceParams, [&](double progress)
+			{
+				setProgress(0.333 + 2.0*progress / 3.0);
+			});
+		}
+		else
+		{
+			return rayTracer->RayTrace(*tData, traceParams, [&](double progress)
 			{
 				setProgress(0.333 + 2.0*progress / 3.0);
 			});

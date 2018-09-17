@@ -34,7 +34,7 @@ namespace DXF
 		std::vector<Triangle> Triangles;
 	};
 
-	TriangleData GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress);
+	std::shared_ptr<TriangleData> GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress);
 
 	void NormalizeVector(const DirectX::XMFLOAT3& start, DirectX::XMFLOAT3& end);
 
