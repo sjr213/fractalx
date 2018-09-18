@@ -8,6 +8,7 @@ namespace DXF
 	struct FractalParams;
 	struct BulbParams;
 	struct TraceParams;
+	struct TriangleData;
 
 	void Serialize(CArchive& ar, StretchDistanceParams& stretchParams);
 
@@ -16,5 +17,7 @@ namespace DXF
 	void Serialize(CArchive& ar, BulbParams& bulbParams);
 
 	void Serialize(CArchive& ar, TraceParams& traceParams);
+
+	void Serialize(CArchive& ar, TriangleData& triangles);
 
 }

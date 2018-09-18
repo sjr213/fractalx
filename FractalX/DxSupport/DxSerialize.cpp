@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "DxSerialize.h"
-#include "VertexData.h"
+
+#include "SphereApproximator.h"
 #include "TraceParamsSerialize.h"
+#include "VertexData.h"
+
 
 namespace DXF
 {
@@ -21,7 +24,7 @@ namespace DXF
 			ar >> n;
 	}
 
-	void Serialize(CArchive& ar, DirectX::XMFLOAT2& xf2)
+	static void Serialize(CArchive& ar, DirectX::XMFLOAT2& xf2)
 	{
 		if (ar.IsStoring())
 		{
@@ -45,11 +48,23 @@ namespace DXF
 		}
 	}
 
-	void Serialize(CArchive& ar, DirectX::VertexPositionNormalTexture& vpnt)
+	static void Serialize(CArchive& ar, DirectX::VertexPositionNormalTexture& vpnt)
 	{
 		Serialize(ar, vpnt.position);
 		Serialize(ar, vpnt.normal);
 		Serialize(ar, vpnt.textureCoordinate);
+	}
+
+	static void Serialize(CArchive& ar, Triangle& triangle)
+	{
+		if (ar.IsStoring())
+		{
+			ar << triangle.one << triangle.two << triangle.three;
+		}
+		else
+		{
+			ar >> triangle.one >> triangle.two >> triangle.three;
+		}
 	}
 
 	void SerializeVertexData(CArchive& ar, DxVertexData& vertexData)
@@ -73,5 +88,27 @@ namespace DXF
 		Serialize(ar, vertexData.Vertices);
 		Serialize(ar, vertexData.Indices);
 		Serialize(ar, vertexData.StretchParams);
+	}
+
+	void Serialize(CArchive& ar, TriangleData& triangles)
+	{
+		const int TriangleVersion = 1;
+
+		if (ar.IsStoring())
+		{
+			ar << TriangleVersion;
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == TriangleVersion);
+			if (version != TriangleVersion)
+				return;
+		}
+
+		Serialize(ar, triangles.Triangles);
+		Serialize(ar, triangles.Vertices);
 	}
 }
