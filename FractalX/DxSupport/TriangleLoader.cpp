@@ -40,22 +40,46 @@ namespace DXF
 			case 6:
 				if (modelData.TriangleSeeds == SeedTriangles::Eight)
 					return _T("triangles6_8.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Four)
+					return _T("triangles6_4.triangles");
 				break;
 			case 7:
 				if (modelData.TriangleSeeds == SeedTriangles::Eight)
 					return _T("triangles7_8.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Four)
+					return _T("triangles7_4.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Two)
+					return _T("triangles7_2.triangles");
 				break;
 			case 8:
 				if (modelData.TriangleSeeds == SeedTriangles::Eight)
 					return _T("triangles8_8.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Four)
+					return _T("triangles8_4.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Two)
+					return _T("triangles8_2.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::One)
+					return _T("triangles8_1.triangles");
 				break;
 			case 9:
 				if (modelData.TriangleSeeds == SeedTriangles::Eight)
 					return _T("triangles9_8.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Four)
+					return _T("triangles9_4.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Two)
+					return _T("triangles9_2.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::One)
+					return _T("triangles9_1.triangles");
 				break;
 			case 10:
 				if (modelData.TriangleSeeds == SeedTriangles::Eight)
 					return _T("triangles10_8.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Four)
+					return _T("triangles10_4.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::Two)
+					return _T("triangles10_2.triangles");
+				else if (modelData.TriangleSeeds == SeedTriangles::One)
+					return _T("triangles10_1.triangles");
 				break;
 			}
 
