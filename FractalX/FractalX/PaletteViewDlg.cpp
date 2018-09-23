@@ -69,7 +69,7 @@ protected:
 
 		InitDoubleBuffer(clientRect);
 
-		m_colors = fx::ColorUtilities::ConvertPalette(m_palette, NumberOfColors);
+		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors);
 
 		return TRUE;
 	}
@@ -101,7 +101,9 @@ protected:
 
 	void PaletteChanged()
 	{
-		m_colors = fx::ColorUtilities::ConvertPalette(m_palette, NumberOfColors);
+		DxColor::ValidatePalette(m_palette);
+
+		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors);
 
 		m_paletteNeedsDrawing = true;
 

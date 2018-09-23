@@ -171,11 +171,8 @@ namespace fx
 				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 		}
 
-		std::vector<uint32_t> ConvertPalette(DxColor::PinPalette& palette, int nColors)
+		std::vector<uint32_t> CalculatePaletteColors(const DxColor::PinPalette& palette, int nColors)
 		{
-			// this can throw std::exception if there are less than 2 colors
-			DxColor::ValidatePalette(palette);
-
 			int nPins = static_cast<int>(palette.Pins.size());
 			DxColor::ColorPin pin1 = palette.Pins.at(0);
 
