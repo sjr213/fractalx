@@ -160,7 +160,7 @@ namespace DXF
 			m_rotationParams = rp;
 		}
 
-		void Update(float time) override
+		void RefreshRender(float time) override
 		{
 			SetWorld(time);
 

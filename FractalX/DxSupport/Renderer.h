@@ -26,7 +26,7 @@ namespace DXF
 		// Basic game loop
 		virtual void Tick() = 0;
 
-		virtual void Update(float time) = 0;
+		virtual void RefreshRender(float time) = 0;
 
 		// Messages
 		virtual void OnWindowSizeChanged(int width, int height) = 0;
