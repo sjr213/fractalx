@@ -36,6 +36,12 @@
     <ClInclude Include="PinTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ColorContrast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DxColorsSerialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -51,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PinTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DxColorsSerialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

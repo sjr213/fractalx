@@ -150,8 +150,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ColorArgb.h" />
+    <ClInclude Include="ColorContrast.h" />
     <ClInclude Include="ColorPin.h" />
     <ClInclude Include="DoubleBuffer.h" />
+    <ClInclude Include="DxColorsSerialization.h" />
     <ClInclude Include="Palettes.h" />
     <ClInclude Include="PinTracker.h" />
     <ClInclude Include="stdafx.h" />
@@ -160,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="ColorPin.cpp" />
     <ClCompile Include="DoubleBuffer.cpp" />
+    <ClCompile Include="DxColorsSerialization.cpp" />
     <ClCompile Include="Palettes.cpp" />
     <ClCompile Include="PinTracker.cpp" />
     <ClCompile Include="stdafx.cpp">
