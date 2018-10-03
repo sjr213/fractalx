@@ -194,6 +194,7 @@
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColorUtilities.h" />
     <ClInclude Include="ColorUtils.h" />
+    <ClInclude Include="ContrastDlg.h" />
     <ClInclude Include="ctrls.h" />
     <ClInclude Include="FractalParamsPage.h" />
     <ClInclude Include="Messages.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="CancelException.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />
+    <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="ctrls.cpp" />
     <ClCompile Include="FractalParamsPage.cpp" />
     <ClCompile Include="Messages.cpp" />
