@@ -774,9 +774,15 @@ protected:
 
 	void OnModeChanged()
 	{
-		UpdateData(TRUE);
-
+		auto pCombo = (CComboBox*)GetDlgItem(IDC_MODE_COMBO);
+		if (!pCombo)
+			return;
+		int nMode = pCombo->GetCurSel();
+		m_contrast.Mode = static_cast<ContrastType>(nMode);
+		
 		SetCtrls();
+
+		UpdateData(FALSE);
 	}
 };
 
