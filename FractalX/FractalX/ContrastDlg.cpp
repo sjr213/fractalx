@@ -13,6 +13,8 @@ class CContrastDlgImp : public CContrastDlg
 private:
 	DxColor::ColorContrast m_contrast;
 
+	CComboBox m_ModeCombo;
+
 	CSliderCtrl m_slider1;
 	CSliderCtrl m_slider2;
 	CSliderCtrl m_slider3;
@@ -27,7 +29,7 @@ public:
 	const int Light_Scale = 1000;
 
 	CContrastDlgImp(const ColorContrast& contrast, CWnd* pParent)
-		: CContrastDlg(IDD_PALETTE_VIEW_DLG, pParent)
+		: CContrastDlg(IDD_CONTRAST_DLG, pParent)
 		, m_contrast(contrast)
 	{}
 
@@ -47,14 +49,34 @@ protected:
 	{
 		CContrastDlg::OnInitDialog();
 
+		InitializeModeCombo();
+
 		SetCtrls();
 
 		return TRUE;
 	}
 
+	void InitializeModeCombo()
+	{
+		auto pCombo = (CComboBox*)GetDlgItem(IDC_MODE_COMBO);
+		if (!pCombo)
+			return;
+
+		pCombo->InsertString(0, _T("None"));
+		pCombo->InsertString(1, _T("Contrast"));
+		pCombo->InsertString(2, _T("HSL"));
+
+		pCombo->SetCurSel(static_cast<int>(m_contrast.Mode));
+	}
+
 	void DoDataExchange(CDataExchange* pDX) override
 	{
 		CContrastDlg::DoDataExchange(pDX);
+
+		int nMode = static_cast<int>(m_contrast.Mode);
+		DDX_Control(pDX, IDC_MODE_COMBO, m_ModeCombo);
+		DDX_CBIndex(pDX, IDC_MODE_COMBO, nMode);
+		m_contrast.Mode = static_cast<ContrastType>(nMode);
 
 		DDX_Control(pDX, IDC_SLIDER1, m_slider1);
 		DDX_Control(pDX, IDC_SLIDER2, m_slider2);
@@ -63,6 +85,71 @@ protected:
 		DDX_Control(pDX, IDC_SLIDER_MAX1, m_sliderMax1);
 		DDX_Control(pDX, IDC_SLIDER_MAX2, m_sliderMax2);
 		DDX_Control(pDX, IDC_SLIDER_MAX3, m_sliderMax3);
+
+		if (m_contrast.Mode == ContrastType::Contrast)
+		{
+			int minRed = m_contrast.MinContrast[0];
+			DDX_Text(pDX, IDC_EDIT1, minRed);
+			DDV_MinMaxInt(pDX, minRed, 0, 255);
+			m_contrast.MinContrast[0] = minRed;
+
+			int maxRed = m_contrast.MaxContrast[0];
+			DDX_Text(pDX, IDC_EDIT_MAX1, maxRed);
+			DDV_MinMaxInt(pDX, maxRed, 0, 255);
+			m_contrast.MaxContrast[0] = maxRed;
+
+			int minGreen = m_contrast.MinContrast[1];
+			DDX_Text(pDX, IDC_EDIT2, minGreen);
+			DDV_MinMaxInt(pDX, minGreen, 0, 255);
+			m_contrast.MinContrast[1] = minGreen;
+
+			int maxGreen = m_contrast.MaxContrast[1];
+			DDX_Text(pDX, IDC_EDIT_MAX2, maxGreen);
+			DDV_MinMaxInt(pDX, maxGreen, 0, 255);
+			m_contrast.MaxContrast[1] = maxGreen;
+
+			int minBlue = m_contrast.MinContrast[2];
+			DDX_Text(pDX, IDC_EDIT3, minBlue);
+			DDV_MinMaxInt(pDX, minBlue, 0, 255);
+			m_contrast.MinContrast[2] = minBlue;
+
+			int maxBlue = m_contrast.MaxContrast[2];
+			DDX_Text(pDX, IDC_EDIT_MAX3, maxBlue);
+			DDV_MinMaxInt(pDX, maxBlue, 0, 255);
+			m_contrast.MaxContrast[2] = maxBlue;
+		}
+		else if (m_contrast.Mode == ContrastType::HSL)
+		{
+			double minHue = m_contrast.MinHue;
+			DDX_Text(pDX, IDC_EDIT1, minHue);
+			DDV_MinMaxDouble(pDX, minHue, 0, MAX_HUE);
+			m_contrast.MinHue = minHue;
+
+			double maxHue = m_contrast.MaxHue;
+			DDX_Text(pDX, IDC_EDIT_MAX1, maxHue);
+			DDV_MinMaxDouble(pDX, maxHue, 0, MAX_HUE);
+			m_contrast.MaxHue = maxHue;
+
+			double minSat = m_contrast.MinSaturation;
+			DDX_Text(pDX, IDC_EDIT2, minSat);
+			DDV_MinMaxDouble(pDX, minSat, 0, MAX_SATURATION);
+			m_contrast.MinSaturation = minSat;
+
+			double maxSat = m_contrast.MaxSaturation;
+			DDX_Text(pDX, IDC_EDIT_MAX2, maxSat);
+			DDV_MinMaxDouble(pDX, maxSat, 0, MAX_SATURATION);
+			m_contrast.MaxSaturation = maxSat;
+
+			double minLight = m_contrast.MinLightness;
+			DDX_Text(pDX, IDC_EDIT3, minLight);
+			DDV_MinMaxDouble(pDX, minLight, 0, MAX_LIGHTNESS);
+			m_contrast.MinLightness = minLight;
+
+			double maxLight = m_contrast.MaxLightness;
+			DDX_Text(pDX, IDC_EDIT_MAX3, maxLight);
+			DDV_MinMaxDouble(pDX, maxLight, 0, MAX_LIGHTNESS);
+			m_contrast.MaxLightness = maxLight;
+		}
 	}
 
 	DECLARE_MESSAGE_MAP()
@@ -508,43 +595,194 @@ protected:
 		}
 	}
 
-	void  OnHScroll(UINT /*nSBCode*/, UINT /*nPos*/, CScrollBar* pScroll)
+	void OnHScrollContrast(CScrollBar* pScroll)
 	{
-		/*
 		auto pSlider = reinterpret_cast<CSliderCtrl*>(pScroll);
-		if (pSlider != &m_wndMinSlider && pSlider != &m_wndMaxSlider)
+		if (!pSlider)
 			return;
 
 		int pos = pSlider->GetPos();
-		if (pSlider == &m_wndMinSlider)
-		{
-			m_eMinBubbleRadius = (double)pos / 100;
 
-			if (m_eMinBubbleRadius > m_eMaxBubbleRadius)
+		if (pSlider == &m_slider1)
+		{
+			m_contrast.MinContrast[0] = pos;
+
+			if (m_contrast.MinContrast[0] > m_contrast.MaxContrast[0])
 			{
-				m_eMaxBubbleRadius = m_eMinBubbleRadius;
-				m_wndMaxSlider.SetPos(static_cast<int>(m_eMaxBubbleRadius * 100));
+				m_contrast.MaxContrast[0] = pos;
+				m_sliderMax1.SetPos(pos);
 			}
+			return;
 		}
 
-		if (pSlider == &m_wndMaxSlider)
+		if (pSlider == &m_sliderMax1)
 		{
-			m_eMaxBubbleRadius = (double)pos / 100;
+			m_contrast.MaxContrast[0] = pos;
 
-			if (m_eMaxBubbleRadius < m_eMinBubbleRadius)
+			if (m_contrast.MaxContrast[0] < m_contrast.MinContrast[0])
 			{
-				m_eMinBubbleRadius = m_eMaxBubbleRadius;
-				m_wndMinSlider.SetPos(static_cast<int>(m_eMaxBubbleRadius * 100));
+				m_contrast.MinContrast[0] = pos;
+				m_slider1.SetPos(pos);
 			}
+			return;
 		}
-		*/
+
+		if (pSlider == &m_slider2)
+		{
+			m_contrast.MinContrast[1] = pos;
+
+			if (m_contrast.MinContrast[1] > m_contrast.MaxContrast[1])
+			{
+				m_contrast.MaxContrast[1] = pos;
+				m_sliderMax2.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_sliderMax2)
+		{
+			m_contrast.MaxContrast[1] = pos;
+
+			if (m_contrast.MaxContrast[1] < m_contrast.MinContrast[1])
+			{
+				m_contrast.MinContrast[1] = pos;
+				m_slider2.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_slider3)
+		{
+			m_contrast.MinContrast[2] = pos;
+
+			if (m_contrast.MinContrast[2] > m_contrast.MaxContrast[2])
+			{
+				m_contrast.MaxContrast[2] = pos;
+				m_sliderMax3.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_sliderMax3)
+		{
+			m_contrast.MaxContrast[2] = pos;
+
+			if (m_contrast.MaxContrast[2] < m_contrast.MinContrast[2])
+			{
+				m_contrast.MinContrast[2] = pos;
+				m_slider3.SetPos(pos);
+			}
+			return;
+		}
+	}
+
+	void OnHScrollHSL(CScrollBar* pScroll)
+	{
+		auto pSlider = reinterpret_cast<CSliderCtrl*>(pScroll);
+		if (!pSlider)
+			return;
+
+		int pos = pSlider->GetPos();
+
+		if (pSlider == &m_slider1)
+		{
+			m_contrast.MinHue = static_cast<double>(pos) / Hue_Scale;
+
+			if (m_contrast.MinHue > m_contrast.MaxHue)
+			{
+				m_contrast.MaxHue = m_contrast.MinHue;
+				m_sliderMax1.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_sliderMax1)
+		{
+			m_contrast.MaxHue = static_cast<double>(pos) / Hue_Scale;
+
+			if (m_contrast.MaxHue < m_contrast.MinHue)
+			{
+				m_contrast.MinHue = m_contrast.MaxHue;
+				m_slider1.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_slider2)
+		{
+			m_contrast.MinSaturation = static_cast<double>(pos) / Sat_Scale;
+
+			if (m_contrast.MinSaturation > m_contrast.MaxSaturation)
+			{
+				m_contrast.MaxSaturation = m_contrast.MinSaturation;
+				m_sliderMax2.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_sliderMax2)
+		{
+			m_contrast.MaxSaturation = static_cast<double>(pos) / Sat_Scale;
+
+			if (m_contrast.MaxSaturation < m_contrast.MinSaturation)
+			{
+				m_contrast.MinSaturation = m_contrast.MaxSaturation;
+				m_slider2.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_slider3)
+		{
+			m_contrast.MinLightness = static_cast<double>(pos) / Light_Scale;
+
+			if (m_contrast.MinLightness > m_contrast.MaxLightness)
+			{
+				m_contrast.MaxLightness = m_contrast.MinLightness;
+				m_sliderMax3.SetPos(pos);
+			}
+			return;
+		}
+
+		if (pSlider == &m_sliderMax3)
+		{
+			m_contrast.MaxLightness = static_cast<double>(pos) / Light_Scale;
+
+			if (m_contrast.MaxLightness < m_contrast.MinLightness)
+			{
+				m_contrast.MinLightness = m_contrast.MaxLightness;
+				m_slider3.SetPos(pos);
+			}
+			return;
+		}
+	}
+
+	void  OnHScroll(UINT /*nSBCode*/, UINT /*nPos*/, CScrollBar* pScroll)
+	{
+		switch (m_contrast.Mode)
+		{
+		case ContrastType::Contrast:
+			OnHScrollContrast(pScroll);
+			break;
+		case ContrastType::HSL:
+			OnHScrollHSL(pScroll);
+			break;
+		}
+
 		UpdateData(FALSE);
 	}
 
+	void OnModeChanged()
+	{
+		UpdateData(TRUE);
+
+		SetCtrls();
+	}
 };
 
 BEGIN_MESSAGE_MAP(CContrastDlgImp, CContrastDlg)
 	ON_WM_HSCROLL()
+	ON_CBN_SELCHANGE(IDC_MODE_COMBO, &CContrastDlgImp::OnModeChanged)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CContrastDlg> CContrastDlg::CreateContrastDlg(const DxColor::ColorContrast& contrast, CWnd* pParent)

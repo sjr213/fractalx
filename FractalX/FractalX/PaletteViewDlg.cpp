@@ -1,12 +1,15 @@
 
 #include "stdafx.h"
 #include "PaletteViewDlg.h"
-#include "Resource.h"
-#include "Messages.h"
-#include "DoubleBuffer.h"
+
+#include "ContrastDlg.h"
 #include "ColorUtilities.h"
+#include "DoubleBuffer.h"
+#include "Messages.h"
 #include "PinTracker.h"
 #include "PinEditDlg.h"
+#include "Resource.h"
+
 
 using namespace DxColor;
 
@@ -14,6 +17,7 @@ class CPaletteViewDlgImp : public CPaletteViewDlg
 {
 private:
 	PinPalette m_palette;
+	ColorContrast m_contrast;
 	CWnd* m_parent = nullptr;
 	std::function<void(const PinPalette&)> m_newPaletteMethod;
 	std::shared_ptr<CDoubleBuffer> m_doubleBuffer;
@@ -35,9 +39,10 @@ private:
 	const int ControlRegionHeight = 50;
 
 public:
-	CPaletteViewDlgImp(const PinPalette& palette, CWnd* pParent)
+	CPaletteViewDlgImp(const PinPalette& palette, ColorContrast& contrast, CWnd* pParent)
 		: CPaletteViewDlg(IDD_PALETTE_VIEW_DLG, pParent)
 		, m_palette(palette)
+		, m_contrast(contrast)
 		, m_parent(pParent)
 		, m_doubleBuffer(CDoubleBuffer::CreateBuffer())
 	{}
@@ -455,6 +460,15 @@ protected:
 
 		return 0;
 	}
+
+	void OnContrast()
+	{
+		auto pContrastDlg = CContrastDlg::CreateContrastDlg(m_contrast, this);
+		if (!pContrastDlg)
+			return;
+
+		pContrastDlg->DoModal();
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
@@ -467,6 +481,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDCANCEL, &CPaletteViewDlgImp::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_IMPORT_BUT, &CPaletteViewDlgImp::OnImport)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
+	ON_BN_CLICKED(IDC_CONTRAST_BUT, &CPaletteViewDlgImp::OnContrast)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)
@@ -476,7 +491,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinEditDlgClosed, &CPaletteViewDlgImp::OnPinEditDlgClosed)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, CWnd* pParent)
+std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent)
 {
-	return std::make_shared <CPaletteViewDlgImp>(palette, pParent);
+	return std::make_shared <CPaletteViewDlgImp>(palette, contrast, pParent);
 }

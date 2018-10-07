@@ -9,15 +9,15 @@ namespace DxColor
 
 	enum class ContrastType
 	{
-		None = 1, Contrast = 2, HSL = 3
+		None = 0, Contrast = 1, HSL = 2
 	};
 
 	struct ColorContrast
 	{
 		ContrastType Mode = ContrastType::None;
 
-		bite MinContrast[3];
-		bite MaxContrast[3];
+		bite MinContrast[3] = { 0, 0, 0 };
+		bite MaxContrast[3] = { 255, 255, 255 };
 
 		double MinHue = 0;
 		double MaxHue = MAX_HUE;
