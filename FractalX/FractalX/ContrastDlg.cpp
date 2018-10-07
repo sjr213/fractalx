@@ -784,11 +784,89 @@ protected:
 
 		UpdateData(FALSE);
 	}
+
+	void UpdateSliders()
+	{
+		switch (m_contrast.Mode)
+		{
+		case ContrastType::Contrast:
+			UpdateSlidersContrast();
+			break;
+		case ContrastType::HSL:
+			UpdateSlidersHSL();
+			break;
+		}
+	}
+
+	void UpdateSlidersContrast()
+	{
+		CSliderCtrl* slider1 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER1);
+		if (slider1)
+			slider1->SetPos(m_contrast.MinContrast[0]);
+
+		CSliderCtrl* sliderMax1 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX1);
+		if (sliderMax1)
+			sliderMax1->SetPos(m_contrast.MaxContrast[0]);
+
+		CSliderCtrl* slider2 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER2);
+		if (slider2)
+			slider2->SetPos(m_contrast.MinContrast[1]);
+
+		CSliderCtrl* sliderMax2 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX2);
+		if (sliderMax2)
+			sliderMax2->SetPos(m_contrast.MaxContrast[1]);
+
+		CSliderCtrl* slider3 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER3);
+		if (slider3)
+			slider3->SetPos(m_contrast.MinContrast[2]);
+
+		CSliderCtrl* sliderMax3 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX3);
+			sliderMax3->SetPos(m_contrast.MaxContrast[2]);
+	}
+
+	void UpdateSlidersHSL()
+	{
+		CSliderCtrl* slider1 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER1);
+		if (slider1)
+			slider1->SetPos(static_cast<int>(Hue_Scale * m_contrast.MinHue));
+
+		CSliderCtrl* sliderMax1 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX1);
+		if (sliderMax1)
+			sliderMax1->SetPos(static_cast<int>(Hue_Scale * m_contrast.MaxHue));
+
+		CSliderCtrl* slider2 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER2);
+		if (slider2)
+			slider2->SetPos(static_cast<int>(Sat_Scale * m_contrast.MinSaturation));
+
+		CSliderCtrl* sliderMax2 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX2);
+		if (sliderMax2)
+			sliderMax2->SetPos(static_cast<int>(Sat_Scale * m_contrast.MaxSaturation));
+
+		CSliderCtrl* slider3 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER3);
+		if (slider3)
+			slider3->SetPos(static_cast<int>(Sat_Scale * m_contrast.MinLightness));
+
+		CSliderCtrl* sliderMax3 = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_MAX3);
+		if (sliderMax3)
+			sliderMax3->SetPos(static_cast<int>(Sat_Scale * m_contrast.MaxLightness));
+	}
+
+	void OnKillFocusEdit()
+	{
+		UpdateData(TRUE);
+		UpdateSliders();
+	}
 };
 
 BEGIN_MESSAGE_MAP(CContrastDlgImp, CContrastDlg)
 	ON_WM_HSCROLL()
 	ON_CBN_SELCHANGE(IDC_MODE_COMBO, &CContrastDlgImp::OnModeChanged)
+	ON_EN_KILLFOCUS(IDC_EDIT1, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX1, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT2, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX2, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT3, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX3, &CContrastDlgImp::OnKillFocusEdit)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CContrastDlg> CContrastDlg::CreateContrastDlg(const DxColor::ColorContrast& contrast, CWnd* pParent)
