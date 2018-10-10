@@ -851,9 +851,107 @@ protected:
 			sliderMax3->SetPos(static_cast<int>(Sat_Scale * m_contrast.MaxLightness));
 	}
 
-	void OnKillFocusEdit()
+	void OnKillFocusMinEdit()
 	{
 		UpdateData(TRUE);
+
+		bool change = false;
+		if (m_contrast.Mode == ContrastType::Contrast)
+		{
+			if (m_contrast.MaxContrast[0] < m_contrast.MinContrast[0])
+			{
+				m_contrast.MaxContrast[0] = m_contrast.MinContrast[0];
+				change = true;
+			}
+
+			if (m_contrast.MaxContrast[1] < m_contrast.MinContrast[1])
+			{
+				m_contrast.MaxContrast[1] = m_contrast.MinContrast[1];
+				change = true;
+			}
+
+			if (m_contrast.MaxContrast[2] < m_contrast.MinContrast[2])
+			{
+				m_contrast.MaxContrast[2] = m_contrast.MinContrast[2];
+				change = true;
+			}
+		}
+		else if (m_contrast.Mode == ContrastType::HSL)
+		{
+			if (m_contrast.MaxHue < m_contrast.MinHue)
+			{
+				m_contrast.MaxHue = m_contrast.MinHue;
+				change = true;
+			}
+
+			if (m_contrast.MaxSaturation < m_contrast.MinSaturation)
+			{
+				m_contrast.MaxSaturation = m_contrast.MinSaturation;
+				change = true;
+			}
+
+			if (m_contrast.MaxLightness < m_contrast.MinLightness)
+			{
+				m_contrast.MaxLightness = m_contrast.MinLightness;
+				change = true;
+			}
+		}
+
+		if (change)
+			UpdateData(FALSE);
+
+		UpdateSliders();
+	}
+
+	void OnKillFocusMaxEdit()
+	{
+		UpdateData(TRUE);
+
+		bool change = false;
+		if (m_contrast.Mode == ContrastType::Contrast)
+		{
+			if (m_contrast.MaxContrast[0] < m_contrast.MinContrast[0])
+			{
+				m_contrast.MinContrast[0] = m_contrast.MaxContrast[0];
+				change = true;
+			}
+
+			if (m_contrast.MaxContrast[1] < m_contrast.MinContrast[1])
+			{
+				m_contrast.MinContrast[1] = m_contrast.MaxContrast[1];
+				change = true;
+			}
+
+			if (m_contrast.MaxContrast[2] < m_contrast.MinContrast[2])
+			{
+				m_contrast.MinContrast[2] = m_contrast.MaxContrast[2];
+				change = true;
+			}
+		}
+		else if (m_contrast.Mode == ContrastType::HSL)
+		{
+			if (m_contrast.MaxHue < m_contrast.MinHue)
+			{
+				m_contrast.MinHue = m_contrast.MaxHue;
+				change = true;
+			}
+
+			if (m_contrast.MaxSaturation < m_contrast.MinSaturation)
+			{
+				m_contrast.MinSaturation = m_contrast.MaxSaturation;
+				change = true;
+			}
+
+			if (m_contrast.MaxLightness < m_contrast.MinLightness)
+			{
+				m_contrast.MinLightness = m_contrast.MaxLightness;
+				change = true;
+			}
+		}
+
+		if (change)
+			UpdateData(FALSE);
+
 		UpdateSliders();
 	}
 };
@@ -861,12 +959,12 @@ protected:
 BEGIN_MESSAGE_MAP(CContrastDlgImp, CContrastDlg)
 	ON_WM_HSCROLL()
 	ON_CBN_SELCHANGE(IDC_MODE_COMBO, &CContrastDlgImp::OnModeChanged)
-	ON_EN_KILLFOCUS(IDC_EDIT1, &CContrastDlgImp::OnKillFocusEdit)
-	ON_EN_KILLFOCUS(IDC_EDIT_MAX1, &CContrastDlgImp::OnKillFocusEdit)
-	ON_EN_KILLFOCUS(IDC_EDIT2, &CContrastDlgImp::OnKillFocusEdit)
-	ON_EN_KILLFOCUS(IDC_EDIT_MAX2, &CContrastDlgImp::OnKillFocusEdit)
-	ON_EN_KILLFOCUS(IDC_EDIT3, &CContrastDlgImp::OnKillFocusEdit)
-	ON_EN_KILLFOCUS(IDC_EDIT_MAX3, &CContrastDlgImp::OnKillFocusEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT1, &CContrastDlgImp::OnKillFocusMinEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX1, &CContrastDlgImp::OnKillFocusMaxEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT2, &CContrastDlgImp::OnKillFocusMinEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX2, &CContrastDlgImp::OnKillFocusMaxEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT3, &CContrastDlgImp::OnKillFocusMinEdit)
+	ON_EN_KILLFOCUS(IDC_EDIT_MAX3, &CContrastDlgImp::OnKillFocusMaxEdit)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CContrastDlg> CContrastDlg::CreateContrastDlg(const DxColor::ColorContrast& contrast, CWnd* pParent)
