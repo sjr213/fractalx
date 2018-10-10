@@ -74,7 +74,7 @@ protected:
 
 		InitDoubleBuffer(clientRect);
 
-		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors);
+		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
 
 		return TRUE;
 	}
@@ -108,7 +108,7 @@ protected:
 	{
 		DxColor::ValidatePalette(m_palette);
 
-		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors);
+		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
 
 		m_paletteNeedsDrawing = true;
 
@@ -467,7 +467,11 @@ protected:
 		if (!pContrastDlg)
 			return;
 
-		pContrastDlg->DoModal();
+		if (pContrastDlg->DoModal() == IDOK)
+		{
+			m_contrast = pContrastDlg->GetContrast();
+			PaletteChanged();
+		}
 	}
 };
 

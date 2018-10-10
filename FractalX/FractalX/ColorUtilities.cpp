@@ -4,7 +4,8 @@
 
 #include <algorithm>
 #include "ColorUtilities.h"
-#include "..\DxColors\ColorPin.h"
+#include "ColorPin.h"
+#include "ColorContrast.h"
 
 using namespace DxColor;
 
@@ -46,7 +47,7 @@ namespace fx
 			return nColors - static_cast<int>(colors.size());
 		}
 
-		void FillSpaceBeforeFirstPin(const DxColor::ColorPin& pin1, std::vector<uint32_t>& colors, int nColors)
+		void FillSpaceBeforeFirstPin(const ColorPin& pin1, std::vector<uint32_t>& colors, int nColors)
 		{
 			if (pin1.Index <= 0.0)
 				return;
@@ -58,7 +59,7 @@ namespace fx
 				AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
 		}
 
-		static void StretchPinsCurved(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		static void StretchPinsCurved(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
 		{
 			// add intermediate colors
 			for (int i = 1; i < nSteps; ++i)
@@ -97,7 +98,7 @@ namespace fx
 			return secondBand;
 		}
 
-		static void StretchPinsBanded(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		static void StretchPinsBanded(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
 		{
 			double band1 = pin1.IndexWidth1;
 			double band2 = pin1.IndexWidth2;
@@ -110,8 +111,8 @@ namespace fx
 
 				bool secondBand = IsSecondBand(band1, band2, currentIndex);
 
-				DxColor::ColorArgb color1 = secondBand ? pin1.Color2 : pin1.Color1;
-				DxColor::ColorArgb color2 = secondBand ? pin2.Color2 : pin2.Color1;
+				ColorArgb color1 = secondBand ? pin1.Color2 : pin1.Color1;
+				ColorArgb color2 = secondBand ? pin2.Color2 : pin2.Color1;
 
 				bite a = StretchBite(color1.A, color2.A, i, nSteps);
 				bite r = StretchBite(color1.R, color2.R, i, nSteps);
@@ -121,7 +122,7 @@ namespace fx
 			}
 		}
 
-		static void StretchPinsNormal(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
+		static void StretchPinsNormal(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
 		{
 			// add intermediate colors
 			for (int i = 1; i < nSteps; ++i)
@@ -134,7 +135,7 @@ namespace fx
 			}
 		}
 
-		static void StretchPins(const DxColor::ColorPin& pin1, const DxColor::ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, bool lastPins)
+		static void StretchPins(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, bool lastPins)
 		{
 			int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
 
@@ -154,9 +155,9 @@ namespace fx
 			// always add one color for first pin
 			AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
 
-			if (pin1.CurveType == DxColor::ColorCurveType::Curve)
+			if (pin1.CurveType == ColorCurveType::Curve)
 				StretchPinsCurved(pin1, pin2, colors, nSteps);
-			else if (pin1.CurveType == DxColor::ColorCurveType::DoubleBand)
+			else if (pin1.CurveType == ColorCurveType::DoubleBand)
 				StretchPinsBanded(pin1, pin2, colors, nSteps);
 			else
 				StretchPinsNormal(pin1, pin2, colors, nSteps);
@@ -171,10 +172,10 @@ namespace fx
 				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
 		}
 
-		std::vector<uint32_t> CalculatePaletteColors(const DxColor::PinPalette& palette, int nColors)
+		std::vector<uint32_t> CalculatePaletteColors(const PinPalette& palette, int nColors, const ColorContrast& contrast)
 		{
 			int nPins = static_cast<int>(palette.Pins.size());
-			DxColor::ColorPin pin1 = palette.Pins.at(0);
+			ColorPin pin1 = palette.Pins.at(0);
 
 			std::vector<uint32_t> colors;
 			colors.reserve(nColors);
@@ -183,7 +184,7 @@ namespace fx
 
 			for (int i = 1; i < nPins; ++i)
 			{
-				const DxColor::ColorPin& pin2 = palette.Pins.at(i);
+				const ColorPin& pin2 = palette.Pins.at(i);
 				StretchPins(pin1, pin2, colors, nColors, i == nPins - 1);
 				pin1 = pin2;
 			}
