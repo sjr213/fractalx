@@ -12,7 +12,7 @@ class CPaletteViewDlg : public CDialogEx
 public:
 	virtual ~CPaletteViewDlg() {};
 
-	virtual void SetNewPaletteMethod(std::function<void(const DxColor::PinPalette&)> newPaletteMethod) = 0;
+	virtual void SetNewPaletteMethod(std::function<void(const DxColor::PinPalette&, const DxColor::ColorContrast&)> newPaletteMethod) = 0;
 
 	static std::shared_ptr<CPaletteViewDlg> CreatePaletteViewDlg(const DxColor::PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent = nullptr);
 

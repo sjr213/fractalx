@@ -13,164 +13,208 @@ namespace fx
 {
 	namespace ColorUtilities
 	{
-		static uint32_t BitesToXmcolor(bite a, bite r, bite g, bite b)
+		namespace 
 		{
-			// XMCOLOR is structured 0xaarrggbb
-			// COLORREF is structured 0x00bbggrr
-			return (a << 24) | (r << 16) | (g<< 8) | b;
-		}
+			const bite ColorRange = 255;
+			const double Rounder = 0.49999;
 
-		static void AddColor(std::vector<uint32_t>& colors, bite a, bite r, bite g, bite b)
-		{
-			colors.push_back(BitesToXmcolor(a, r, g, b));
-		}
-
-		static bite StretchBite(bite start, bite end, int nStep, int nSteps)
-		{
-			double eStart = start;
-			double eRange = static_cast<double>(end) - static_cast<double>(start);
-			double eStretch = static_cast<double>(nStep) / nSteps;
-			double result = eStart + eStretch * eRange;
-			return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
-		}
-
-		static bite CurveBite(bite start, bite end, double difference)
-		{
-			double eStart = start;
-			double eRange = static_cast<double>(end) - static_cast<double>(start);
-			double result = eStart + difference * eRange;
-			return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
-		}
-
-		static int ColorsRemaining(std::vector<uint32_t>& colors, int nColors)
-		{
-			return nColors - static_cast<int>(colors.size());
-		}
-
-		void FillSpaceBeforeFirstPin(const ColorPin& pin1, std::vector<uint32_t>& colors, int nColors)
-		{
-			if (pin1.Index <= 0.0)
-				return;
-
-			int nSteps = static_cast<int>(pin1.Index * nColors);
-			nSteps = std::min<int>(nSteps, nColors);
-
-			for(int i = 0; i < nSteps; ++i)
-				AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
-		}
-
-		static void StretchPinsCurved(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
-		{
-			// add intermediate colors
-			for (int i = 1; i < nSteps; ++i)
+			struct CalcParams
 			{
-				double fractionalPosition = static_cast<double>(i) / nSteps;
-				double colorDifference = pow(fractionalPosition, pin1.Curve);
-
-				bite a = CurveBite(pin1.Color1.A, pin2.Color1.A, colorDifference);
-				bite r = CurveBite(pin1.Color1.R, pin2.Color1.R, colorDifference);
-				bite g = CurveBite(pin1.Color1.G, pin2.Color1.G, colorDifference);
-				bite b = CurveBite(pin1.Color1.B, pin2.Color1.B, colorDifference);
-				AddColor(colors, a, r, g, b);
+				double StretchRed = 0.0;
+				double StretchGreen = 0.0;
+				double StretchBlue = 0.0;
+			};
+			uint32_t BitesToXmcolor(bite a, bite r, bite g, bite b)
+			{
+				// XMCOLOR is structured 0xaarrggbb
+				// COLORREF is structured 0x00bbggrr
+				return (a << 24) | (r << 16) | (g << 8) | b;
 			}
-		}
 
-		static bool IsSecondBand(double band1, double band2, double index)
-		{
-			double currentIndex = band1;
-
-			bool secondBand = false;
-
-			while (currentIndex < index)
+			void ContrastColor(bite& r, bite& g, bite& b, const ColorContrast& contrast, const CalcParams& calcParams)
 			{
-				currentIndex += band2;
-				if (currentIndex >
-					index)
+				int red = static_cast<int>((r - contrast.MinContrast[0]) * calcParams.StretchRed + Rounder);
+				r = static_cast<bite>(std::min<int>(std::max<int>(0, red), ColorRange));
+
+				int green = static_cast<int>((g - contrast.MinContrast[1]) * calcParams.StretchGreen + Rounder);
+				g = static_cast<bite>(std::min<int>(std::max<int>(0, green), ColorRange));
+
+				int blue = static_cast<int>((b - contrast.MinContrast[2]) * calcParams.StretchBlue + Rounder);
+				b = static_cast<bite>(std::min<int>(std::max<int>(0, blue), ColorRange));
+			}
+
+			void AddColor(std::vector<uint32_t>& colors, bite a, bite r, bite g, bite b, const ColorContrast& contrast, const CalcParams& calcParams)
+			{
+				if (contrast.Mode == ContrastType::Contrast)
+					ContrastColor(r, g, b, contrast, calcParams);
+
+				colors.push_back(BitesToXmcolor(a, r, g, b));
+			}
+
+			bite StretchBite(bite start, bite end, int nStep, int nSteps)
+			{
+				double eStart = start;
+				double eRange = static_cast<double>(end) - static_cast<double>(start);
+				double eStretch = static_cast<double>(nStep) / nSteps;
+				double result = eStart + eStretch * eRange;
+				return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
+			}
+
+			bite CurveBite(bite start, bite end, double difference)
+			{
+				double eStart = start;
+				double eRange = static_cast<double>(end) - static_cast<double>(start);
+				double result = eStart + difference * eRange;
+				return static_cast<bite>(std::min<double>(result + 0.5, 255.0));
+			}
+
+			int ColorsRemaining(std::vector<uint32_t>& colors, int nColors)
+			{
+				return nColors - static_cast<int>(colors.size());
+			}
+
+			void FillSpaceBeforeFirstPin(const ColorPin& pin1, std::vector<uint32_t>& colors, int nColors, 
+				const ColorContrast& contrast, const CalcParams& calcParams)
+			{
+				if (pin1.Index <= 0.0)
+					return;
+
+				int nSteps = static_cast<int>(pin1.Index * nColors);
+				nSteps = std::min<int>(nSteps, nColors);
+
+				for (int i = 0; i < nSteps; ++i)
+					AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B, contrast, calcParams);
+			}
+
+			void StretchPinsCurved(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps, 
+				const ColorContrast& contrast, const CalcParams& calcParams)
+			{
+				// add intermediate colors
+				for (int i = 1; i < nSteps; ++i)
 				{
-					secondBand = true;
-					break;
+					double fractionalPosition = static_cast<double>(i) / nSteps;
+					double colorDifference = pow(fractionalPosition, pin1.Curve);
+
+					bite a = CurveBite(pin1.Color1.A, pin2.Color1.A, colorDifference);
+					bite r = CurveBite(pin1.Color1.R, pin2.Color1.R, colorDifference);
+					bite g = CurveBite(pin1.Color1.G, pin2.Color1.G, colorDifference);
+					bite b = CurveBite(pin1.Color1.B, pin2.Color1.B, colorDifference);
+					AddColor(colors, a, r, g, b, contrast, calcParams);
+				}
+			}
+
+			bool IsSecondBand(double band1, double band2, double index)
+			{
+				double currentIndex = band1;
+
+				bool secondBand = false;
+
+				while (currentIndex < index)
+				{
+					currentIndex += band2;
+					if (currentIndex >
+						index)
+					{
+						secondBand = true;
+						break;
+					}
+
+					currentIndex += band1;
+					secondBand = false;
 				}
 
-				currentIndex += band1;
-				secondBand = false;
+				return secondBand;
 			}
 
-			return secondBand;
-		}
-
-		static void StretchPinsBanded(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
-		{
-			double band1 = pin1.IndexWidth1;
-			double band2 = pin1.IndexWidth2;
-
-			double indexRange = pin2.Index - pin1.Index;
-
-			for (int i = 1; i < nSteps; ++i)
+			void StretchPinsBanded(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps,
+				const ColorContrast& contrast, const CalcParams& calcParams)
 			{
-				double currentIndex = i * indexRange / nSteps;
+				double band1 = pin1.IndexWidth1;
+				double band2 = pin1.IndexWidth2;
 
-				bool secondBand = IsSecondBand(band1, band2, currentIndex);
+				double indexRange = pin2.Index - pin1.Index;
 
-				ColorArgb color1 = secondBand ? pin1.Color2 : pin1.Color1;
-				ColorArgb color2 = secondBand ? pin2.Color2 : pin2.Color1;
+				for (int i = 1; i < nSteps; ++i)
+				{
+					double currentIndex = i * indexRange / nSteps;
 
-				bite a = StretchBite(color1.A, color2.A, i, nSteps);
-				bite r = StretchBite(color1.R, color2.R, i, nSteps);
-				bite g = StretchBite(color1.G, color2.G, i, nSteps);
-				bite b = StretchBite(color1.B, color2.B, i, nSteps);
-				AddColor(colors, a, r, g, b);
+					bool secondBand = IsSecondBand(band1, band2, currentIndex);
+
+					ColorArgb color1 = secondBand ? pin1.Color2 : pin1.Color1;
+					ColorArgb color2 = secondBand ? pin2.Color2 : pin2.Color1;
+
+					bite a = StretchBite(color1.A, color2.A, i, nSteps);
+					bite r = StretchBite(color1.R, color2.R, i, nSteps);
+					bite g = StretchBite(color1.G, color2.G, i, nSteps);
+					bite b = StretchBite(color1.B, color2.B, i, nSteps);
+					AddColor(colors, a, r, g, b, contrast, calcParams);
+				}
 			}
-		}
 
-		static void StretchPinsNormal(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps)
-		{
-			// add intermediate colors
-			for (int i = 1; i < nSteps; ++i)
+			void StretchPinsNormal(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nSteps, 
+				const ColorContrast& contrast, const CalcParams& calcParams)
 			{
-				bite a = StretchBite(pin1.Color1.A, pin2.Color1.A, i, nSteps);
-				bite r = StretchBite(pin1.Color1.R, pin2.Color1.R, i, nSteps);
-				bite g = StretchBite(pin1.Color1.G, pin2.Color1.G, i, nSteps);
-				bite b = StretchBite(pin1.Color1.B, pin2.Color1.B, i, nSteps);
-				AddColor(colors, a, r, g, b);
+				// add intermediate colors
+				for (int i = 1; i < nSteps; ++i)
+				{
+					bite a = StretchBite(pin1.Color1.A, pin2.Color1.A, i, nSteps);
+					bite r = StretchBite(pin1.Color1.R, pin2.Color1.R, i, nSteps);
+					bite g = StretchBite(pin1.Color1.G, pin2.Color1.G, i, nSteps);
+					bite b = StretchBite(pin1.Color1.B, pin2.Color1.B, i, nSteps);
+					AddColor(colors, a, r, g, b, contrast, calcParams);
+				}
 			}
-		}
 
-		static void StretchPins(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, bool lastPins)
-		{
-			int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
-
-			int colorsRemaining = ColorsRemaining(colors, nColors);
-			if (colorsRemaining < 1)
-				return;
-
-			if (lastPins)
+			void StretchPins(const ColorPin& pin1, const ColorPin& pin2, std::vector<uint32_t>& colors, int nColors, 
+				bool lastPins, const ColorContrast& contrast, const CalcParams& calcParams)
 			{
-				if (pin2.Index >= 1.0)
-					nSteps = colorsRemaining;
+				int nSteps = static_cast<int>((pin2.Index - pin1.Index) * nColors + 0.5);
 
-				// remove 1 for last color
-				--nSteps;
+				int colorsRemaining = ColorsRemaining(colors, nColors);
+				if (colorsRemaining < 1)
+					return;
+
+				if (lastPins)
+				{
+					if (pin2.Index >= 1.0)
+						nSteps = colorsRemaining;
+
+					// remove 1 for last color
+					--nSteps;
+				}
+
+				// always add one color for first pin
+				AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B, contrast, calcParams);
+
+				if (pin1.CurveType == ColorCurveType::Curve)
+					StretchPinsCurved(pin1, pin2, colors, nSteps, contrast, calcParams);
+				else if (pin1.CurveType == ColorCurveType::DoubleBand)
+					StretchPinsBanded(pin1, pin2, colors, nSteps, contrast, calcParams);
+				else
+					StretchPinsNormal(pin1, pin2, colors, nSteps, contrast, calcParams);
+
+				if (!lastPins)
+					return;
+
+				// add last color
+				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B, contrast, calcParams);
+
+				while (static_cast<int>(colors.size()) < nColors)
+					AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B, contrast, calcParams);
 			}
 
-			// always add one color for first pin
-			AddColor(colors, pin1.Color1.A, pin1.Color1.R, pin1.Color1.G, pin1.Color1.B);
+			CalcParams CalculateParams(const ColorContrast& contrast)
+			{
+				CalcParams params;
 
-			if (pin1.CurveType == ColorCurveType::Curve)
-				StretchPinsCurved(pin1, pin2, colors, nSteps);
-			else if (pin1.CurveType == ColorCurveType::DoubleBand)
-				StretchPinsBanded(pin1, pin2, colors, nSteps);
-			else
-				StretchPinsNormal(pin1, pin2, colors, nSteps);
+				params.StretchRed = static_cast<double>(ColorRange) / (contrast.MaxContrast[0] - contrast.MinContrast[0]);
+				params.StretchGreen = static_cast<double>(ColorRange) / (contrast.MaxContrast[1] - contrast.MinContrast[1]);
+				params.StretchBlue = static_cast<double>(ColorRange) / (contrast.MaxContrast[2] - contrast.MinContrast[2]);
 
-			if (!lastPins)
-				return;
-
-			// add last color
-			AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
-
-			while (static_cast<int>(colors.size()) < nColors)
-				AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B);
+				return params;
+			}
 		}
+
 
 		std::vector<uint32_t> CalculatePaletteColors(const PinPalette& palette, int nColors, const ColorContrast& contrast)
 		{
@@ -180,12 +224,14 @@ namespace fx
 			std::vector<uint32_t> colors;
 			colors.reserve(nColors);
 
-			FillSpaceBeforeFirstPin(pin1, colors, nColors);
+			CalcParams params = CalculateParams(contrast);
+
+			FillSpaceBeforeFirstPin(pin1, colors, nColors, contrast, params);
 
 			for (int i = 1; i < nPins; ++i)
 			{
 				const ColorPin& pin2 = palette.Pins.at(i);
-				StretchPins(pin1, pin2, colors, nColors, i == nPins - 1);
+				StretchPins(pin1, pin2, colors, nColors, i == nPins - 1, contrast, params);
 				pin1 = pin2;
 			}
 

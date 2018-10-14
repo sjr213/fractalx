@@ -19,7 +19,7 @@ private:
 	PinPalette m_palette;
 	ColorContrast m_contrast;
 	CWnd* m_parent = nullptr;
-	std::function<void(const PinPalette&)> m_newPaletteMethod;
+	std::function<void(const PinPalette&, const ColorContrast&)> m_newPaletteMethod;
 	std::shared_ptr<CDoubleBuffer> m_doubleBuffer;
 	CPoint m_topLeft = CPoint(0, 0);
 	CRect m_paletteRect;
@@ -53,7 +53,7 @@ public:
 			DestroyIcon(m_hIcon);
 	}
 
-	void SetNewPaletteMethod(std::function<void(const PinPalette&)> newPaletteMethod) override
+	void SetNewPaletteMethod(std::function<void(const PinPalette&, const ColorContrast& contrast)> newPaletteMethod) override
 	{
 		m_newPaletteMethod = newPaletteMethod;
 	}
@@ -143,7 +143,7 @@ protected:
 		}
 
 		if (m_newPaletteMethod)
-			m_newPaletteMethod(m_palette);
+			m_newPaletteMethod(m_palette, m_contrast);
 
 		m_parent->PostMessage(cMessage::tm_killPaletteView, 0, 0);
 	}
