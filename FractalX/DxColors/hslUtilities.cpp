@@ -31,32 +31,41 @@ namespace DxColor
 			if (maxComponent == RgbPart::total)
 				return 0.0;
 
-			bite C = maxVal - minVal;
+			int C = maxVal - minVal;
+			double hue = 0.0;
 
 			if (C == 0)
-				return 0.0;
+				return hue;
+
+			int r = rgb.R;
+			int g = rgb.G;
+			int b = rgb.B;
 
 			if (maxComponent == RgbPart::red)
 			{
-				double h = (rgb.G - rgb.B) / C;
+				double h = static_cast<double>(g - b) / C;
 				if (h < 0)
-					h + 6;
+					h += 6;
 
-				return 60.0 * h;
+				hue = 60.0 * h;
 			}
 
 			if (maxComponent == RgbPart::green)
 			{
-				double h = (rgb.B - rgb.R) / C + 2.0;
-				return 60.0 * h;
+				double h = static_cast<double>(b - r) / C + 2.0;
+				hue = 60.0 * h;
 			}
 
 			if (maxComponent == RgbPart::blue)
 			{
-				double h = (rgb.R - rgb.G) / C + 4.0;
-				return 60.0 * h;
+				double h = static_cast<double>(r - g) / C + 4.0;
+				hue = 60.0 * h;
 			}
-			return 0.0;
+
+			while (hue < 0.0)
+				hue += 360.0;
+
+			return hue;
 		}
 
 		double GetLightness(bite maxVal, bite minVal)
