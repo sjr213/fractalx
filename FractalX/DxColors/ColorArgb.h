@@ -6,6 +6,20 @@ namespace DxColor
 {
 	struct ColorArgb
 	{
+		ColorArgb()
+			: A(255)
+			, R(0)
+			, G(0)
+			, B(0)
+		{}
+
+		ColorArgb(bite a, bite r, bite g, bite b)
+			: A(a)
+			, R(r)
+			, G(g)
+			, B(b)
+		{}
+
 		bite A = 255;
 		bite R = 0;
 		bite G = 0;

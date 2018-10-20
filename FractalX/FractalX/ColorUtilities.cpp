@@ -6,6 +6,7 @@
 #include "ColorUtilities.h"
 #include "ColorPin.h"
 #include "ColorContrast.h"
+#include "hslUtilities.h"
 
 using namespace DxColor;
 
@@ -23,6 +24,8 @@ namespace fx
 				double StretchRed = 0.0;
 				double StretchGreen = 0.0;
 				double StretchBlue = 0.0;
+
+				HslScaleParams ScaleParams;
 			};
 			uint32_t BitesToXmcolor(bite a, bite r, bite g, bite b)
 			{
@@ -43,10 +46,23 @@ namespace fx
 				b = static_cast<bite>(std::min<int>(std::max<int>(0, blue), ColorRange));
 			}
 
+			void StretchHsl(bite& r, bite& g, bite& b, const ColorContrast& contrast, const HslScaleParams& scaleParams)
+			{
+				ColorArgb color(255, r, g, b);
+				auto newColor = StretchHslColor(color, scaleParams, contrast);
+
+				r = newColor.R;
+				g = newColor.G;
+				b = newColor.B;
+			}
+
 			void AddColor(std::vector<uint32_t>& colors, bite a, bite r, bite g, bite b, const ColorContrast& contrast, const CalcParams& calcParams)
 			{
 				if (contrast.Mode == ContrastType::Contrast)
 					ContrastColor(r, g, b, contrast, calcParams);
+
+				if (contrast.Mode == ContrastType::HSL)
+					StretchHsl(r, g, b, contrast, calcParams.ScaleParams);
 
 				colors.push_back(BitesToXmcolor(a, r, g, b));
 			}
@@ -203,13 +219,15 @@ namespace fx
 					AddColor(colors, pin2.Color1.A, pin2.Color1.R, pin2.Color1.G, pin2.Color1.B, contrast, calcParams);
 			}
 
-			CalcParams CalculateParams(const ColorContrast& contrast)
+			CalcParams CalculateParams(const PinPalette& palette, const ColorContrast& contrast)
 			{
 				CalcParams params;
 
 				params.StretchRed = static_cast<double>(ColorRange) / (contrast.MaxContrast[0] - contrast.MinContrast[0]);
 				params.StretchGreen = static_cast<double>(ColorRange) / (contrast.MaxContrast[1] - contrast.MinContrast[1]);
 				params.StretchBlue = static_cast<double>(ColorRange) / (contrast.MaxContrast[2] - contrast.MinContrast[2]);
+
+				params.ScaleParams = CalculateScaleParams(palette, contrast);
 
 				return params;
 			}
@@ -224,7 +242,7 @@ namespace fx
 			std::vector<uint32_t> colors;
 			colors.reserve(nColors);
 
-			CalcParams params = CalculateParams(contrast);
+			CalcParams params = CalculateParams(palette, contrast);
 
 			FillSpaceBeforeFirstPin(pin1, colors, nColors, contrast, params);
 
