@@ -3,7 +3,7 @@
 
 namespace DxColor
 {
-	const double MAX_HUE = 359.9;
+	const double MAX_HUE = 360.0;
 	const double MAX_SATURATION = 1.0;
 	const double MAX_LIGHTNESS = 1.0;
 

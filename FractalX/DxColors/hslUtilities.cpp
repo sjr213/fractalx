@@ -29,8 +29,13 @@ namespace DxColor
 		double GetHue(ColorArgb rgb, bite minVal, bite maxVal, RgbPart maxComponent)
 		{
 			if (maxComponent == RgbPart::total)
-				return 0.0;
+			{
+				if (maxVal == 255)
+					return MAX_HUE;
 
+				return 0.0;
+			}
+				
 			int C = maxVal - minVal;
 			double hue = 0.0;
 
@@ -127,7 +132,7 @@ namespace DxColor
 	{
 		double c = (1 - fabs(2 * hsl.L - 1)) * hsl.S;
 		double h = hsl.H / 60.0;
-		double x = c * (1.0 - abs(static_cast<int>(h+0.4999) % 2 - 1));
+		double x = c * (1.0 - fabs(fmod(h, 2.0) - 1));
 
 		double r = 0, g = 0, b = 0;
 		if (h >= 0 && h < 1.0)

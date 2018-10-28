@@ -25,4 +25,6 @@ namespace DxColor
 		bite G = 0;
 		bite B = 0;
 	};
+
+	bool operator==(const ColorArgb& lf, const ColorArgb& rt);
 }

@@ -161,6 +161,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorArgb.cpp" />
     <ClCompile Include="ColorPin.cpp" />
     <ClCompile Include="DoubleBuffer.cpp" />
     <ClCompile Include="DxColorsSerialization.cpp" />
