@@ -41,6 +41,7 @@ CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	, m_k2(0)
 	, m_indexIndex(0)
 	, m_IsCopiedColor(FALSE)
+	, m_alpha(_T(""))
 	, m_red(_T(""))
 	, m_green(_T(""))
 	, m_blue(_T(""))
@@ -82,9 +83,11 @@ void CPinEditDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BANDB_EDIT2, m_BandB2);
 	DDX_Text(pDX, IDC_CURVE_EDIT1, m_k1);
 	DDX_Text(pDX, IDC_CURVE_EDIT2, m_k2);
+	DDX_Control(pDX, IDC_ALPHA_EDIT, m_AlphaEdit);
 	DDX_Control(pDX, IDC_RED_EDIT, m_RedEdit);
 	DDX_Control(pDX, IDC_GREEN_EDIT, m_GreenEdit);
 	DDX_Control(pDX, IDC_BLUE_EDIT, m_BlueEdit);
+	DDX_Text(pDX, IDC_ALPHA_EDIT, m_alpha);
 	DDX_Text(pDX, IDC_RED_EDIT, m_red);
 	DDX_Text(pDX, IDC_GREEN_EDIT, m_green);
 	DDX_Text(pDX, IDC_BLUE_EDIT, m_blue);
@@ -165,13 +168,15 @@ BOOL CPinEditDlg::OnInitDialog()
 	m_CurveRect1 = CRect(168, curveTop, 168 + curveWt, curveTop + curveWt); // x-22,y+38
 	m_CurveRect2 = CRect(345, curveTop, 345 + curveWt, curveTop + curveWt);
 	
+	m_AlphaEdit.SetTextColor(RGB(0, 0, 0));
+	m_AlphaEdit.SetBkColor(GetSysColor(COLOR_3DFACE));
 	m_RedEdit.SetTextColor( RGB(255,0,0) );
 	m_RedEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
 	m_GreenEdit.SetTextColor( RGB(0,255,0) );
 	m_GreenEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
 	m_BlueEdit.SetTextColor( RGB(0,0,255) );
 	m_BlueEdit.SetBkColor( GetSysColor( COLOR_3DFACE ) );
-	m_red = m_green = m_blue = _T("");
+	m_alpha = m_red = m_green = m_blue = _T("");
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -969,6 +974,7 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	if(m_nPins < 1)
 		return;
 
+	m_alpha = _T("");
 	m_red = _T("");
 	m_green = _T("");
 	m_blue = _T("");
@@ -976,10 +982,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	// Group 1
 	if(m_TopCtrRect1.PtInRect(point))
 	{
-		COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
-		m_red.Format(_T("%d"), GetRValue(color1));
-		m_green.Format(_T("%d"),GetGValue(color1));
-		m_blue.Format(_T("%d"), GetBValue(color1));
+		auto argb1 = m_pins.at(m_indexIndex).Color1;
+		m_alpha.Format(_T("%d"), argb1.A);
+		m_red.Format(_T("%d"), argb1.R);
+		m_green.Format(_T("%d"), argb1.G);
+		m_blue.Format(_T("%d"), argb1.B);
 		UpdateData(FALSE);
 		return CDialogEx::OnMouseMove(nFlags, point);
 	}
@@ -988,10 +995,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		if(m_BotCtrRect1.PtInRect(point))
 		{
-			COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex).Color2);
-			m_red.Format(_T("%d"), GetRValue(color2));
-			m_green.Format(_T("%d"), GetGValue(color2));
-			m_blue.Format(_T("%d"), GetBValue(color2));
+			auto argb2 = m_pins.at(m_indexIndex).Color2;
+			m_alpha.Format(_T("%d"), argb2.A);
+			m_red.Format(_T("%d"), argb2.R);
+			m_green.Format(_T("%d"), argb2.G);
+			m_blue.Format(_T("%d"), argb2.B);
 			UpdateData(FALSE);
 			return CDialogEx::OnMouseMove(nFlags, point); 
 		}
@@ -1002,10 +1010,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		if(m_TopCtrRect2.PtInRect(point))
 		{
-			COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
-			m_red.Format(_T("%d"), GetRValue(color1));
-			m_green.Format(_T("%d"), GetGValue(color1));
-			m_blue.Format(_T("%d"), GetBValue(color1));
+			auto argb1 = m_pins.at(m_indexIndex+1).Color1;
+			m_alpha.Format(_T("%d"), argb1.A);
+			m_red.Format(_T("%d"), argb1.R);
+			m_green.Format(_T("%d"), argb1.G);
+			m_blue.Format(_T("%d"), argb1.B);
 			UpdateData(FALSE);
 			return CDialogEx::OnMouseMove(nFlags, point);
 		}
@@ -1014,10 +1023,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			if(m_BotCtrRect2.PtInRect(point))
 			{
-				COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
-				m_red.Format(_T("%d"), GetRValue(color2) );
-				m_green.Format(_T("%d"), GetGValue(color2));
-				m_blue.Format(_T("%d"), GetBValue(color2));
+				auto argb2 = m_pins.at(m_indexIndex+1).Color2;
+				m_alpha.Format(_T("%d"), argb2.A);
+				m_red.Format(_T("%d"), argb2.R);
+				m_green.Format(_T("%d"), argb2.G);
+				m_blue.Format(_T("%d"), argb2.B);
 				UpdateData(FALSE);
 				return CDialogEx::OnMouseMove(nFlags, point);
 			}
@@ -1029,10 +1039,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 	{	
 		if(m_TopCtrRect3.PtInRect(point))
 		{
-			COLORREF color1 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
-			m_red.Format(_T("%d"), GetRValue(color1));
-			m_green.Format(_T("%d"),GetGValue(color1));
-			m_blue.Format(_T("%d"), GetBValue(color1));
+			auto argb1 = m_pins.at(m_indexIndex+2).Color1;
+			m_alpha.Format(_T("%d"), argb1.A);
+			m_red.Format(_T("%d"), argb1.R);
+			m_green.Format(_T("%d"), argb1.G);
+			m_blue.Format(_T("%d"), argb1.B);
 			UpdateData(FALSE);
 			return CDialogEx::OnMouseMove(nFlags, point);
 		}
@@ -1041,10 +1052,11 @@ void CPinEditDlg::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			if(m_BotCtrRect3.PtInRect(point))
 			{
-				COLORREF color2 = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
-				m_red.Format(_T("%d"), GetRValue(color2) );
-				m_green.Format(_T("%d"),GetGValue(color2));
-				m_blue.Format(_T("%d"), GetBValue(color2));
+				auto argb2 = m_pins.at(m_indexIndex + 2).Color2;
+				m_alpha.Format(_T("%d"), argb2.A);
+				m_red.Format(_T("%d"), argb2.R);
+				m_green.Format(_T("%d"), argb2.G);
+				m_blue.Format(_T("%d"), argb2.B);
 				UpdateData(FALSE);
 				return CDialogEx::OnMouseMove(nFlags, point);
 			}

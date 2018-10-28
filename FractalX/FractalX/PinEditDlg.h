@@ -86,10 +86,12 @@ protected:
 	double m_k1;
 	double m_k2;
 
+	CColorEdit m_AlphaEdit;
 	CColorEdit m_RedEdit;
 	CColorEdit m_GreenEdit;
 	CColorEdit m_BlueEdit;
 
+	CString m_alpha;
 	CString m_red;
 	CString m_green;
 	CString m_blue;
