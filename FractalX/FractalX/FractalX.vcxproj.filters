@@ -102,10 +102,13 @@
     <ClInclude Include="ctrls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColorUtils.h">
+    <ClInclude Include="ContrastDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ContrastDlg.h">
+    <ClInclude Include="ColorSelectorDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -189,6 +192,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ContrastDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorSelectorDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
