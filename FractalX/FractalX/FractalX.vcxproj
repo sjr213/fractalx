@@ -120,7 +120,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;DxSupport.lib;DxColors.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;DxSupport.lib;DxColors.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
@@ -175,7 +175,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;DxSupport.lib;DxColors.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;DxSupport.lib;DxColors.lib;dxgi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
@@ -192,6 +192,7 @@
   <ItemGroup>
     <ClInclude Include="CancelException.h" />
     <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="ColorSelectorDlg.h" />
     <ClInclude Include="ColorUtilities.h" />
     <ClInclude Include="ColorUtils.h" />
     <ClInclude Include="ContrastDlg.h" />
@@ -225,7 +226,9 @@
   <ItemGroup>
     <ClCompile Include="CancelException.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="ColorSelectorDlg.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />
+    <ClCompile Include="ColorUtils.cpp" />
     <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="ctrls.cpp" />
     <ClCompile Include="FractalParamsPage.cpp" />

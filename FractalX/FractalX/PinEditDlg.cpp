@@ -14,11 +14,13 @@
 // m_pColors[index-1] <-> m_pPin.SetIndex(index)
 
 #include "stdafx.h"
-
 #include "PinEditDlg.h"
-#include "math.h"
+
 #include <algorithm>
+#include "ColorArgb.h"
 #include "ColorUtils.h"
+#include "ColorSelectorDlg.h"
+#include "math.h"
 #include "Messages.h"
 
 using namespace DxColor;
@@ -258,6 +260,23 @@ void CPinEditDlg::OnPaint()
 	dc.SelectObject(pOldPen);
 }
 
+void CPinEditDlg::EditColor(int index, bool color2)
+{
+	ColorArgb color = color2 ? m_pins.at(m_indexIndex + index).Color2 : m_pins.at(m_indexIndex + index).Color1;
+
+	auto colorDlg = CColorSelectorDlg::CreateColorSelectorDlg(color, this);
+	if (colorDlg->DoModal() == IDOK)
+	{
+		if (color2)
+			m_pins.at(m_indexIndex + index).Color2 = colorDlg->GetColor();
+		else
+			m_pins.at(m_indexIndex + index).Color1 = colorDlg->GetColor();
+
+		Invalidate(TRUE);
+		Dirty();
+	}
+}
+
 void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if(m_nPins < 1)
@@ -267,41 +286,15 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	// TOP CENTER - use left color 
 	if(m_TopCtrRect1.PtInRect(point))
 	{
-		CColorDialog dlg;
-		dlg.m_cc.Flags |= CC_FULLOPEN;
-		dlg.m_cc.Flags |= CC_RGBINIT;
-		
-		auto colorTop1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
-		dlg.m_cc.lpCustColors = &colorTop1;
-
-		if(dlg.DoModal() == IDOK)
-		{
-			m_pins.at(m_indexIndex).Color1 = FromColorRef(dlg.GetColor());
-			Invalidate(TRUE);
-			Dirty();
-		}
+		EditColor(0, false);
 		return;
 	}
 		
 	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
 	{
 		// BOTTOM CENTER - use left color
-		if(m_BotCtrRect1.PtInRect(point))
-		{
-			CColorDialog dlg;
-			dlg.m_cc.Flags |= CC_FULLOPEN;
-			dlg.m_cc.Flags |= CC_RGBINIT;
-			auto colorBottom1 = ToColorRef(m_pins.at(m_indexIndex).Color2);
-			dlg.m_cc.lpCustColors = &colorBottom1;
-			
-			if(dlg.DoModal() == IDOK)
-			{
-				m_pins.at(m_indexIndex).Color2 = FromColorRef(dlg.GetColor());
-				Invalidate(TRUE);
-				Dirty();
-			}
-			return;
-		}
+		EditColor(0, true);
+		return;
 	}
 
 	// Group 2
@@ -309,18 +302,7 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if(m_TopCtrRect2.PtInRect(point))
 		{
-			CColorDialog dlg;
-			dlg.m_cc.Flags |= CC_FULLOPEN;
-			dlg.m_cc.Flags |= CC_RGBINIT;
-			auto colorTop2 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
-			dlg.m_cc.lpCustColors = &colorTop2;
-
-			if(dlg.DoModal() == IDOK)
-			{
-				m_pins.at(m_indexIndex + 1).Color1 = FromColorRef(dlg.GetColor());
-				Invalidate(TRUE);
-				Dirty();
-			}
+			EditColor(1, false);
 			return;
 		}
 
@@ -328,18 +310,7 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 			if(m_BotCtrRect2.PtInRect(point))
 			{
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				auto colorBottom2 = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
-				dlg.m_cc.lpCustColors = &colorBottom2;
-
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pins.at(m_indexIndex + 1).Color2 = FromColorRef(dlg.GetColor());
-					Invalidate(TRUE);
-					Dirty();
-				}
+				EditColor(1, true);
 				return;
 			}
 		}
@@ -350,18 +321,7 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	{	
 		if(m_TopCtrRect3.PtInRect(point))
 		{
-			CColorDialog dlg;
-			dlg.m_cc.Flags |= CC_FULLOPEN;
-			dlg.m_cc.Flags |= CC_RGBINIT;
-			auto colorTop3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
-			dlg.m_cc.lpCustColors = &colorTop3;
-
-			if(dlg.DoModal() == IDOK)
-			{
-				m_pins.at(m_indexIndex + 2).Color1 = FromColorRef(dlg.GetColor());
-				Invalidate(TRUE);
-				Dirty();
-			}
+			EditColor(2, false);
 			return;
 		}
 
@@ -369,18 +329,7 @@ void CPinEditDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 			if(m_BotCtrRect3.PtInRect(point))
 			{
-				CColorDialog dlg;
-				dlg.m_cc.Flags |= CC_FULLOPEN;
-				dlg.m_cc.Flags |= CC_RGBINIT;
-				auto colorBottom3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
-				dlg.m_cc.lpCustColors = &colorBottom3;
-					
-				if(dlg.DoModal() == IDOK)
-				{
-					m_pins.at(m_indexIndex + 2).Color2 =FromColorRef(dlg.GetColor());
-					Invalidate(TRUE);
-					Dirty();
-				}
+				EditColor(2, true);
 				return;
 			}
 		}

@@ -27,4 +27,5 @@ namespace DxColor
 	};
 
 	bool operator==(const ColorArgb& lf, const ColorArgb& rt);
+
 }
