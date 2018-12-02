@@ -23,7 +23,7 @@
     <ProjectGuid>{6B5E81C8-7E15-49AB-9CCE-B7241E63A718}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DxSupport</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

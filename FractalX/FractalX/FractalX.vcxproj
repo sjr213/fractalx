@@ -23,7 +23,7 @@
     <ProjectGuid>{EA738E87-4273-4551-9BA7-ED78D01E2743}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
     <RootNamespace>FractalX</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
