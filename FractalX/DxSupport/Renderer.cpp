@@ -56,6 +56,8 @@ namespace DXF
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 
+		Microsoft::WRL::ComPtr< ID3D11BlendState1> m_blendState;
+
 		std::vector<uint32_t> m_textureColors;
 		ComPtr<ID3D11Texture2D>	m_texture;			
 		ComPtr<ID3D11ShaderResourceView> m_textureView;
@@ -316,6 +318,8 @@ namespace DXF
 			DXF::ThrowIfFailed(device.As(&m_d3dDevice), "device 1 not supported");
 			DXF::ThrowIfFailed(context.As(&m_d3dContext), "context 1 not supported");
 
+			CreateBlendState();
+
 			// TODO: Initialize device dependent objects here (independent of window size).
 			m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
 
@@ -461,6 +465,27 @@ namespace DXF
 			CreateProjectionMatrix();
 		}
 
+		void CreateBlendState()
+		{
+			D3D11_BLEND_DESC1 blendStateDesc;
+			blendStateDesc.AlphaToCoverageEnable = FALSE;
+			blendStateDesc.IndependentBlendEnable = FALSE;
+			blendStateDesc.RenderTarget[0].LogicOpEnable = FALSE;			// not sure what this does
+			blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+			blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			blendStateDesc.RenderTarget[0].LogicOp = D3D11_LOGIC_OP_NOOP;
+
+			ComPtr<ID3D11BlendState1> blendState;
+			DXF::ThrowIfFailed(m_d3dDevice->CreateBlendState1(&blendStateDesc, m_blendState.ReleaseAndGetAddressOf()),
+				"Could not create blend state");
+		}
+
 		HRESULT CreateBuffers()
 		{
 			if (!m_d3dDevice)
@@ -494,6 +519,7 @@ namespace DXF
 			m_depthStencilView.Reset();
 			m_renderTargetView.Reset();
 			m_swapChain.Reset();
+			m_blendState.Reset();
 			m_d3dContext.Reset();
 			m_d3dDevice.Reset();
 			m_nIndices = 0;
@@ -575,7 +601,9 @@ namespace DXF
 			m_effect->SetProjection(m_proj);
 			m_effect->SetWorld(m_world);
 
-			m_d3dContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+			float blendFactors[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			m_d3dContext->OMSetBlendState(m_blendState.Get(), blendFactors, 0xFFFFFFFF);
+
 			m_d3dContext->RSSetState(m_states->CullNone());
 
 			m_effect->Apply(m_d3dContext.Get());
