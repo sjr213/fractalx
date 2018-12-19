@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ColorUtils.h"
+#include <gdiplus.h>
 
 namespace ColorUtils
 {
@@ -16,5 +17,11 @@ namespace ColorUtils
 	DxColor::ColorArgb ToArgb(COLORREF cr, bite alpha)
 	{
 		return DxColor::ColorArgb(alpha, GetRValue(cr), GetGValue(cr), GetBValue(cr));
+	}
+
+	Gdiplus::Color ConvertToGdiColor(const DxColor::ColorArgb& color)
+	{
+		Gdiplus::Color gColor(color.A, color.R, color.G, color.B);
+		return gColor;
 	}
 }

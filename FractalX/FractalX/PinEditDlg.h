@@ -5,6 +5,11 @@
 #include "afxwin.h"
 #include "ColorPin.h"
 
+namespace Gdiplus
+{
+	class Graphics;
+}
+
 // notes for FractalX version
 // lets pretend the index is an int between 0 and 999, later convert it to double
 
@@ -129,6 +134,8 @@ protected:
 	virtual void OnCancel();
 
 	void EditColor(int index, bool color2);
+
+	void DrawRect(Gdiplus::Graphics& graphics, CRect rect, DxColor::ColorArgb color);
 
 	afx_msg void OnPaint();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

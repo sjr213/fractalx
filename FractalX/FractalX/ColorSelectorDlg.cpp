@@ -122,12 +122,6 @@ protected:
 		}
 	}
 
-	Gdiplus::Color ConvertToGdiColor(ColorArgb color)
-	{
-		Gdiplus::Color gColor(color.A, color.R, color.G, color.B);
-		return gColor;
-	}
-
 	void OnPaint()
 	{
 		using namespace Gdiplus;

@@ -20,11 +20,14 @@
 #include "ColorArgb.h"
 #include "ColorUtils.h"
 #include "ColorSelectorDlg.h"
+#include <Gdiplus.h>
 #include "math.h"
 #include "Messages.h"
 
 using namespace DxColor;
 using namespace ColorUtils;
+
+using namespace Gdiplus;
 
 CPinEditDlg::CPinEditDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPinEditDlg::IDD, pParent)
@@ -187,12 +190,33 @@ BOOL CPinEditDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
+void CPinEditDlg::DrawRect(Graphics& graphics, CRect rect, DxColor::ColorArgb color)
+{
+	Gdiplus::Rect gRect(rect.left, rect.top, rect.Width(), rect.Height());
+
+	HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
+
+	graphics.FillRectangle(&backGroundBrush, gRect);
+
+	SolidBrush colorBrush(ConvertToGdiColor(color));
+
+	graphics.FillRectangle(&colorBrush, gRect);
+
+	// Create a Pen object.
+	Pen blackPen(Color(255, 0, 0, 0), 2);
+
+	// Draw the rectangle.
+	graphics.DrawRectangle(&blackPen, gRect);
+}
+
 void CPinEditDlg::OnPaint()
 {
 	if(m_nPins < 1)
 		return;
 
 	CPaintDC dc(this); // device context for painting
+
+	Graphics graphics(dc);
 
 	CPen *pOldPen = (CPen*) dc.SelectStockObject(BLACK_PEN);
 
@@ -201,62 +225,29 @@ void CPinEditDlg::OnPaint()
 
 	if(m_nPins > 1 && m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::Curve)	// curve graph 2
 		DrawCurve(dc, FALSE);
-	
-	CBrush brushTop1;
-	auto colortop1 = ToColorRef(m_pins.at(m_indexIndex).Color1);
-	brushTop1.CreateSolidBrush(colortop1);
-	CBrush *pOldBrush = (CBrush*) dc.SelectObject(&brushTop1);
 
-	dc.SelectObject(&brushTop1);
-	dc.Rectangle(&m_TopCtrRect1);
+	DrawRect(graphics, m_TopCtrRect1, m_pins.at(m_indexIndex).Color1);
 
 	if(m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
-	{
-		CBrush brushctr2;
-		auto colorBottom = ToColorRef(m_pins.at(m_indexIndex).Color2);
-		brushctr2.CreateSolidBrush(colorBottom);
-		dc.SelectObject(&brushctr2);
-		dc.Rectangle(&m_BotCtrRect1);
-	}
+		DrawRect(graphics, m_BotCtrRect1, m_pins.at(m_indexIndex).Color2);
 
 	if(m_nPins > 1)
 	{
-		CBrush brushTop2;
-		auto colorTop2 = ToColorRef(m_pins.at(m_indexIndex+1).Color1);
-		brushTop2.CreateSolidBrush(colorTop2);
-		dc.SelectObject(&brushTop2);
-		dc.Rectangle(&m_TopCtrRect2);
+		DrawRect(graphics, m_TopCtrRect2, m_pins.at(m_indexIndex + 1).Color1);
 
 		if(m_pins.at(m_indexIndex+1).CurveType == ColorCurveType::DoubleBand || m_pins.at(m_indexIndex).CurveType == ColorCurveType::DoubleBand)
-		{
-			CBrush brushctr2;
-			auto colorBottom = ToColorRef(m_pins.at(m_indexIndex+1).Color2);
-			brushctr2.CreateSolidBrush(colorBottom);
-			dc.SelectObject(&brushctr2);
-			dc.Rectangle(&m_BotCtrRect2);
-		}
+			DrawRect(graphics, m_BotCtrRect2, m_pins.at(m_indexIndex + 1).Color2);
 	}
 
 	if(m_nPins > 2)
 	{
-		CBrush brushTop3;
-		auto colorTop3 = ToColorRef(m_pins.at(m_indexIndex + 2).Color1);
-		brushTop3.CreateSolidBrush(colorTop3);
-		dc.SelectObject(&brushTop3);
-		dc.Rectangle(&m_TopCtrRect3);
+		DrawRect(graphics, m_TopCtrRect3, m_pins.at(m_indexIndex + 2).Color1);
 
 		if(m_pins.at(m_indexIndex + 1).CurveType == ColorCurveType::DoubleBand)
-		{
-			CBrush brushctr2;
-			auto colorBottom = ToColorRef(m_pins.at(m_indexIndex + 2).Color2);
-			brushctr2.CreateSolidBrush(colorBottom);
-			dc.SelectObject(&brushctr2);
-			dc.Rectangle(&m_BotCtrRect3);
-		}
+			DrawRect(graphics, m_BotCtrRect3, m_pins.at(m_indexIndex + 2).Color2);
 	}
 
 	// clean up 
-	dc.SelectObject(pOldBrush);
 	dc.SelectObject(pOldPen);
 }
 
