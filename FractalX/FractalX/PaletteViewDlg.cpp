@@ -38,6 +38,8 @@ private:
 	const int BorderWidth = 10;
 	const int ControlRegionHeight = 50;
 
+	bool m_dirty = false;
+
 public:
 	CPaletteViewDlgImp(const PinPalette& palette, ColorContrast& contrast, CWnd* pParent)
 		: CPaletteViewDlg(IDD_PALETTE_VIEW_DLG, pParent)
@@ -75,6 +77,8 @@ protected:
 		InitDoubleBuffer(clientRect);
 
 		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
+
+		EnableUpdate(false);
 
 		return TRUE;
 	}
@@ -114,6 +118,8 @@ protected:
 
 		UpdateData(FALSE);
 		InvalidateRect(m_paletteRect, FALSE);
+
+		EnableUpdate(true);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -142,10 +148,18 @@ protected:
 			return;
 		}
 
-		if (m_newPaletteMethod)
+		if (m_newPaletteMethod && m_dirty)
 			m_newPaletteMethod(m_palette, m_contrast);
 
 		m_parent->PostMessage(cMessage::tm_killPaletteView, 0, 0);
+	}
+
+	afx_msg void OnUpdate()
+	{
+		if (m_newPaletteMethod)
+			m_newPaletteMethod(m_palette, m_contrast);
+
+		EnableUpdate(false);
 	}
 
 	afx_msg void OnBnClickedCancel()
@@ -473,6 +487,15 @@ protected:
 			PaletteChanged();
 		}
 	}
+
+	void EnableUpdate(bool enable)
+	{
+		auto pWnd = GetDlgItem(IDC_UPDATE_BUT);
+		if (pWnd)
+			pWnd->EnableWindow(enable);
+
+		m_dirty = enable;
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
@@ -493,6 +516,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinEditDlgClosed, &CPaletteViewDlgImp::OnPinEditDlgClosed)
+	ON_BN_CLICKED(IDC_UPDATE_BUT, &CPaletteViewDlgImp::OnUpdate)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent)
