@@ -1,4 +1,5 @@
 
+// This is no longer used - delete if there is a problem
 #include "stdafx.h"
 #include "TextureDlg.h"
 #include "DxfColorFactory.h"

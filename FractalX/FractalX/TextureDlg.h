@@ -1,5 +1,7 @@
 #pragma once
 
+// This is no longer used - delete if there is a problem
+
 #include "resource.h"       // main symbols
 #include <afxwin.h>
 #include <afxdialogex.h>
