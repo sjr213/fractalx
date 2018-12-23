@@ -17,4 +17,6 @@ namespace ColorUtils
 	DxColor::ColorArgb ToArgb(COLORREF cr, bite alpha);
 
 	Gdiplus::Color ConvertToGdiColor(const DxColor::ColorArgb& color);
+
+	Gdiplus::Color ConvertToGdiColor(uint32_t color);
 }

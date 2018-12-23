@@ -24,4 +24,17 @@ namespace ColorUtils
 		Gdiplus::Color gColor(color.A, color.R, color.G, color.B);
 		return gColor;
 	}
+
+	Gdiplus::Color ConvertToGdiColor(uint32_t color)
+	{
+		// opposite (a << 24) | (r << 16) | (g << 8) | b;
+
+		int b = color & 0xff;
+		int g = (color >> 8) & 0xff;
+		int r = (color >> 16) & 0xff;
+		int a = (color >> 24) & 0xff;
+
+		Gdiplus::Color gColor(a, r, g, b);
+		return gColor;
+	}
 }

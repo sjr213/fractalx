@@ -3,15 +3,19 @@
 #include "PaletteViewDlg.h"
 
 #include "ContrastDlg.h"
+#include "ColorUtils.h"
 #include "ColorUtilities.h"
 #include "DoubleBuffer.h"
+#include <Gdiplus.h>
 #include "Messages.h"
 #include "PinTracker.h"
 #include "PinEditDlg.h"
 #include "Resource.h"
 
-
+using namespace ColorUtils;
 using namespace DxColor;
+using namespace Gdiplus;
+
 
 class CPaletteViewDlgImp : public CPaletteViewDlg
 {
@@ -184,19 +188,24 @@ protected:
 
 	void DrawPaletteColors(CDC& dc)
 	{
+		Graphics graphics(dc);
+
+		Gdiplus::Rect gRect(0, 0, NumberOfColors, ColorLineHeight);
+
+		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleNarrowHorizontal, Color::Black, Color::White);
+
+		graphics.FillRectangle(&backGroundBrush, gRect);
+
+		int yEnd = ColorLineHeight;
+
 		for (int x = 0; x < NumberOfColors; ++x)
 		{
+			// std::vector<uint32_t>
+			// need ColorArgb 
 			auto uColor = m_colors.at(x);
-			COLORREF color = fx::ColorUtilities::ToColorRef(uColor);
-			CPen aPen;
-			aPen.CreatePen(PS_SOLID, 1, color);
+			Pen pen(ConvertToGdiColor(uColor), 1.0);
 
-			CPen *pOldPen = (CPen*)dc.SelectObject(&aPen);
-
-			dc.MoveTo(x, 0);
-			dc.LineTo(x, ColorLineHeight);
-
-			dc.SelectObject(pOldPen);
+			graphics.DrawLine(&pen, x, 0, x, yEnd);
 		}
 	}
 
