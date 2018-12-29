@@ -44,6 +44,8 @@ namespace DXF
 
 		virtual void SetView(const std::tuple<float, float, float>& camera, const std::tuple<float, float, float>& target) = 0;
 
+		virtual void SetTarget(const std::tuple<float, float, float>& target) = 0;
+
 		virtual std::tuple<float, float, float> GetCamera() const = 0;
 
 		virtual std::tuple<float, float, float> GetTarget() const = 0;

@@ -223,6 +223,16 @@ namespace DXF
 			CreateViewMatrix();
 		}
 
+		void SetTarget(const std::tuple<float, float, float>& target) override
+		{
+			if (!m_d3dDevice)
+				return;
+
+			m_target = target;
+
+			CreateViewMatrix();
+		}
+
 		std::tuple<float, float, float> GetCamera() const override
 		{
 			return m_camera;

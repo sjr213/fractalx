@@ -14,6 +14,8 @@ const UINT cMessage::tm_pinsChanged = RegisterWindowMessage(_T("Pins changed"));
 
 const UINT cMessage::tm_pinEditDlgClosed = RegisterWindowMessage(_T("Pin edit dlg closed"));
 
+const UINT cMessage::tm_killPositionAngleDlg = RegisterWindowMessage(_T("Kill position angle dialog"));
+
 const double PROGRESS_SIZE = 10000;
 
 WPARAM cMessage::MakeWPARAMProgress(double progress)

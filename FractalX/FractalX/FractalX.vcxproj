@@ -210,6 +210,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="PinEditDlg.h" />
+    <ClInclude Include="PositionAngleDlg.h" />
     <ClInclude Include="PositionRangePage.h" />
     <ClInclude Include="ProgressCancelSignaling.h" />
     <ClInclude Include="ProgressDlg.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="PinEditDlg.cpp" />
+    <ClCompile Include="PositionAngleDlg.cpp" />
     <ClCompile Include="PositionRangePage.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
@@ -283,6 +285,7 @@
     <Image Include="res\file_view.ico" />
     <Image Include="res\file_view_hc.ico" />
     <Image Include="res\FractalX.ico" />
+    <Image Include="res\FractalX256.bmp" />
     <Image Include="res\FractalXDoc.ico" />
     <Image Include="res\homelarge.bmp" />
     <Image Include="res\homesmall.bmp" />
