@@ -25,6 +25,14 @@ public:
 
 	static const UINT tm_killPositionAngleDlg;
 
+	static const UINT tm_mouseCoords;
+
+	static const UINT tm_clickIDs;
+
+	static const UINT tm_modelPositionChanged;
+
+	static const UINT tm_modelAngleChanged;
+
 	static WPARAM MakeWPARAMProgress(double progress);
 
 	static double MakeDoubleProgress(WPARAM progress);

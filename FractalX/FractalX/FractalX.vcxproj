@@ -209,6 +209,7 @@
     <ClInclude Include="FractalXView.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
+    <ClInclude Include="ClickMappedPictureCtrl.h" />
     <ClInclude Include="PinEditDlg.h" />
     <ClInclude Include="PositionAngleDlg.h" />
     <ClInclude Include="PositionRangePage.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="FractalXView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
+    <ClCompile Include="ClickMappedPictureCtrl.cpp" />
     <ClCompile Include="PinEditDlg.cpp" />
     <ClCompile Include="PositionAngleDlg.cpp" />
     <ClCompile Include="PositionRangePage.cpp" />

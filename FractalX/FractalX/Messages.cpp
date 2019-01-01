@@ -16,6 +16,14 @@ const UINT cMessage::tm_pinEditDlgClosed = RegisterWindowMessage(_T("Pin edit dl
 
 const UINT cMessage::tm_killPositionAngleDlg = RegisterWindowMessage(_T("Kill position angle dialog"));
 
+const UINT cMessage::tm_mouseCoords = RegisterWindowMessage(_T("Mouse coordinates"));
+
+const UINT cMessage::tm_clickIDs = RegisterWindowMessage(_T("Click IDs"));
+
+const UINT cMessage::tm_modelPositionChanged = RegisterWindowMessage(_T("Model Position Changed"));
+
+const UINT cMessage::tm_modelAngleChanged = RegisterWindowMessage(_T("Model Angle Changed"));
+
 const double PROGRESS_SIZE = 10000;
 
 WPARAM cMessage::MakeWPARAMProgress(double progress)
