@@ -553,7 +553,8 @@ namespace DXF
 			{
 				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees)) *
-					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees));
+					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees)) *
+					Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees) + time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateX)
 			{

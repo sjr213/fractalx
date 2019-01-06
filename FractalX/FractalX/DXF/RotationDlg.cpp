@@ -64,7 +64,7 @@ namespace DXF
 
 	RotationParams CRotationDlg::GetRotationParams()
 	{
-		RotationParams rp(RotationActionFromInt(m_action), m_angleX, m_angleY, m_angleZ);
+		RotationParams rp(RotationActionFromInt(m_action), -1.0f * m_angleX, -1.0f * m_angleY, -1.0f * m_angleZ);
 
 		return rp;
 	}
@@ -72,9 +72,9 @@ namespace DXF
 	void CRotationDlg::SetRotationParams(RotationParams rp)
 	{
 		m_action = RotationActionToInt(rp.Action);
-		m_angleX = rp.AngleXDegrees;
-		m_angleY = rp.AngleYDegrees;
-		m_angleZ = rp.AngleZDegrees;
+		m_angleX = -1.0f * rp.AngleXDegrees;
+		m_angleY = -1.0f * rp.AngleYDegrees;
+		m_angleZ = -1.0f * rp.AngleZDegrees;
 	}
 }
 

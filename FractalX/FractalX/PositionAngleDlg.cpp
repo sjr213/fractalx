@@ -189,68 +189,68 @@ protected:
 		switch (static_cast<int>(wparam))
 		{
 		case X_Minus:
-			std::get<0>(m_target) = std::get<0>(m_target) - m_distance;
-			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
-			break;
-		case X_CCW:
-			if (m_rotationParams.Action == RotationAction::Fixed)
-			{
-				m_rotationParams.AngleXDegrees -= m_angle;
-				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
-			}
-			break;
-		case X_Plus:
 			std::get<0>(m_target) = std::get<0>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
-		case X_CW:
+		case X_CCW:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleXDegrees += m_angle;
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
-		case Y_Minus:
-			std::get<1>(m_target) = std::get<1>(m_target) - m_distance;
+		case X_Plus:
+			std::get<0>(m_target) = std::get<0>(m_target) - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
-		case Y_CCW:
+		case X_CW:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
-				m_rotationParams.AngleYDegrees -= m_angle;
+				m_rotationParams.AngleXDegrees -= m_angle;
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
-		case Y_Plus:
+		case Y_Minus:
 			std::get<1>(m_target) = std::get<1>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
-		case Y_CW:
+		case Y_CCW:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleYDegrees += m_angle;
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
+		case Y_Plus:
+			std::get<1>(m_target) = std::get<1>(m_target) - m_distance;
+			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
+			break;
+		case Y_CW:
+			if (m_rotationParams.Action == RotationAction::Fixed)
+			{
+				m_rotationParams.AngleYDegrees -= m_angle;
+				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
+			}
+			break;
 		case Z_Minus:
-			std::get<2>(m_target) = std::get<2>(m_target) - m_distance;
+			std::get<2>(m_target) = std::get<2>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CCW:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
-				m_rotationParams.AngleZDegrees -= m_angle;
+				m_rotationParams.AngleZDegrees += m_angle;
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
 		case Z_Plus:
-			std::get<2>(m_target) = std::get<2>(m_target) + m_distance;
+			std::get<2>(m_target) = std::get<2>(m_target) - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CW:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
-				m_rotationParams.AngleZDegrees += m_angle;
+				m_rotationParams.AngleZDegrees -= m_angle;
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;

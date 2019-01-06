@@ -49,14 +49,20 @@ void CViewDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_CAMERA_Z_EDIT, std::get<2>(m_camera));
 	DDV_MinMaxFloat(pDX, std::get<2>(m_camera), -10000.0f, 10000.0f);
 
-	DDX_Text(pDX, IDC_TARGET_X_EDIT, std::get<0>(m_target));
-	DDV_MinMaxFloat(pDX, std::get<0>(m_target), -10000.0f, 10000.0f);
+	float x = -1.0f * std::get<0>(m_target);
+	DDX_Text(pDX, IDC_TARGET_X_EDIT, x);
+	DDV_MinMaxFloat(pDX, x, -10000.0f, 10000.0f);
+	std::get<0>(m_target) = -1.0f * x;
 
-	DDX_Text(pDX, IDC_TARGET_Y_EDIT, std::get<1>(m_target));
-	DDV_MinMaxFloat(pDX, std::get<1>(m_target), -10000.0f, 10000.0f);
+	float y = -1.0f * std::get<1>(m_target);
+	DDX_Text(pDX, IDC_TARGET_Y_EDIT, y);
+	DDV_MinMaxFloat(pDX, y, -10000.0f, 10000.0f);
+	std::get<1>(m_target) = -1.0f * y;
 
-	DDX_Text(pDX, IDC_TARGET_Z_EDIT, std::get<2>(m_target));
-	DDV_MinMaxFloat(pDX, std::get<2>(m_target), -10000.0f, 10000.0f);
+	float z = -1.0f * std::get<2>(m_target);
+	DDX_Text(pDX, IDC_TARGET_Z_EDIT, z);
+	DDV_MinMaxFloat(pDX, z, -10000.0f, 10000.0f);
+	std::get<2>(m_target) = -1.0f * z;
 }
 
 
