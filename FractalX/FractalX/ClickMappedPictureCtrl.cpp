@@ -3,12 +3,37 @@
 #include "ClickMappedPictureCtrl.h"
 #include "Messages.h"
 
+namespace
+{
+	void InvertColors(byte* pixel)
+	{
+		if (pixel[0] != 255 || pixel[1] != 255 || pixel[2] != 255)
+		{
+			pixel[0] = 255 - pixel[0];
+			pixel[1] = 255 - pixel[1];
+			pixel[2] = 255 - pixel[2];
+		}
+	}
+
+	void Darken(byte* pixel)
+	{
+		const int dif = 40;
+		if (pixel[0] != 255 || pixel[1] != 255 || pixel[2] != 255)
+		{
+			pixel[0] = pixel[0] > dif ? pixel[0] - dif : 0;
+			pixel[1] = pixel[1] > dif ? pixel[1] - dif : 0;
+			pixel[2] = pixel[2] > dif ? pixel[2] - dif : 0;
+		}
+	}
+}
+
 
 IMPLEMENT_DYNAMIC(CClickMappedPictureCtrl, CStatic)
 CClickMappedPictureCtrl::CClickMappedPictureCtrl()
 	: m_parent(nullptr)
 	, m_sendMousePositionMsg(false)
 	, m_sendClickMsg(false)
+	, m_shaderFunction(Darken)
 {
 }
 
@@ -19,23 +44,6 @@ CClickMappedPictureCtrl::~CClickMappedPictureCtrl()
 void CClickMappedPictureCtrl::SetBitmap(CString strBitmap)
 {
 	m_bmpPath = strBitmap;
-
-	/*
-	// This expects a path to a .bmp file
-	HBITMAP hBitmap = (HBITMAP) ::LoadImage(NULL, // AfxGetInstanceHandle(),
-		m_bmpPath, IMAGE_BITMAP, 0, 0,
-		LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-	// Do we have a valid handle for the loaded image?
-	if (hBitmap)
-	{
-		if (m_bitmap.DeleteObject())
-			m_bitmap.Detach();
-
-		m_bitmap.Attach(hBitmap);
-	}
-	m_bitmap.GetBitmap(&m_bmpHeader);
-	*/
 
 	m_gBitmap = std::make_unique<Gdiplus::Bitmap>(m_bmpPath);
 
@@ -60,6 +68,11 @@ void CClickMappedPictureCtrl::SetParent(CWnd* pWnd)
 void CClickMappedPictureCtrl::SetClickTargets(const std::list<PictureClickTarget>& targets)
 {
 	m_targets = targets;
+}
+
+void CClickMappedPictureCtrl::SetShaderFunction(const std::function<void(byte*)>& shaderFunction)
+{
+	m_shaderFunction = shaderFunction;
 }
 
 BEGIN_MESSAGE_MAP(CClickMappedPictureCtrl, CStatic)
@@ -96,7 +109,7 @@ static Gdiplus::Rect GetGdiRect(const CRect& winRect)
 	return Gdiplus::Rect(winRect.left, winRect.top, winRect.Width(), winRect.Height());
 }
 
-static std::shared_ptr<Gdiplus::Bitmap> GetShadedBitmap(const Gdiplus::Rect& shadeRect, CString bmpPath)
+static std::shared_ptr<Gdiplus::Bitmap> GetShadedBitmap(const Gdiplus::Rect& shadeRect, CString bmpPath, const std::function<void(byte*)>& shader)
 {
 	std::shared_ptr<Gdiplus::Bitmap> copiedBmp = std::make_shared<Gdiplus::Bitmap>(bmpPath);
 	if (!copiedBmp)
@@ -118,12 +131,8 @@ static std::shared_ptr<Gdiplus::Bitmap> GetShadedBitmap(const Gdiplus::Rect& sha
 		{
 			int pos = y*_nWidth + 3*x;
 			byte* pixel = _current + pos;
-			if (pixel[0] != 255 || pixel[1] != 255 || pixel[2] != 255)
-			{
-				pixel[0] = 255 - pixel[0];
-				pixel[1] = 255 - pixel[1];
-				pixel[2] = 255 - pixel[2];
-			}
+
+			shader(pixel);
 		}
 	}
 
@@ -144,7 +153,7 @@ void CClickMappedPictureCtrl::DrawBitmapWithMask(CPaintDC &dc)
 
 	auto maskRect = GetGdiRect(m_maskRect.value());
 
-	auto shadedBmp = GetShadedBitmap(maskRect, m_bmpPath);
+	auto shadedBmp = GetShadedBitmap(maskRect, m_bmpPath, m_shaderFunction);
 	if (!shadedBmp)
 		return;
 

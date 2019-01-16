@@ -23,6 +23,7 @@ public:
 	void SendMousePositionMessage(bool sendMousePositionMessage);
 	void SendClickMessage(bool sendClickMessage);
 	void SetClickTargets(const std::list<PictureClickTarget>& targets);
+	void SetShaderFunction(const std::function<void(byte*)>& shaderFunction);
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -44,6 +45,7 @@ protected:
 	std::optional<CRect> m_maskRect;
 
 	std::unique_ptr<Gdiplus::Bitmap> m_gBitmap;
+	std::function<void(byte*)> m_shaderFunction;
 
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
