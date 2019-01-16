@@ -2,6 +2,7 @@
 
 #pragma once
 #include <list>
+#include <optional>
 
 struct PictureClickTarget
 {
@@ -25,7 +26,9 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
-	void ShowBitmap(CPaintDC *pDC);
+
+	void DrawBitmap(CPaintDC &dc);
+	void DrawBitmapWithMask(CPaintDC &dc);
 
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
@@ -38,5 +41,11 @@ protected:
 	bool m_sendMousePositionMsg;
 	bool m_sendClickMsg;
 	std::list<PictureClickTarget> m_targets;
+	std::optional<CRect> m_maskRect;
+
+	std::unique_ptr<Gdiplus::Bitmap> m_gBitmap;
+
+public:
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 

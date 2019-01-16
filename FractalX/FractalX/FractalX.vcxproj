@@ -117,6 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,6 +171,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,6 +193,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CancelException.h" />
+    <ClInclude Include="cdib.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColorSelectorDlg.h" />
     <ClInclude Include="ColorUtilities.h" />
@@ -227,6 +230,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CancelException.cpp" />
+    <ClCompile Include="cdib.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColorSelectorDlg.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />
