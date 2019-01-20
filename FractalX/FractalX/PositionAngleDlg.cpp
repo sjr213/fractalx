@@ -86,20 +86,20 @@ protected:
 	{
 		std::list<PictureClickTarget> targets
 		{
-			{CRect(10, 150, 85, 210), X_Minus },
-			{CRect(315, 150, 348, 210), X_CCW},
-			{CRect(350, 150, 382, 210), X_Plus},
-			{CRect(275, 150, 310, 210), X_Plus},
-			{CRect(384, 150, 417, 210), X_CW},
-			{CRect(159, 277, 208, 350), Y_Minus},
-			{CRect(132, 5, 167, 62), Y_CCW},
-			{CRect(169, 5, 201, 87), Y_Plus},
-			{CRect(203, 5, 238, 62), Y_CW},
-			{CRect(45, 221, 118, 274), Z_Minus},
-			{CRect(260, 75, 295, 121), Z_CCW},
-			{CRect(298, 75, 328, 121), Z_Plus},
-			{CRect(230, 123, 273, 149), Z_Plus},
-			{CRect(330, 75, 365, 121), Z_CW}
+			{CRect(10, 150, 85, 210), CRect(10, 150, 43, 210), X_Minus },
+			{CRect(315, 150, 348, 210), CRect(315, 150, 348, 210), X_CCW},
+			{CRect(350, 150, 382, 210), CRect(350, 150, 382, 210), X_Plus},
+			{CRect(275, 150, 310, 210), CRect(350, 150, 382, 210), X_Plus},
+			{CRect(384, 150, 417, 210), CRect(384, 150, 417, 210), X_CW},
+			{CRect(159, 277, 208, 350), CRect(159, 317, 208, 350), Y_Minus},
+			{CRect(132, 5, 167, 62), CRect(132, 5, 167, 62), Y_CCW},
+			{CRect(169, 5, 201, 87), CRect(169, 5, 201, 38), Y_Plus},
+			{CRect(203, 5, 238, 62), CRect(203, 5, 238, 62), Y_CW},
+			{CRect(45, 221, 118, 274), CRect(45, 221, 78, 274), Z_Minus},
+			{CRect(260, 75, 295, 121), CRect(260, 75, 295, 121), Z_CCW},
+			{CRect(298, 75, 328, 121), CRect(298, 75, 328, 121), Z_Plus},
+			{CRect(230, 123, 273, 149), CRect(298, 75, 328, 121), Z_Plus},
+			{CRect(330, 75, 365, 121), CRect(330, 75, 365, 121), Z_CW}
 		};
 
 		return targets;

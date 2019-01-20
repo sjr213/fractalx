@@ -109,36 +109,38 @@ static Gdiplus::Rect GetGdiRect(const CRect& winRect)
 	return Gdiplus::Rect(winRect.left, winRect.top, winRect.Width(), winRect.Height());
 }
 
+// I started off using win32 bitmaps/dibs but Gdiplus was much easier
 static std::shared_ptr<Gdiplus::Bitmap> GetShadedBitmap(const Gdiplus::Rect& shadeRect, CString bmpPath, const std::function<void(byte*)>& shader)
 {
-	std::shared_ptr<Gdiplus::Bitmap> copiedBmp = std::make_shared<Gdiplus::Bitmap>(bmpPath);
-	if (!copiedBmp)
+	// I tried copying the original bitmap but ran into problems. Since this seems efficient enough I left as is.
+	std::shared_ptr<Gdiplus::Bitmap> shadingBmp = std::make_shared<Gdiplus::Bitmap>(bmpPath);
+	if (!shadingBmp)
 		return nullptr;
 
-	Gdiplus::Rect fullRect(0, 0, copiedBmp->GetWidth(), copiedBmp->GetHeight());
+	Gdiplus::Rect fullRect(0, 0, shadingBmp->GetWidth(), shadingBmp->GetHeight());
 
 	Gdiplus::BitmapData bitmapData;
-	auto status = copiedBmp->LockBits(&fullRect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, PixelFormat24bppRGB, &bitmapData);
+	auto status = shadingBmp->LockBits(&fullRect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, PixelFormat24bppRGB, &bitmapData);
 	if (status != Gdiplus::Status::Ok)
-		return copiedBmp;
+		return shadingBmp;
 
-	byte* _current = (byte*)(void*)bitmapData.Scan0;
-	int _nWidth = bitmapData.Stride;
+	byte* start = (byte*)(void*)bitmapData.Scan0;
+	int stride = bitmapData.Stride;
 
 	for (int y = shadeRect.GetTop(); y < shadeRect.GetBottom(); ++y)
 	{
 		for (int x = shadeRect.GetLeft(); x < shadeRect.GetRight(); ++x)
 		{
-			int pos = y*_nWidth + 3*x;
-			byte* pixel = _current + pos;
+			int pos = y*stride + 3*x;
+			byte* pixel = start + pos;
 
 			shader(pixel);
 		}
 	}
 
-	copiedBmp->UnlockBits(&bitmapData);
+	shadingBmp->UnlockBits(&bitmapData);
 
-	return copiedBmp;
+	return shadingBmp;
 }
 
 void CClickMappedPictureCtrl::DrawBitmapWithMask(CPaintDC &dc)
@@ -210,7 +212,7 @@ void CClickMappedPictureCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			if (target.TargetRect.PtInRect(point))
 			{
-				m_maskRect = target.TargetRect;
+				m_maskRect = target.ShadeRect;
 				Invalidate(FALSE);
 				break;
 			}
