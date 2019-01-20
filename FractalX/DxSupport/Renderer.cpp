@@ -370,7 +370,8 @@ namespace DXF
 		{
 			m_view = Matrix::CreateLookAt(
 				Vector3(std::get<0>(m_camera), std::get<1>(m_camera), std::get<2>(m_camera)),
-				Vector3(std::get<0>(m_target), std::get<1>(m_target), std::get<2>(m_target)),
+				Vector3::Zero,
+		//		Vector3(std::get<0>(m_target), std::get<1>(m_target), std::get<2>(m_target)),
 				Vector3::UnitY);
 		}
 
@@ -549,46 +550,52 @@ namespace DXF
 
 		void SetWorld(float time)
 		{
+			auto transMatrix = Matrix::CreateTranslation(std::get<0>(m_target), std::get<1>(m_target), std::get<2>(m_target));
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
+				m_world = transMatrix *
+					Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees)) *
 					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees)) *
 					Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees) + time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateX)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationX(time);
+				m_world = transMatrix * Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationX(time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateY)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationY(time);
+				m_world = transMatrix * Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationY(time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateZ)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationZ(time);
+				m_world = transMatrix * Matrix::CreateScale(0.1f, 0.1f, 0.1f) * Matrix::CreateRotationZ(time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateXY)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) * 
+				m_world = transMatrix * 
+					Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees) + time) *
 					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees) + time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateYZ)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
+				m_world = transMatrix * 
+					Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees) + time) *
 					Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees) + time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateXZ)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
+				m_world = transMatrix *
+					Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees) + time) *
 					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees) + time);
 			}
 			else if (m_rotationParams.Action == RotationAction::RotateAll)
 			{
-				m_world = Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
+				m_world = transMatrix * 
+					Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
 					Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees) + time) *
 					Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees) + time) *
 					Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees) + time);

@@ -134,7 +134,7 @@ protected:
 		DDX_Control(pDX, IDC_COORD_PIC, m_coordCtrl);
 
 		DDX_Text(pDX, IDC_DISTANCE_EDIT, m_distance);
-		DDV_MinMaxFloat(pDX, m_distance, 0.00001f, 1.0f);
+		DDV_MinMaxFloat(pDX, m_distance, 0.00001f, 10.0f);
 
 		DDX_Text(pDX, IDC_ANGLE_EDIT, m_angle);
 		DDV_MinMaxFloat(pDX, m_angle, 0.1f, 180.0f);
@@ -189,7 +189,7 @@ protected:
 		switch (static_cast<int>(wparam))
 		{
 		case X_Minus:
-			std::get<0>(m_target) = std::get<0>(m_target) + m_distance;
+			std::get<0>(m_target) = std::get<0>(m_target) - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CCW:
@@ -200,7 +200,7 @@ protected:
 			}
 			break;
 		case X_Plus:
-			std::get<0>(m_target) = std::get<0>(m_target) - m_distance;
+			std::get<0>(m_target) = std::get<0>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CW:
@@ -211,7 +211,7 @@ protected:
 			}
 			break;
 		case Y_Minus:
-			std::get<1>(m_target) = std::get<1>(m_target) + m_distance;
+			std::get<1>(m_target) = std::get<1>(m_target) - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CCW:
@@ -222,7 +222,7 @@ protected:
 			}
 			break;
 		case Y_Plus:
-			std::get<1>(m_target) = std::get<1>(m_target) - m_distance;
+			std::get<1>(m_target) = std::get<1>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CW:
@@ -233,7 +233,7 @@ protected:
 			}
 			break;
 		case Z_Minus:
-			std::get<2>(m_target) = std::get<2>(m_target) + m_distance;
+			std::get<2>(m_target) = std::get<2>(m_target) - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CCW:
@@ -244,7 +244,7 @@ protected:
 			}
 			break;
 		case Z_Plus:
-			std::get<2>(m_target) = std::get<2>(m_target) - m_distance;
+			std::get<2>(m_target) = std::get<2>(m_target) + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CW:
