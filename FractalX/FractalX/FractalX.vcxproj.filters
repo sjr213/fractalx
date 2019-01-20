@@ -117,9 +117,6 @@
     <ClInclude Include="ClickMappedPictureCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cdib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FractalX.cpp">
@@ -213,9 +210,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClickMappedPictureCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cdib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

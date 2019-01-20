@@ -48,7 +48,7 @@ public:
 		, m_targetOriginal(target)
 		, m_target(target)
 		, m_parent(pParent)
-		, m_distance(0.1f)
+		, m_distance(0.02f)
 		, m_angle(10.0f)
 	{}
 
