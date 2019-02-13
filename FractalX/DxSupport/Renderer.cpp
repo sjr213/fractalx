@@ -24,7 +24,8 @@
 #include <wrl\client.h>
 #include <dxgi.h>
 #include <wingdi.h>
-#include <gdiplus.h>
+//#include <gdiplus.h>
+#include <afxwin.h>
 
 #undef max
 #undef min
@@ -252,7 +253,7 @@ namespace DXF
 			return (m_d3dDevice != nullptr);
 		}
 
-		std::shared_ptr<Gdiplus::Bitmap> GrabImage() override
+		bool DrawImage(CDC& dc, CSize imageSize) override
 		{
 			if (!m_d3dDevice)
 				return nullptr;
@@ -260,7 +261,7 @@ namespace DXF
 			ComPtr<IDXGISurface1> pSurface1;
 			HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)pSurface1.GetAddressOf());
 			if (FAILED(hr))
-				return nullptr;
+				return false;
 
 			HDC hdc3D;
 			pSurface1->GetDC(FALSE, &hdc3D);
@@ -270,21 +271,27 @@ namespace DXF
 			BITMAPINFO	bitmapInfo;
 			bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
 			bitmapInfo.bmiHeader.biBitCount = 0;
-	
-			VERIFY(GetDIBits(hdc3D, hbm3D, 0, m_outputHeight, nullptr, &bitmapInfo, DIB_RGB_COLORS));
+
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, imageSize.cy, nullptr, &bitmapInfo, DIB_RGB_COLORS));
 
 			bitmapInfo.bmiHeader.biCompression = BI_RGB;
-			bitmapInfo.bmiHeader.biWidth = m_outputWidth;
-			bitmapInfo.bmiHeader.biHeight = m_outputHeight;
+			bitmapInfo.bmiHeader.biWidth = imageSize.cx;
+			bitmapInfo.bmiHeader.biHeight = imageSize.cy;
 
 			std::unique_ptr<BYTE[]> pDIBits(new BYTE[(bitmapInfo.bmiHeader.biWidth + 1) * bitmapInfo.bmiHeader.biHeight * sizeof(DWORD)]);
-			VERIFY(GetDIBits(hdc3D, hbm3D, 0, m_outputHeight, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
-		
-			std::shared_ptr<Gdiplus::Bitmap> pBmp = std::make_shared<Gdiplus::Bitmap>(&bitmapInfo, pDIBits.get());
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, imageSize.cy, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
+
+			VERIFY(StretchDIBits(dc, 0, 0, imageSize.cx, imageSize.cy, 0, 0, bitmapInfo.bmiHeader.biWidth, bitmapInfo.bmiHeader.biHeight,
+				pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS, SRCCOPY) != GDI_ERROR);
 
 			pSurface1->ReleaseDC(nullptr);
 
-			return pBmp;
+			return true;
+		}
+
+		CSize GetScreenSize() const override
+		{		
+			return CSize(m_outputWidth, m_outputHeight);
 		}
 
 	protected:

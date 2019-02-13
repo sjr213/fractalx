@@ -5,10 +5,7 @@
 #include "VertexData.h"
 #include <tuple>
 
-namespace Gdiplus
-{
-	class Bitmap;
-}
+class CDC;
 
 namespace DXF
 {
@@ -57,7 +54,9 @@ namespace DXF
 
 		virtual bool IsReady() = 0;
 
-		virtual std::shared_ptr<Gdiplus::Bitmap> GrabImage() = 0;
+		virtual CSize GetScreenSize() const = 0;
+
+		virtual bool DrawImage(CDC& dc, CSize imageSize) = 0;
 
 	protected:
 		Renderer() {}
