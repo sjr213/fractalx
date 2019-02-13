@@ -5,6 +5,11 @@
 #include "VertexData.h"
 #include <tuple>
 
+namespace Gdiplus
+{
+	class Bitmap;
+}
+
 namespace DXF
 {
 	struct RotationParams;
@@ -51,6 +56,8 @@ namespace DXF
 		virtual std::tuple<float, float, float> GetTarget() const = 0;
 
 		virtual bool IsReady() = 0;
+
+		virtual std::shared_ptr<Gdiplus::Bitmap> GrabImage() = 0;
 
 	protected:
 		Renderer() {}

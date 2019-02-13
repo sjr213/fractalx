@@ -23,9 +23,12 @@
 #include "StepTimer.h"
 #include <wrl\client.h>
 #include <dxgi.h>
+#include <wingdi.h>
+#include <gdiplus.h>
 
 #undef max
 #undef min
+
 
 // Use the C++ standard template-d min/max
 
@@ -249,6 +252,41 @@ namespace DXF
 			return (m_d3dDevice != nullptr);
 		}
 
+		std::shared_ptr<Gdiplus::Bitmap> GrabImage() override
+		{
+			if (!m_d3dDevice)
+				return nullptr;
+
+			ComPtr<IDXGISurface1> pSurface1;
+			HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)pSurface1.GetAddressOf());
+			if (FAILED(hr))
+				return nullptr;
+
+			HDC hdc3D;
+			pSurface1->GetDC(FALSE, &hdc3D);
+
+			HBITMAP hbm3D = static_cast<HBITMAP>(GetCurrentObject(hdc3D, OBJ_BITMAP));
+
+			BITMAPINFO	bitmapInfo;
+			bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
+			bitmapInfo.bmiHeader.biBitCount = 0;
+	
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, m_outputHeight, nullptr, &bitmapInfo, DIB_RGB_COLORS));
+
+			bitmapInfo.bmiHeader.biCompression = BI_RGB;
+			bitmapInfo.bmiHeader.biWidth = m_outputWidth;
+			bitmapInfo.bmiHeader.biHeight = m_outputHeight;
+
+			std::unique_ptr<BYTE[]> pDIBits(new BYTE[(bitmapInfo.bmiHeader.biWidth + 1) * bitmapInfo.bmiHeader.biHeight * sizeof(DWORD)]);
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, m_outputHeight, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
+		
+			std::shared_ptr<Gdiplus::Bitmap> pBmp = std::make_shared<Gdiplus::Bitmap>(&bitmapInfo, pDIBits.get());
+
+			pSurface1->ReleaseDC(nullptr);
+
+			return pBmp;
+		}
+
 	protected:
 
 		// These are the resources that depend on the device.
@@ -371,7 +409,6 @@ namespace DXF
 			m_view = Matrix::CreateLookAt(
 				Vector3(std::get<0>(m_camera), std::get<1>(m_camera), std::get<2>(m_camera)),
 				Vector3::Zero,
-		//		Vector3(std::get<0>(m_target), std::get<1>(m_target), std::get<2>(m_target)),
 				Vector3::UnitY);
 		}
 
@@ -389,12 +426,13 @@ namespace DXF
 			UINT backBufferHeight = static_cast<UINT>(m_outputHeight);
 			DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 			DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			UINT swapChainFlags = DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
 			UINT backBufferCount = 2;
 
 			// If the swap chain already exists, resize it, otherwise create one.
 			if (m_swapChain)
 			{
-				HRESULT hr = m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, 0);
+				HRESULT hr = m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, swapChainFlags);
 
 				if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 				{
@@ -433,6 +471,7 @@ namespace DXF
 				swapChainDesc.SampleDesc.Quality = 0;
 				swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 				swapChainDesc.BufferCount = backBufferCount;
+				swapChainDesc.Flags = swapChainFlags;
 
 				DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
 				fsSwapChainDesc.Windowed = TRUE;
@@ -462,6 +501,7 @@ namespace DXF
 			// Allocate a 2-D surface as the depth/stencil buffer and
 			// create a DepthStencil view on this surface to use on bind.
 			CD3D11_TEXTURE2D_DESC depthStencilDesc(depthBufferFormat, backBufferWidth, backBufferHeight, 1, 1, D3D11_BIND_DEPTH_STENCIL);
+//			depthStencilDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
 			ComPtr<ID3D11Texture2D> depthStencil;
 			DXF::ThrowIfFailed(m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, depthStencil.GetAddressOf()),
