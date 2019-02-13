@@ -2,38 +2,26 @@
 #include "stdafx.h"
 #include "Renderer.h"
 
+#include <afxwin.h>
+#include <algorithm>
 #include "CommonStates.h"
 #include <d3d11_1.h>
 #include <DirectXColors.h>
 #include "DirectXHelpers.h"
+#include "DxfColorFactory.h"
+#include "DxException.h"
+#include "DxFactoryMethods.h"
+#include <dxgi.h>
 #include <dxgi1_2.h>
 #include "Effects.h"
 #include "ModelData.h"
 #include "PrimitiveBatch.h"
+#include "RotationParams.h"
 #include "SimpleMath.h"
+#include "StepTimer.h"
 #include "vertexFactory.h"
 #include "VertexTypes.h"
 
-
-#include <algorithm>
-#include "DxfColorFactory.h"
-#include "DxException.h"
-#include "DxFactoryMethods.h"
-#include "RotationParams.h"
-#include "StepTimer.h"
-#include <wrl\client.h>
-#include <dxgi.h>
-#include <wingdi.h>
-//#include <gdiplus.h>
-#include <afxwin.h>
-
-#undef max
-#undef min
-
-
-// Use the C++ standard template-d min/max
-
-// extern void ExitGame();
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;

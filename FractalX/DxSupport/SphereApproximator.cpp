@@ -4,9 +4,6 @@
 
 #include <algorithm>
 
-#undef max
-#undef min
-
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
