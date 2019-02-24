@@ -86,8 +86,8 @@ namespace DXF
 
 		RendererImp() :
 			m_window(nullptr),
-			m_outputWidth(800),
-			m_outputHeight(600),
+			m_outputWidth(400),
+			m_outputHeight(400),
 			m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 			m_nIndices(0),
 			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0)
