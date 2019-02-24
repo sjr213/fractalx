@@ -20,6 +20,8 @@ namespace DXF
 
 	struct RotationParams
 	{
+		static const int RotationVersion = 1;
+
 		RotationParams()
 			: Action(RotationAction::Fixed)
 			, AngleXDegrees(0)

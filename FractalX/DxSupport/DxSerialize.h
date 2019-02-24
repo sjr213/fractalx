@@ -10,6 +10,7 @@ namespace DXF
 
 	struct DxVertexData;
 	struct TriangleData;
+	struct RotationParams;
 
 	void Serialize(CArchive& ar, size_t& n);
 
@@ -32,4 +33,6 @@ namespace DXF
 	void Serialize(CArchive& ar, DirectX::XMFLOAT3& xf3);
 
 	void Serialize(CArchive& ar, TriangleData& triangles);
+
+	void Serialize(CArchive& ar, RotationParams& rotationParams);
 }

@@ -4,6 +4,7 @@
 #include "SphereApproximator.h"
 #include "TraceParamsSerialize.h"
 #include "VertexData.h"
+#include "RotationParams.h"
 
 
 namespace DXF
@@ -110,5 +111,35 @@ namespace DXF
 
 		Serialize(ar, triangles.Triangles);
 		Serialize(ar, triangles.Vertices);
+	}
+
+	void Serialize(CArchive& ar, RotationParams& rotationParams)
+	{
+		int version = RotationParams::RotationVersion;
+
+		if (ar.IsStoring())
+		{
+			ar << version;
+			ar << RotationActionToInt(rotationParams.Action);
+			ar << rotationParams.AngleXDegrees << rotationParams.AngleYDegrees << rotationParams.AngleZDegrees;
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == RotationParams::RotationVersion);
+			if (version != RotationParams::RotationVersion)
+				return;
+
+			int action = 0;
+			ar >> action;
+			rotationParams.Action = RotationActionFromInt(action);
+			ar >> rotationParams.AngleXDegrees >> rotationParams.AngleYDegrees >> rotationParams.AngleZDegrees;
+		}
+
+
+
+
 	}
 }
