@@ -35,4 +35,6 @@ namespace DXF
 	void Serialize(CArchive& ar, TriangleData& triangles);
 
 	void Serialize(CArchive& ar, RotationParams& rotationParams);
+
+	void Serialize(CArchive& ar, std::tuple<float, float, float>& f3);
 }

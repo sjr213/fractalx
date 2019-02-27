@@ -137,9 +137,17 @@ namespace DXF
 			rotationParams.Action = RotationActionFromInt(action);
 			ar >> rotationParams.AngleXDegrees >> rotationParams.AngleYDegrees >> rotationParams.AngleZDegrees;
 		}
+	}
 
-
-
-
+	void Serialize(CArchive& ar, std::tuple<float, float, float>& f3)
+	{
+		if (ar.IsStoring())
+		{
+			ar << std::get<0>(f3) << std::get<1>(f3) << std::get<2>(f3);
+		}
+		else
+		{
+			ar >> std::get<0>(f3) >> std::get<1>(f3) >> std::get<2>(f3);
+		}
 	}
 }
