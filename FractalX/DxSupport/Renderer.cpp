@@ -180,10 +180,22 @@ namespace DXF
 			m_effect->SetTexture(m_textureView.Get());
 		}
 
-		void SetPerspective(float nearView, float farView) override
+		DxPerspective GetPerspective() const override
+		{
+			DxPerspective perspective;
+			perspective.NearPlane = m_nearPlaneView;
+			perspective.FarPlane = m_farPlaneView;
+
+			return perspective;
+		}
+
+		void SetPerspective(const DxPerspective& perspective) override
 		{
 			if (!m_d3dDevice)
 				return;
+
+			float nearView = perspective.NearPlane;
+			float farView = perspective.FarPlane;
 
 			if (nearView > farView)
 				std::swap(nearView, farView);
@@ -192,16 +204,6 @@ namespace DXF
 			m_farPlaneView = farView;
 
 			CreateProjectionMatrix();
-		}
-
-		float GetNear() const override
-		{
-			return m_nearPlaneView;
-		}
-
-		float GetFar() const override
-		{
-			return m_farPlaneView;
 		}
 
 		void SetView(const std::tuple<float, float, float>& camera, const std::tuple<float, float, float>& target) override

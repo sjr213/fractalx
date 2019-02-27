@@ -158,6 +158,7 @@
     <ClInclude Include="DxfColorFactory.h" />
     <ClInclude Include="DxSerialize.h" />
     <ClInclude Include="ModelData.h" />
+    <ClInclude Include="Perspective.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RotationParams.h" />
     <ClInclude Include="SeedTriangles.h" />

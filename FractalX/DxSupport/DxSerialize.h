@@ -11,6 +11,7 @@ namespace DXF
 	struct DxVertexData;
 	struct TriangleData;
 	struct RotationParams;
+	struct DxPerspective;
 
 	void Serialize(CArchive& ar, size_t& n);
 
@@ -37,4 +38,6 @@ namespace DXF
 	void Serialize(CArchive& ar, RotationParams& rotationParams);
 
 	void Serialize(CArchive& ar, std::tuple<float, float, float>& f3);
+
+	void Serialize(CArchive& ar, DxPerspective& perspective);
 }

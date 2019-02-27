@@ -2,6 +2,7 @@
 #pragma once
 
 #include "ModelData.h"
+#include "Perspective.h"
 #include "VertexData.h"
 #include <tuple>
 
@@ -38,11 +39,9 @@ namespace DXF
 
 		virtual void SetTextureColors(std::vector<uint32_t> colors) = 0;
 
-		virtual void SetPerspective(float near, float far) = 0;
+		virtual void SetPerspective(const DxPerspective& perspective) = 0;
 
-		virtual float GetNear() const = 0;
-
-		virtual float GetFar() const = 0;
+		virtual DxPerspective GetPerspective() const = 0;
 
 		virtual void SetView(const std::tuple<float, float, float>& camera, const std::tuple<float, float, float>& target) = 0;
 

@@ -5,6 +5,7 @@
 #include "TraceParamsSerialize.h"
 #include "VertexData.h"
 #include "RotationParams.h"
+#include "Perspective.h"
 
 
 namespace DXF
@@ -148,6 +149,18 @@ namespace DXF
 		else
 		{
 			ar >> std::get<0>(f3) >> std::get<1>(f3) >> std::get<2>(f3);
+		}
+	}
+
+	void Serialize(CArchive& ar, DxPerspective& perspective)
+	{
+		if (ar.IsStoring())
+		{
+			ar << perspective.NearPlane << perspective.FarPlane;
+		}
+		else
+		{
+			ar >> perspective.NearPlane >> perspective.FarPlane;
 		}
 	}
 }
