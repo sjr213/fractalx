@@ -8,6 +8,11 @@ namespace Gdiplus
 	class Color;
 }
 
+namespace DirectX::SimpleMath
+{
+	struct Color;
+}
+
 namespace ColorUtils
 {
 	COLORREF ToColorRef(const DxColor::ColorArgb& argb);
@@ -19,4 +24,6 @@ namespace ColorUtils
 	Gdiplus::Color ConvertToGdiColor(const DxColor::ColorArgb& color);
 
 	Gdiplus::Color ConvertToGdiColor(uint32_t color);
+
+	DirectX::SimpleMath::Color ConvertToDxColor(const DxColor::ColorArgb& color);
 }

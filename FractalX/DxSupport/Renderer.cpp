@@ -21,6 +21,7 @@
 #include "StepTimer.h"
 #include "vertexFactory.h"
 #include "VertexTypes.h"
+#include <DirectXPackedVector.h>
 
 
 using namespace DirectX;
@@ -82,6 +83,8 @@ namespace DXF
 		std::tuple<float, float, float> m_camera = std::make_tuple(0.f, 0.f, 0.3f);
 		std::tuple<float, float, float> m_target = std::make_tuple(0.0f, 0.0f, 0.0f);
 
+		DirectX::SimpleMath::Color m_backgroundColor;
+
 	public:
 
 		RendererImp() :
@@ -90,7 +93,8 @@ namespace DXF
 			m_outputHeight(400),
 			m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 			m_nIndices(0),
-			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0)
+			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0),
+			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f))
 		{}
 
 		void Initialize(HWND window, int width, int height) override
@@ -282,6 +286,11 @@ namespace DXF
 		CSize GetScreenSize() const override
 		{		
 			return CSize(m_outputWidth, m_outputHeight);
+		}
+
+		void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) override
+		{
+			m_backgroundColor = bkColor;
 		}
 
 	protected:
@@ -707,7 +716,7 @@ namespace DXF
 		void Clear()
 		{
 			// Clear the views.
-			m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::CornflowerBlue);
+			m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), m_backgroundColor); // Colors::CornflowerBlue);
 			m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 			m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());

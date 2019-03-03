@@ -1,13 +1,15 @@
+
 #pragma once
 
 class CArchive;
 
+
 namespace DxColor
 {
+	struct ColorArgb;
 	struct ColorContrast;
 
-	namespace Serialization
-	{
-		void Serialize(CArchive& ar, ColorContrast& contrast);
-	}
+	void SerializeColorArgb(CArchive& ar, ColorArgb& color);
+
+	void Serialize(CArchive& ar, ColorContrast& contrast);
 }

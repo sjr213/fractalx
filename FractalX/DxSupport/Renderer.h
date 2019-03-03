@@ -57,6 +57,8 @@ namespace DXF
 
 		virtual bool DrawImage(CDC& dc, CSize imageSize) = 0;
 
+		virtual void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) = 0;
+
 	protected:
 		Renderer() {}
 	};

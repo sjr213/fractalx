@@ -1,30 +1,15 @@
+
 #include "stdafx.h"
 #include <afx.h>
-#include "ColorPin.h"
-#include <assert.h>
+
 #include <algorithm>
+#include <assert.h>
+#include "ColorPin.h"
+#include "DxColorsSerialization.h"
 
 namespace DxColor
 {
 	const int CurrentPinVersion = 1;
-
-	static void SerializeColorArgb(CArchive& ar, ColorArgb& color)
-	{
-		if (ar.IsStoring())
-			ar << color.A << color.R << color.G << color.B;
-		else
-		{
-			// ar >> color.A >> color.R << color.G << color.B;
-			BYTE a, r, g, b;
-			ar >> a >> r >> g >> b;
-
-			color.A = a;
-			color.R = r;
-			color.G = g;
-			color.B = b;
-		}
-			
-	}
 
 	static void SerializePin(CArchive& ar, ColorPin& pin, int version)
 	{

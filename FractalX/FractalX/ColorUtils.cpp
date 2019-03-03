@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ColorUtils.h"
 #include <gdiplus.h>
+#include <SimpleMath.h>
 
 namespace ColorUtils
 {
@@ -36,5 +37,15 @@ namespace ColorUtils
 
 		Gdiplus::Color gColor(a, r, g, b);
 		return gColor;
+	}
+
+	DirectX::SimpleMath::Color ConvertToDxColor(const DxColor::ColorArgb& color)
+	{
+		float r = static_cast<float>(color.R) / 255;
+		float g = static_cast<float>(color.G) / 255;
+		float b = static_cast<float>(color.B) / 255;
+		float a = static_cast<float>(color.A) / 255;
+
+		return DirectX::SimpleMath::Vector4(r,g,b,a);
 	}
 }
