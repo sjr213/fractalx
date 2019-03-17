@@ -9,6 +9,7 @@
 #include <DirectXColors.h>
 #include "DirectXHelpers.h"
 #include "DxfColorFactory.h"
+#include "DxEffectColors.h"
 #include "DxException.h"
 #include "DxFactoryMethods.h"
 #include <dxgi.h>
@@ -22,7 +23,6 @@
 #include "vertexFactory.h"
 #include "VertexTypes.h"
 #include <DirectXPackedVector.h>
-
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -86,6 +86,7 @@ namespace DXF
 		DirectX::SimpleMath::Color m_backgroundColor;
 
 		// new colors and lights
+		DXF::DxEffectColors m_effectColors;
 		DirectX::SimpleMath::Color m_ambientColor;
 		DirectX::SimpleMath::Color m_diffuseColor;
 		DirectX::SimpleMath::Color m_specularColor;
@@ -100,11 +101,7 @@ namespace DXF
 			m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 			m_nIndices(0),
 			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0),
-			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)),	// r,g.b,a
-			m_ambientColor(DirectX::SimpleMath::Vector4(0.24f, 0.24f, 0.24f, 1.0f)),
-			m_diffuseColor(DirectX::SimpleMath::Vector4(0.75f, 0.75f, 0.75f, 1.0f)),
-			m_specularColor(DirectX::SimpleMath::Vector4(0.75f, 0.75f, 0.75f, 1.0f)),
-			m_specularPower(16.0f)
+			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f))	// r,g.b,a
 		{}
 
 		void Initialize(HWND window, int width, int height) override
@@ -301,6 +298,12 @@ namespace DXF
 		void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) override
 		{
 			m_backgroundColor = bkColor;
+		}
+
+		void SetEffectColors(DXF::DxEffectColors& effectColors) override
+		{
+			m_effectColors = effectColors;
+			SetEffectColors(*m_effect);
 		}
 
 	protected:
@@ -600,10 +603,10 @@ namespace DXF
 
 		void SetEffectColors(BasicEffect& effect)
 		{
-			effect.SetAmbientLightColor(m_ambientColor);
-			effect.SetDiffuseColor(m_diffuseColor);
-			effect.SetSpecularColor(m_specularColor);
-			effect.SetSpecularPower(m_specularPower);
+			effect.SetAmbientLightColor(m_effectColors.AmbientColor);
+			effect.SetDiffuseColor(m_effectColors.DiffuseColor);
+			effect.SetSpecularColor(m_effectColors.SpecularColor);
+			effect.SetSpecularPower(m_effectColors.SpecularPower);
 		}
 
 		// Updates the world.

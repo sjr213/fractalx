@@ -10,6 +10,7 @@ class CDC;
 
 namespace DXF
 {
+	struct DxEffectColors;
 	struct RotationParams;
 
 	class Renderer
@@ -58,6 +59,8 @@ namespace DXF
 		virtual bool DrawImage(CDC& dc, CSize imageSize) = 0;
 
 		virtual void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) = 0;
+
+		virtual void SetEffectColors(DXF::DxEffectColors& effectColors) = 0;
 
 	protected:
 		Renderer() {}

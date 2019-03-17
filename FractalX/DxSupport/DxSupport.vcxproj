@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BasicRayTracer.h" />
+    <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
     <ClInclude Include="DxFactoryMethods.h" />
     <ClInclude Include="DxfColorFactory.h" />
