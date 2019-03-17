@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "ColorArgb.h"
 #include "ColorContrast.h"
+#include "EffectColors.h"
 
 
 namespace DxColor
@@ -61,5 +62,17 @@ namespace DxColor
 			color.G = g;
 			color.B = b;
 		}
+	}
+
+	void SerializeEffectColors(CArchive& ar, EffectColors& colors)
+	{
+		SerializeColorArgb(ar, colors.Ambient);
+		SerializeColorArgb(ar, colors.Diffuse);
+		SerializeColorArgb(ar, colors.Specular);
+
+		if (ar.IsStoring())
+			ar << colors.SpecularPower;
+		else
+			ar >> colors.SpecularPower;
 	}
 }
