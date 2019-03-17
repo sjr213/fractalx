@@ -85,6 +85,12 @@ namespace DXF
 
 		DirectX::SimpleMath::Color m_backgroundColor;
 
+		// new colors and lights
+		DirectX::SimpleMath::Color m_ambientColor;
+		DirectX::SimpleMath::Color m_diffuseColor;
+		DirectX::SimpleMath::Color m_specularColor;
+		float m_specularPower;
+
 	public:
 
 		RendererImp() :
@@ -94,7 +100,11 @@ namespace DXF
 			m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 			m_nIndices(0),
 			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0),
-			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f))
+			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)),	// r,g.b,a
+			m_ambientColor(DirectX::SimpleMath::Vector4(0.24f, 0.24f, 0.24f, 1.0f)),
+			m_diffuseColor(DirectX::SimpleMath::Vector4(0.75f, 0.75f, 0.75f, 1.0f)),
+			m_specularColor(DirectX::SimpleMath::Vector4(0.75f, 0.75f, 0.75f, 1.0f)),
+			m_specularPower(16.0f)
 		{}
 
 		void Initialize(HWND window, int width, int height) override
@@ -382,6 +392,8 @@ namespace DXF
 
 			m_effect->SetTextureEnabled(true);
 
+			SetEffectColors(*m_effect);
+
 			void const* shaderByteCode;
 			size_t byteCodeLength;
 
@@ -584,6 +596,14 @@ namespace DXF
 			CreateDevice();
 
 			CreateResources();
+		}
+
+		void SetEffectColors(BasicEffect& effect)
+		{
+			effect.SetAmbientLightColor(m_ambientColor);
+			effect.SetDiffuseColor(m_diffuseColor);
+			effect.SetSpecularColor(m_specularColor);
+			effect.SetSpecularPower(m_specularPower);
 		}
 
 		// Updates the world.

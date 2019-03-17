@@ -26,7 +26,7 @@ public:
 		m_hsl = ToHsl(color);
 	}
 
-	~ColorSelectorDlgImpl() {}
+	virtual ~ColorSelectorDlgImpl() {}
 
 	DxColor::ColorArgb GetColor() override
 	{

@@ -199,6 +199,7 @@
     <ClInclude Include="ColorUtils.h" />
     <ClInclude Include="ContrastDlg.h" />
     <ClInclude Include="ctrls.h" />
+    <ClInclude Include="EffectColorDlg.h" />
     <ClInclude Include="FractalParamsPage.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="ModelSheet.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="ColorUtils.cpp" />
     <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="ctrls.cpp" />
+    <ClCompile Include="EffectColorDlg.cpp" />
     <ClCompile Include="FractalParamsPage.cpp" />
     <ClCompile Include="Messages.cpp" />
     <ClCompile Include="ModelSheet.cpp" />
