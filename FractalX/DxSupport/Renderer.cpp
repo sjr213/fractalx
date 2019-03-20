@@ -87,10 +87,6 @@ namespace DXF
 
 		// new colors and lights
 		DXF::DxEffectColors m_effectColors;
-		DirectX::SimpleMath::Color m_ambientColor;
-		DirectX::SimpleMath::Color m_diffuseColor;
-		DirectX::SimpleMath::Color m_specularColor;
-		float m_specularPower;
 
 	public:
 
@@ -396,6 +392,7 @@ namespace DXF
 			m_effect->SetTextureEnabled(true);
 
 			SetEffectColors(*m_effect);
+			SetLights(*m_effect);
 
 			void const* shaderByteCode;
 			size_t byteCodeLength;
@@ -607,6 +604,13 @@ namespace DXF
 			effect.SetDiffuseColor(m_effectColors.DiffuseColor);
 			effect.SetSpecularColor(m_effectColors.SpecularColor);
 			effect.SetSpecularPower(m_effectColors.SpecularPower);
+		}
+
+		void SetLights(BasicEffect& effect)
+		{
+			effect.SetLightingEnabled(true);
+			effect.EnableDefaultLighting();
+			effect.SetPerPixelLighting(false);
 		}
 
 		// Updates the world.
