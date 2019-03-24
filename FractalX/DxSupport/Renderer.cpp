@@ -603,6 +603,7 @@ namespace DXF
 			effect.SetAmbientLightColor(m_effectColors.AmbientColor);
 			effect.SetDiffuseColor(m_effectColors.DiffuseColor);
 			effect.SetSpecularColor(m_effectColors.SpecularColor);
+			effect.SetEmissiveColor(m_effectColors.EmissiveColor);
 			effect.SetSpecularPower(m_effectColors.SpecularPower);
 		}
 

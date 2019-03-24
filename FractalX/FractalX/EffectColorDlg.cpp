@@ -17,14 +17,16 @@ private:
 	const Gdiplus::Rect m_rectAmbient;
 	const Gdiplus::Rect m_rectDiffuse;
 	const Gdiplus::Rect m_rectSpecular;
+	const Gdiplus::Rect m_rectEmissive;
 
 public:
 	EffectColorDlgImpl(EffectColors colors, CWnd* pParent)
 		: CEffectColorDlg(IDD_EFFECT_COLOR_DLG, pParent)
 		, m_colors(colors)
 		, m_rectAmbient(100, 45, 40, 40)
-		, m_rectDiffuse(100, 105, 40, 40)
-		, m_rectSpecular(100, 165, 40, 40)
+		, m_rectDiffuse(100, 104, 40, 40)
+		, m_rectSpecular(100, 163, 40, 40)
+		, m_rectEmissive(100, 222, 40, 40)
 	{}
 
 	virtual ~EffectColorDlgImpl() {}
@@ -108,6 +110,26 @@ protected:
 		DDV_MinMaxInt(pDX, specularAlpha, 0, 255);
 		m_colors.Specular.A = specularAlpha;
 
+		int emissiveRed = m_colors.Emissive.R;
+		DDX_Text(pDX, IDC_EMISSIVE_RED_EDIT, emissiveRed);
+		DDV_MinMaxInt(pDX, emissiveRed, 0, 255);
+		m_colors.Emissive.R = emissiveRed;
+
+		int emissiveGreen = m_colors.Emissive.G;
+		DDX_Text(pDX, IDC_EMISSIVE_GREEN_EDIT, emissiveGreen);
+		DDV_MinMaxInt(pDX, emissiveGreen, 0, 255);
+		m_colors.Emissive.G = emissiveGreen;
+
+		int emissiveBlue = m_colors.Emissive.B;
+		DDX_Text(pDX, IDC_EMISSIVE_BLUE_EDIT, emissiveBlue);
+		DDV_MinMaxInt(pDX, emissiveBlue, 0, 255);
+		m_colors.Emissive.B = emissiveBlue;
+
+		int emissiveAlpha = m_colors.Emissive.A;
+		DDX_Text(pDX, IDC_EMISSIVE_ALPHA_EDIT, emissiveAlpha);
+		DDV_MinMaxInt(pDX, emissiveAlpha, 0, 255);
+		m_colors.Emissive.A = emissiveAlpha;
+
 		float specularPower = m_colors.SpecularPower;
 		DDX_Text(pDX, IDC_SPECULAR_POWER_EDIT, specularPower);
 		DDV_MinMaxFloat(pDX, specularPower, 0.0f, 1000.0f);
@@ -149,6 +171,8 @@ protected:
 		DrawColorSquare(graphics, m_rectDiffuse, m_colors.Diffuse);
 
 		DrawColorSquare(graphics, m_rectSpecular, m_colors.Specular);
+
+		DrawColorSquare(graphics, m_rectEmissive, m_colors.Emissive);
 	}
 
 	void OnDefault()
@@ -200,6 +224,12 @@ protected:
 			ChooseColor(m_colors.Specular);
 			return;
 		}
+
+		if (PointInRect(m_rectEmissive, point))
+		{
+			ChooseColor(m_colors.Emissive);
+			return;
+		}
 	}
 
 };
@@ -219,6 +249,10 @@ BEGIN_MESSAGE_MAP(EffectColorDlgImpl, CEffectColorDlg)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
+	ON_EN_KILLFOCUS(IDC_EMISSIVE_RED_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
+	ON_EN_KILLFOCUS(IDC_EMISSIVE_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
+	ON_EN_KILLFOCUS(IDC_EMISSIVE_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
+	ON_EN_KILLFOCUS(IDC_EMISSIVE_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_POWER_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_BN_CLICKED(IDC_DEFAULT_BUT, &EffectColorDlgImpl::OnDefault)
 END_MESSAGE_MAP()

@@ -69,6 +69,7 @@ namespace DxColor
 		SerializeColorArgb(ar, colors.Ambient);
 		SerializeColorArgb(ar, colors.Diffuse);
 		SerializeColorArgb(ar, colors.Specular);
+		SerializeColorArgb(ar, colors.Emissive);
 
 		if (ar.IsStoring())
 			ar << colors.SpecularPower;
