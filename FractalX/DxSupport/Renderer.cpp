@@ -387,7 +387,6 @@ namespace DXF
 			m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
 
 			m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-			m_effect->SetVertexColorEnabled(false);
 
 			m_effect->SetTextureEnabled(true);
 
@@ -611,6 +610,7 @@ namespace DXF
 		{
 			effect.SetLightingEnabled(true);
 			effect.EnableDefaultLighting();
+			effect.SetVertexColorEnabled(false);	// this has to be false
 			effect.SetPerPixelLighting(false);
 		}
 

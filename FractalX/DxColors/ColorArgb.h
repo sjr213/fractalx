@@ -20,11 +20,15 @@ namespace DxColor
 			, B(b)
 		{}
 
+		ColorArgb& operator=(const ColorArgb& c);
+
 		bite A = 255;
 		bite R = 0;
 		bite G = 0;
 		bite B = 0;
 	};
+
+	
 
 	bool operator==(const ColorArgb& lf, const ColorArgb& rt);
 

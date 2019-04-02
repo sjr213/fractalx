@@ -157,6 +157,7 @@
     <ClInclude Include="DxException.h" />
     <ClInclude Include="DxFactoryMethods.h" />
     <ClInclude Include="DxfColorFactory.h" />
+    <ClInclude Include="DxLight.h" />
     <ClInclude Include="DxSerialize.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="Perspective.h" />

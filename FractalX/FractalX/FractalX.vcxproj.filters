@@ -120,6 +120,9 @@
     <ClInclude Include="EffectColorDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LightsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FractalX.cpp">
@@ -216,6 +219,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EffectColorDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightsDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
