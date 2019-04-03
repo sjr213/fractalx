@@ -58,13 +58,13 @@ namespace DxColor
 
 			ColorArgb d1 = ColorArgb((bite)255, (bite)192, (bite)192, (bite)192);
 			ColorArgb s1 = ColorArgb((bite)255, (bite)192, (bite)192, (bite)192);
-			std::tuple<float, float, float> direction1 = std::make_tuple(0.0f, 0.0f, -1.0f);
+			std::tuple<float, float, float> direction1 = std::make_tuple(0.0f, 1.0f, -1.0f);
 			lights.Light1 = Light(true, d1, s1, direction1);
 
-			std::tuple<float, float, float> direction2 = std::make_tuple(1.0f, 0.0f, 0.0f);
+			std::tuple<float, float, float> direction2 = std::make_tuple(0.886f, -0.5f, 0.0f);
 			lights.Light2 = Light(true, d1, s1, direction2);
 
-			std::tuple<float, float, float> direction3 = std::make_tuple(0.0f, 1.0f, 0.0f);
+			std::tuple<float, float, float> direction3 = std::make_tuple(-0.886f, -0.5f, 0.0f);
 			lights.Light3 = Light(true, d1, s1, direction3);
 		}
 

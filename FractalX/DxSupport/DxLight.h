@@ -25,14 +25,13 @@ namespace DXF
 			: DefaultLights(false)
 			, PerPixelLighting(false)
 			, Alpha(1.0f)
+			, Lights(3)
 		{}
 
 		bool DefaultLights;
 		bool PerPixelLighting;
 		float Alpha;
 
-		DxLight Light1;
-		DxLight Light2;
-		DxLight Light3;
+		std::vector<DxLight> Lights;
 	};
 }

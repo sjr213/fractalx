@@ -12,6 +12,7 @@ namespace DXF
 {
 	struct DxEffectColors;
 	struct RotationParams;
+	struct DxLights;
 
 	class Renderer
 	{
@@ -60,7 +61,9 @@ namespace DXF
 
 		virtual void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) = 0;
 
-		virtual void SetEffectColors(DXF::DxEffectColors& effectColors) = 0;
+		virtual void SetEffectColors(DxEffectColors& effectColors) = 0;
+
+		virtual void SetLights(DxLights& lights) = 0;
 
 	protected:
 		Renderer() {}

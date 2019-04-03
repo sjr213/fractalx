@@ -12,6 +12,7 @@
 #include "DxEffectColors.h"
 #include "DxException.h"
 #include "DxFactoryMethods.h"
+#include "DxLight.h"
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #include "Effects.h"
@@ -23,6 +24,7 @@
 #include "vertexFactory.h"
 #include "VertexTypes.h"
 #include <DirectXPackedVector.h>
+#include "DxLight.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -86,7 +88,8 @@ namespace DXF
 		DirectX::SimpleMath::Color m_backgroundColor;
 
 		// new colors and lights
-		DXF::DxEffectColors m_effectColors;
+		DxEffectColors m_effectColors;
+		DxLights m_lights;
 
 	public:
 
@@ -296,10 +299,16 @@ namespace DXF
 			m_backgroundColor = bkColor;
 		}
 
-		void SetEffectColors(DXF::DxEffectColors& effectColors) override
+		void SetEffectColors(DxEffectColors& effectColors) override
 		{
 			m_effectColors = effectColors;
 			SetEffectColors(*m_effect);
+		}
+
+		void SetLights(DxLights& lights) override
+		{
+			m_lights = lights;
+			SetLighting(*m_effect);
 		}
 
 	protected:
@@ -391,7 +400,7 @@ namespace DXF
 			m_effect->SetTextureEnabled(true);
 
 			SetEffectColors(*m_effect);
-			SetLights(*m_effect);
+			SetLighting(*m_effect);
 
 			void const* shaderByteCode;
 			size_t byteCodeLength;
@@ -606,12 +615,38 @@ namespace DXF
 			effect.SetSpecularPower(m_effectColors.SpecularPower);
 		}
 
-		void SetLights(BasicEffect& effect)
+		void SetLight(BasicEffect& effect, int lightIndex, const DxLight& light)
 		{
+			assert(lightIndex >= 0);
+			assert(lightIndex < 3);
+			if (lightIndex < 0 || lightIndex > 2)
+				return;
+
+			effect.SetLightEnabled(lightIndex, light.Enable);
+			if (light.Enable)
+			{
+				effect.SetLightDiffuseColor(lightIndex, light.DiffuseColor);
+				effect.SetLightSpecularColor(lightIndex, light.SpectacularColor);
+				effect.SetLightDirection(lightIndex, light.Direction);
+			}
+		}
+
+		void SetLighting(BasicEffect& effect)
+		{	
 			effect.SetLightingEnabled(true);
-			effect.EnableDefaultLighting();
 			effect.SetVertexColorEnabled(false);	// this has to be false
-			effect.SetPerPixelLighting(false);
+			effect.SetPerPixelLighting(m_lights.PerPixelLighting);
+
+			if (m_lights.DefaultLights)
+			{	
+				effect.EnableDefaultLighting();
+			}
+			else
+			{
+				effect.SetAmbientLightColor(m_effectColors.AmbientColor);
+				for (int i = 0; i < 3; ++i)
+					SetLight(effect, i, m_lights.Lights.at(i));
+			}		
 		}
 
 		// Updates the world.
