@@ -135,8 +135,6 @@ protected:
 
 	void EditColor(int index, bool color2);
 
-	void DrawRect(Gdiplus::Graphics& graphics, CRect rect, DxColor::ColorArgb color);
-
 	afx_msg void OnPaint();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

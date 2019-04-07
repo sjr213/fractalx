@@ -3,9 +3,11 @@
 
 #include "ColorSelectorDlg.h"
 #include "ColorUtils.h"
+#include "DialogUtils.h"
 #include <Gdiplus.h>
 #include "Resource.h"
 
+using namespace DlgUtils;
 using namespace DxColor;
 using namespace Gdiplus;
 using namespace ColorUtils;
@@ -154,24 +156,6 @@ protected:
 		m_lights.Alpha = alpha;
 	}
 
-	// can add to common location
-	void DrawColorSquare(Gdiplus::Graphics& graphics, const Gdiplus::Rect& rect, DxColor::ColorArgb color)
-	{
-		HatchBrush backGroundBrush(HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
-
-		graphics.FillRectangle(&backGroundBrush, rect);
-
-		SolidBrush colorBrush(ConvertToGdiColor(color));
-
-		graphics.FillRectangle(&colorBrush, rect);
-
-		// Create a Pen object.
-		Pen blackPen(Color(255, 0, 0, 0), 2);
-
-		// Draw the rectangle.
-		graphics.DrawRectangle(&blackPen, rect);
-	}
-
 	void OnPaint()
 	{
 		using namespace Gdiplus;
@@ -197,31 +181,6 @@ protected:
 		DrawColorSquare(graphics, m_rectSpectacular3, draw3 ? m_lights.Light3.Spectacular : blank);
 	}
 
-	// can add to common location
-	bool PointInRect(const Gdiplus::Rect& rect, const CPoint& pt)
-	{
-		if (pt.x < rect.GetLeft() || pt.x > rect.GetRight())
-			return false;
-
-		if (pt.y < rect.GetTop() || pt.y > rect.GetBottom())
-			return false;
-
-		return true;
-	}
-
-	// can add to common location
-	void ChooseColor(DxColor::ColorArgb& color)
-	{
-		auto colorDlg = CColorSelectorDlg::CreateColorSelectorDlg(color, this);
-		if (colorDlg->DoModal() == IDOK)
-		{
-			color = colorDlg->GetColor();
-
-			UpdateData(FALSE);
-			Invalidate(TRUE);
-		}
-	}
-
 	void OnLButtonUp(UINT /*nFlags*/, CPoint point)
 	{
 		if (m_lights.DefaultLights)
@@ -232,7 +191,7 @@ protected:
 			if (!m_lights.Light1.Enable)
 				return;
 
-			ChooseColor(m_lights.Light1.Diffuse);
+			ChooseColor(m_lights.Light1.Diffuse, *this);
 			return;
 		}
 
@@ -241,7 +200,7 @@ protected:
 			if (!m_lights.Light2.Enable)
 				return;
 
-			ChooseColor(m_lights.Light2.Diffuse);
+			ChooseColor(m_lights.Light2.Diffuse, *this);
 			return;
 		}
 
@@ -250,7 +209,7 @@ protected:
 			if (!m_lights.Light3.Enable)
 				return;
 
-			ChooseColor(m_lights.Light3.Diffuse);
+			ChooseColor(m_lights.Light3.Diffuse, *this);
 			return;
 		}
 
@@ -259,7 +218,7 @@ protected:
 			if (!m_lights.Light1.Enable)
 				return;
 
-			ChooseColor(m_lights.Light1.Spectacular);
+			ChooseColor(m_lights.Light1.Spectacular, *this);
 			return;
 		}
 
@@ -268,7 +227,7 @@ protected:
 			if (!m_lights.Light2.Enable)
 				return;
 
-			ChooseColor(m_lights.Light2.Spectacular);
+			ChooseColor(m_lights.Light2.Spectacular, *this);
 			return;
 		}
 
@@ -277,7 +236,7 @@ protected:
 			if (!m_lights.Light3.Enable)
 				return;
 
-			ChooseColor(m_lights.Light3.Spectacular);
+			ChooseColor(m_lights.Light3.Spectacular, *this);
 			return;
 		}
 	}
