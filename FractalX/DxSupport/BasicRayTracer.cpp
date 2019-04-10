@@ -138,7 +138,7 @@ namespace DXF
 			// We might want to set lastDistance to distance if it breaks on first step
 			return lastDistance;
 		}
-
+/*
 		XMFLOAT3 CalculateNormal(const XMFLOAT3& pos, float normalDelta)
 		{
 			double plusX = EstimateDistance(AddScaler(pos, normalDelta));
@@ -152,7 +152,7 @@ namespace DXF
 			norm.Normalize();
 			return norm;
 		}
-
+*/
 		StretchDistanceParams EstimateStretchRange(const TriangleData& data, const std::function<void(double)>& setProgress)
 		{
 			double minDistance = std::numeric_limits<double>::max();
@@ -196,6 +196,50 @@ namespace DXF
 			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
 		}
 
+		DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+		{
+			return DirectX::XMFLOAT3(	v1.y * v2.z - v1.z * v2.y, 
+										v1.z * v2.x - v1.x * v2.z, 
+										v1.x * v2.y - v1.y * v2.x );
+		}
+
+		// From Luna DirectX 11, 7.2.1
+		void CalculateNormals(DxVertexData& data)
+		{
+			size_t nTriangles = data.Indices.size() / 3;
+
+			for (size_t i = 0; i < nTriangles; ++i)
+			{
+				unsigned int i0 = data.Indices[i * 3 + 0];
+				unsigned int i1 = data.Indices[i * 3 + 1];
+				unsigned int i2 = data.Indices[i * 3 + 2];
+
+				DirectX::VertexPositionNormalTexture v0 = data.Vertices[i0];
+				DirectX::VertexPositionNormalTexture v1 = data.Vertices[i1];
+				DirectX::VertexPositionNormalTexture v2 = data.Vertices[i2];
+
+				// compute face normals
+				DirectX::XMFLOAT3 e0 = v1.position - v0.position;
+				DirectX::XMFLOAT3 e1 = v2.position - v0.position;
+				DirectX::XMFLOAT3 faceNormal = CrossProduct(e0, e1);
+
+				// This triangle shares the following three vertices.
+				// so add this face normal into the average of these
+				// vertex normals.
+				data.Vertices[i0].normal = data.Vertices[i0].normal + faceNormal;
+				data.Vertices[i1].normal = data.Vertices[i1].normal + faceNormal;
+				data.Vertices[i2].normal = data.Vertices[i2].normal + faceNormal;
+			}
+
+			// normalize all vertex normals
+			for (DirectX::VertexPositionNormalTexture& vertex : data.Vertices)
+			{
+				Vector3 v = vertex.normal;
+				v.Normalize();
+				vertex.normal = v;
+			}
+		}
+
 	public:
 
 		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const TraceParams& traceParams, 
@@ -220,6 +264,8 @@ namespace DXF
 				return RayMarchFractional(start, direction, p);
 			};
 
+			XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
+
 			for (const XMFLOAT3& v : data.Vertices)
 			{
 				XMFLOAT3 pt = MakeStartingPoint(traceParams.Bulb.Distance, traceParams.Bulb.Origin, v);
@@ -228,9 +274,7 @@ namespace DXF
 				Vector3 p;
 				double distance = marcher(pt, direction, p);
 
-				auto normal = CalculateNormal(p, m_traceParams.Bulb.NormalDelta);
-
-				vData->Vertices.emplace_back(p, normal, Vector2(static_cast<float>(distance), 0.0f));
+				vData->Vertices.emplace_back(p, nullNormal, Vector2(static_cast<float>(distance), 0.0f));
 
 				++progress;
 				if (progress % 20 == 0)
@@ -243,6 +287,8 @@ namespace DXF
 				vData->Indices.push_back(t.two);
 				vData->Indices.push_back(t.three);
 			}
+
+			CalculateNormals(*vData);
 
 			setProgress(1.0);
 
@@ -275,6 +321,8 @@ namespace DXF
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
 
+			XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
+
 			for (const XMFLOAT3& v : data.Vertices)
 			{
 				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
@@ -283,9 +331,7 @@ namespace DXF
 				XMFLOAT3 p;
 				double distance = CalculateStretchDistance(pt, direction, p, m_traceParams.Stretch);
 
-				auto normal = CalculateNormal(p, m_traceParams.Bulb.NormalDelta);
-
-				vData->Vertices.emplace_back(p, normal, Vector2(static_cast<float>(distance), 0.0f));
+				vData->Vertices.emplace_back(p, nullNormal, Vector2(static_cast<float>(distance), 0.0f));
 
 				++progress;
 				if (progress % 20 == 0)
@@ -298,6 +344,8 @@ namespace DXF
 				vData->Indices.push_back(t.two);
 				vData->Indices.push_back(t.three);
 			}
+
+			CalculateNormals(*vData);
 
 			setProgress(1.0);
 
