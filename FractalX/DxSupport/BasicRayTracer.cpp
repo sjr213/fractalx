@@ -198,9 +198,13 @@ namespace DXF
 
 		DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
 		{
-			return DirectX::XMFLOAT3(	v1.y * v2.z - v1.z * v2.y, 
-										v1.z * v2.x - v1.x * v2.z, 
-										v1.x * v2.y - v1.y * v2.x );
+			Vector3 n(	v1.y * v2.z - v1.z * v2.y,
+									v1.z * v2.x - v1.x * v2.z, 
+									v1.x * v2.y - v1.y * v2.x );
+
+			n.Normalize();
+
+			return n;
 		}
 
 		// From Luna DirectX 11, 7.2.1
