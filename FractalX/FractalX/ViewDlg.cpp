@@ -56,7 +56,7 @@ void CViewDlg::DoDataExchange(CDataExchange* pDX)
 	std::get<2>(m_camera) = cz;
 
 	float x = std::get<0>(m_target);
-	DDX_Text(pDX, IDC_TARGET_X_EDIT, std::get<0>(m_target));
+	DDX_Text(pDX, IDC_TARGET_X_EDIT, x);
 	DDV_MinMaxFloat(pDX, x, -10000.0f, 10000.0f);
 	std::get<0>(m_target) = x;
 
