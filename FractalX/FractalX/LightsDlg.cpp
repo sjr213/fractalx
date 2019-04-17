@@ -90,7 +90,7 @@ protected:
 		DDV_MinMaxFloat(pDX, l1x, -100.0f, 100.0f);
 		std::get<0>(m_lights.Light1.Direction) = l1x;
 
-		float l1y = std::get<2>(m_lights.Light1.Direction);
+		float l1y = std::get<1>(m_lights.Light1.Direction);
 		DDX_Text(pDX, IDC_Y1_EDIT, l1y);
 		DDV_MinMaxFloat(pDX, l1y, -100.0f, 100.0f);
 		std::get<1>(m_lights.Light1.Direction) = l1y;
@@ -105,8 +105,8 @@ protected:
 		DDV_MinMaxFloat(pDX, l2x, -100.0f, 100.0f);
 		std::get<0>(m_lights.Light2.Direction) = l2x;
 
-		float l2y = std::get<2>(m_lights.Light2.Direction);
-		DDX_Text(pDX, IDC_Y2_EDIT, l2x);
+		float l2y = std::get<1>(m_lights.Light2.Direction);
+		DDX_Text(pDX, IDC_Y2_EDIT, l2y);
 		DDV_MinMaxFloat(pDX, l2y, -100.0f, 100.0f);
 		std::get<1>(m_lights.Light2.Direction) = l2y;
 
@@ -120,7 +120,7 @@ protected:
 		DDV_MinMaxFloat(pDX, l3x, -100.0f, 100.0f);
 		std::get<0>(m_lights.Light3.Direction) = l3x;
 
-		float l3y = std::get<2>(m_lights.Light3.Direction);
+		float l3y = std::get<1>(m_lights.Light3.Direction);
 		DDX_Text(pDX, IDC_Y3_EDIT, l3y);
 		DDV_MinMaxFloat(pDX, l3y, -100.0f, 100.0f);
 		std::get<1>(m_lights.Light3.Direction) = l3y;
