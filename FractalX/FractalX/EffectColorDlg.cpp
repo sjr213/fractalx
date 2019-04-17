@@ -67,11 +67,6 @@ protected:
 		DDV_MinMaxInt(pDX, ambientBlue, 0, 255);
 		m_colors.Ambient.B = ambientBlue;
 
-		int ambientAlpha = m_colors.Ambient.A;
-		DDX_Text(pDX, IDC_AMBIENT_ALPHA_EDIT, ambientAlpha);
-		DDV_MinMaxInt(pDX, ambientAlpha, 0, 255);
-		m_colors.Ambient.A = ambientAlpha;
-
 		int diffuseRed = m_colors.Diffuse.R;
 		DDX_Text(pDX, IDC_DIFFUSE_RED_EDIT, diffuseRed);
 		DDV_MinMaxInt(pDX, diffuseRed, 0, 255);
@@ -86,11 +81,6 @@ protected:
 		DDX_Text(pDX, IDC_DIFFUSE_BLUE_EDIT, diffuseBlue);
 		DDV_MinMaxInt(pDX, diffuseBlue, 0, 255);
 		m_colors.Diffuse.B = diffuseBlue;
-
-		int diffuseAlpha = m_colors.Diffuse.A;
-		DDX_Text(pDX, IDC_DIFFUSE_ALPHA_EDIT, diffuseAlpha);
-		DDV_MinMaxInt(pDX, diffuseAlpha, 0, 255);
-		m_colors.Diffuse.A = diffuseAlpha;
 
 		int specularRed = m_colors.Specular.R;
 		DDX_Text(pDX, IDC_SPECULAR_RED_EDIT, specularRed);
@@ -107,11 +97,6 @@ protected:
 		DDV_MinMaxInt(pDX, specularBlue, 0, 255);
 		m_colors.Specular.B = specularBlue;
 
-		int specularAlpha = m_colors.Specular.A;
-		DDX_Text(pDX, IDC_SPECULAR_ALPHA_EDIT, specularAlpha);
-		DDV_MinMaxInt(pDX, specularAlpha, 0, 255);
-		m_colors.Specular.A = specularAlpha;
-
 		int emissiveRed = m_colors.Emissive.R;
 		DDX_Text(pDX, IDC_EMISSIVE_RED_EDIT, emissiveRed);
 		DDV_MinMaxInt(pDX, emissiveRed, 0, 255);
@@ -126,11 +111,6 @@ protected:
 		DDX_Text(pDX, IDC_EMISSIVE_BLUE_EDIT, emissiveBlue);
 		DDV_MinMaxInt(pDX, emissiveBlue, 0, 255);
 		m_colors.Emissive.B = emissiveBlue;
-
-		int emissiveAlpha = m_colors.Emissive.A;
-		DDX_Text(pDX, IDC_EMISSIVE_ALPHA_EDIT, emissiveAlpha);
-		DDV_MinMaxInt(pDX, emissiveAlpha, 0, 255);
-		m_colors.Emissive.A = emissiveAlpha;
 
 		float specularPower = m_colors.SpecularPower;
 		DDX_Text(pDX, IDC_SPECULAR_POWER_EDIT, specularPower);
@@ -202,19 +182,15 @@ BEGIN_MESSAGE_MAP(EffectColorDlgImpl, CEffectColorDlg)
 	ON_EN_KILLFOCUS(IDC_AMBIENT_RED_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_AMBIENT_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_AMBIENT_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
-	ON_EN_KILLFOCUS(IDC_AMBIENT_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_DIFFUSE_RED_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_DIFFUSE_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_DIFFUSE_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
-	ON_EN_KILLFOCUS(IDC_DIFFUSE_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_RED_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
-	ON_EN_KILLFOCUS(IDC_SPECULAR_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_EMISSIVE_RED_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_EMISSIVE_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_EMISSIVE_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
-	ON_EN_KILLFOCUS(IDC_EMISSIVE_ALPHA_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_POWER_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_BN_CLICKED(IDC_DEFAULT_BUT, &EffectColorDlgImpl::OnDefault)
 END_MESSAGE_MAP()
