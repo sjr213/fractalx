@@ -95,11 +95,11 @@ protected:
 			{CRect(132, 5, 167, 62), CRect(132, 5, 167, 62), Y_CCW},
 			{CRect(169, 5, 201, 87), CRect(169, 5, 201, 38), Y_Plus},
 			{CRect(203, 5, 238, 62), CRect(203, 5, 238, 62), Y_CW},
-			{CRect(45, 221, 118, 274), CRect(45, 221, 78, 274), Z_Minus},
-			{CRect(260, 75, 295, 121), CRect(260, 75, 295, 121), Z_CCW},
-			{CRect(298, 75, 328, 121), CRect(298, 75, 328, 121), Z_Plus},
-			{CRect(230, 123, 273, 149), CRect(298, 75, 328, 121), Z_Plus},
-			{CRect(330, 75, 365, 121), CRect(330, 75, 365, 121), Z_CW}
+			{CRect(247, 99, 320, 148), CRect(280,99, 320, 148), Z_Minus},
+			{CRect(16,234,56,282), CRect(16,234,56,282), Z_CCW},
+			{CRect(57,234,84,282), CRect(57,234,84,282), Z_Plus},
+			{CRect(96,200,135,233), CRect(57,234,84,282), Z_Plus},
+			{CRect(85,234,116, 282), CRect(85,234,116, 282), Z_CW}
 		};
 
 		return targets;
@@ -115,7 +115,7 @@ protected:
 		m_coordCtrl.SetClickTargets(targets);
 
 		// Change this later to something more reproducible
-		CString imagePath(_T("C:\\docs\\programming FractalX\\images\\coords.bmp"));
+		CString imagePath(_T("C:\\docs\\programming FractalX\\images\\coords2.png"));
 		m_coordCtrl.SetBitmap(imagePath);
 	}
 
