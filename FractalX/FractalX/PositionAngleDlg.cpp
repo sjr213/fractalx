@@ -125,6 +125,8 @@ protected:
 
 		PrepMappedBitmap();
 
+		UpdateData(FALSE);
+
 		return TRUE;
 	}
 
@@ -138,6 +140,36 @@ protected:
 
 		DDX_Text(pDX, IDC_ANGLE_EDIT, m_angle);
 		DDV_MinMaxFloat(pDX, m_angle, 0.1f, 180.0f);
+
+		float x = std::get<0>(m_target);
+		DDX_Text(pDX, IDC_POS_X_EDIT, x);
+		DDV_MinMaxFloat(pDX, x, -10.0f, +10.0f);
+		std::get<0>(m_target) = x;
+
+		float y = std::get<1>(m_target);
+		DDX_Text(pDX, IDC_POS_Y_EDIT, y);
+		DDV_MinMaxFloat(pDX, y, -10.0f, +10.0f);
+		std::get<1>(m_target) = y;
+
+		float z = std::get<2>(m_target);
+		DDX_Text(pDX, IDC_POS_Z_EDIT, z);
+		DDV_MinMaxFloat(pDX, z, -10.0f, +10.0f);
+		std::get<2>(m_target) = z;
+
+		float angleX = m_rotationParams.AngleXDegrees;
+		DDX_Text(pDX, IDC_X_ANGLE_EDIT, angleX);
+		DDV_MinMaxFloat(pDX, angleX, -360.0f, +360.0f);
+		m_rotationParams.AngleXDegrees = angleX;
+
+		float angleY = m_rotationParams.AngleYDegrees;
+		DDX_Text(pDX, IDC_Y_ANGLE_EDIT, angleY);
+		DDV_MinMaxFloat(pDX, angleY, -360.0f, +360.0f);
+		m_rotationParams.AngleYDegrees = angleY;
+
+		float angleZ = m_rotationParams.AngleZDegrees;
+		DDX_Text(pDX, IDC_Z_ANGLE_EDIT, angleZ);
+		DDV_MinMaxFloat(pDX, angleZ, -360.0f, +360.0f);
+		m_rotationParams.AngleZDegrees = angleZ;
 	}
 
 	afx_msg void OnOk()
@@ -256,12 +288,25 @@ protected:
 			break;
 		}
 
+		UpdateData(FALSE);
 		return 0;
 	}
 
 	void OnKillFocus()
 	{
 		UpdateData(TRUE);
+	}
+
+	void OnPositionChanged()
+	{
+		UpdateData(TRUE);
+		m_parent->PostMessage(cMessage::tm_modelPositionChanged);
+	}
+
+	void OnAngleChanged()
+	{
+		UpdateData(TRUE);
+		m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 	}
 	
 };
@@ -273,7 +318,12 @@ BEGIN_MESSAGE_MAP(CPositionAngleDlgImp, CPositionAngleDlg)
 	ON_REGISTERED_MESSAGE(cMessage::tm_clickIDs, &CPositionAngleDlgImp::OnTargetClicked)
 	ON_EN_KILLFOCUS(IDC_DISTANCE_EDIT, &CPositionAngleDlgImp::OnKillFocus)
 	ON_EN_KILLFOCUS(IDC_ANGLE_EDIT, &CPositionAngleDlgImp::OnKillFocus)
-//	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
+	ON_EN_KILLFOCUS(IDC_POS_X_EDIT, &CPositionAngleDlgImp::OnPositionChanged)
+	ON_EN_KILLFOCUS(IDC_POS_Y_EDIT, &CPositionAngleDlgImp::OnPositionChanged)
+	ON_EN_KILLFOCUS(IDC_POS_Z_EDIT, &CPositionAngleDlgImp::OnPositionChanged)
+	ON_EN_KILLFOCUS(IDC_X_ANGLE_EDIT, &CPositionAngleDlgImp::OnAngleChanged)
+	ON_EN_KILLFOCUS(IDC_Y_ANGLE_EDIT, &CPositionAngleDlgImp::OnAngleChanged)
+	ON_EN_KILLFOCUS(IDC_Z_ANGLE_EDIT, &CPositionAngleDlgImp::OnAngleChanged)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPositionAngleDlg> CPositionAngleDlg::CreatePositionAngleDlg(const RotationParams& rotationParams,
