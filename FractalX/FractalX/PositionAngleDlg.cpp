@@ -3,6 +3,7 @@
 #include "PositionAngleDlg.h"
 
 #include "ClickMappedPictureCtrl.h"
+#include "FileSupport.h"
 #include "Messages.h"
 #include "Resource.h"
 #include "RotationParams.h"
@@ -114,8 +115,7 @@ protected:
 		auto targets = BuildClickTargets();
 		m_coordCtrl.SetClickTargets(targets);
 
-		// Change this later to something more reproducible
-		CString imagePath(_T("C:\\docs\\programming FractalX\\images\\coords2.png"));
+		CString imagePath = FileSupport::GetExecutablePath() + _T("coords2.bmp");
 		m_coordCtrl.SetBitmap(imagePath);
 	}
 
