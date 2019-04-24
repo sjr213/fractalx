@@ -16,11 +16,13 @@ private:
 	DxColor::ColorArgb m_rawColor;
 	COLORREF m_rgb;
 	HSL m_hsl;
+	bool m_enableAlpha;
 
 public:
-	ColorSelectorDlgImpl(ColorArgb color, CWnd* pParent)
+	ColorSelectorDlgImpl(ColorArgb color, bool enableAlpha, CWnd* pParent)
 		: CColorSelectorDlg(IDD_COLOR_DLG, pParent)
 		, m_rawColor(color)
+		, m_enableAlpha(enableAlpha)
 	{
 		m_rgb = ToColorRef(color);
 		m_hsl = ToHsl(color);
@@ -40,7 +42,16 @@ protected:
 	{
 		CColorSelectorDlg::OnInitDialog();
 
+		EnableCtrls();
+
 		return TRUE;
+	}
+
+	void EnableCtrls()
+	{
+		CWnd* pWnd = GetDlgItem(IDC_ALPHA_EDIT);
+		if (pWnd)
+			pWnd->EnableWindow(m_enableAlpha);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -160,7 +171,7 @@ BEGIN_MESSAGE_MAP(ColorSelectorDlgImpl, CColorSelectorDlg)
 	ON_BN_CLICKED(IDC_COLOR_CHOOSER_BUT, &ColorSelectorDlgImpl::OnBnColorChooser)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CColorSelectorDlg> CColorSelectorDlg::CreateColorSelectorDlg(DxColor::ColorArgb color, CWnd* pParent /* = nullptr*/)
+std::shared_ptr<CColorSelectorDlg> CColorSelectorDlg::CreateColorSelectorDlg(DxColor::ColorArgb color, bool enableAlpha, CWnd* pParent /* = nullptr*/)
 {
-	return std::make_shared<ColorSelectorDlgImpl>(color, pParent);
+	return std::make_shared<ColorSelectorDlgImpl>(color, enableAlpha, pParent);
 }

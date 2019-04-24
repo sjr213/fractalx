@@ -151,25 +151,25 @@ protected:
 	{
 		if (PointInRect(m_rectAmbient, point))
 		{
-			ChooseColor(m_colors.Ambient, *this);
+			ChooseColor(m_colors.Ambient, false, *this);
 			return;
 		}
 
 		if (PointInRect(m_rectDiffuse, point))
 		{
-			ChooseColor(m_colors.Diffuse, *this);
+			ChooseColor(m_colors.Diffuse, false, *this);
 			return;
 		}
 
 		if (PointInRect(m_rectSpecular, point))
 		{
-			ChooseColor(m_colors.Specular, *this);
+			ChooseColor(m_colors.Specular, false, *this);
 			return;
 		}
 
 		if (PointInRect(m_rectEmissive, point))
 		{
-			ChooseColor(m_colors.Emissive, *this);
+			ChooseColor(m_colors.Emissive, false, *this);
 			return;
 		}
 	}

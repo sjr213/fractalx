@@ -48,9 +48,9 @@ namespace DlgUtils
 		return true;
 	}
 
-	void ChooseColor(DxColor::ColorArgb& color, CDialogEx& dlg)
+	void ChooseColor(DxColor::ColorArgb& color, bool enableAlpha, CDialogEx& dlg)
 	{
-		auto colorDlg = CColorSelectorDlg::CreateColorSelectorDlg(color, &dlg);
+		auto colorDlg = CColorSelectorDlg::CreateColorSelectorDlg(color, enableAlpha, &dlg);
 		if (colorDlg->DoModal() == IDOK)
 		{
 			color = colorDlg->GetColor();

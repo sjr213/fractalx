@@ -191,7 +191,7 @@ protected:
 			if (!m_lights.Light1.Enable)
 				return;
 
-			ChooseColor(m_lights.Light1.Diffuse, *this);
+			ChooseColor(m_lights.Light1.Diffuse, false, *this);
 			return;
 		}
 
@@ -200,7 +200,7 @@ protected:
 			if (!m_lights.Light2.Enable)
 				return;
 
-			ChooseColor(m_lights.Light2.Diffuse, *this);
+			ChooseColor(m_lights.Light2.Diffuse, false, *this);
 			return;
 		}
 
@@ -209,7 +209,7 @@ protected:
 			if (!m_lights.Light3.Enable)
 				return;
 
-			ChooseColor(m_lights.Light3.Diffuse, *this);
+			ChooseColor(m_lights.Light3.Diffuse, false, *this);
 			return;
 		}
 
@@ -218,7 +218,7 @@ protected:
 			if (!m_lights.Light1.Enable)
 				return;
 
-			ChooseColor(m_lights.Light1.Spectacular, *this);
+			ChooseColor(m_lights.Light1.Spectacular, false, *this);
 			return;
 		}
 
@@ -227,7 +227,7 @@ protected:
 			if (!m_lights.Light2.Enable)
 				return;
 
-			ChooseColor(m_lights.Light2.Spectacular, *this);
+			ChooseColor(m_lights.Light2.Spectacular, false, *this);
 			return;
 		}
 
@@ -236,7 +236,7 @@ protected:
 			if (!m_lights.Light3.Enable)
 				return;
 
-			ChooseColor(m_lights.Light3.Spectacular, *this);
+			ChooseColor(m_lights.Light3.Spectacular, false, *this);
 			return;
 		}
 	}
