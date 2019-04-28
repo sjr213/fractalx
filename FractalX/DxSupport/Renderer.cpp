@@ -253,7 +253,7 @@ namespace DXF
 			return (m_d3dDevice != nullptr);
 		}
 
-		bool DrawImage(CDC& dc, CSize imageSize) override
+		bool DrawImage(CDC& dc, CSize targetSize) override
 		{
 			if (!m_d3dDevice)
 				return nullptr;
@@ -272,19 +272,25 @@ namespace DXF
 			bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
 			bitmapInfo.bmiHeader.biBitCount = 0;
 
-			VERIFY(GetDIBits(hdc3D, hbm3D, 0, imageSize.cy, nullptr, &bitmapInfo, DIB_RGB_COLORS));
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, bitmapInfo.bmiHeader.biHeight, nullptr, &bitmapInfo, DIB_RGB_COLORS));
 
 			bitmapInfo.bmiHeader.biCompression = BI_RGB;
-			bitmapInfo.bmiHeader.biWidth = imageSize.cx;
-			bitmapInfo.bmiHeader.biHeight = imageSize.cy;
 
 			std::unique_ptr<BYTE[]> pDIBits(new BYTE[(bitmapInfo.bmiHeader.biWidth + 1) * bitmapInfo.bmiHeader.biHeight * sizeof(DWORD)]);
-			VERIFY(GetDIBits(hdc3D, hbm3D, 0, imageSize.cy, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
+			VERIFY(GetDIBits(hdc3D, hbm3D, 0, bitmapInfo.bmiHeader.biHeight, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
 
-			VERIFY(StretchDIBits(dc, 0, 0, imageSize.cx, imageSize.cy, 0, 0, bitmapInfo.bmiHeader.biWidth, bitmapInfo.bmiHeader.biHeight,
+			// Better quality stretching
+			int oldMode = SetStretchBltMode(dc, HALFTONE);
+
+			// This might be necessary if images don't look right
+			//SetBrushOrgEx(dc, 0, 0, NULL);
+
+			VERIFY(StretchDIBits(dc, 0, 0, targetSize.cx, targetSize.cy, 0, 0, bitmapInfo.bmiHeader.biWidth, bitmapInfo.bmiHeader.biHeight,
 				pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS, SRCCOPY) != GDI_ERROR);
 
 			pSurface1->ReleaseDC(nullptr);
+
+			SetStretchBltMode(dc, oldMode);
 
 			return true;
 		}
