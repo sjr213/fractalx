@@ -203,6 +203,7 @@
     <ClInclude Include="EffectColorDlg.h" />
     <ClInclude Include="FileSupport.h" />
     <ClInclude Include="FractalParamsPage.h" />
+    <ClInclude Include="ImageSizeDlg.h" />
     <ClInclude Include="LightsDlg.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="ModelSheet.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="EffectColorDlg.cpp" />
     <ClCompile Include="FileSupport.cpp" />
     <ClCompile Include="FractalParamsPage.cpp" />
+    <ClCompile Include="ImageSizeDlg.cpp" />
     <ClCompile Include="LightsDlg.cpp" />
     <ClCompile Include="Messages.cpp" />
     <ClCompile Include="ModelSheet.cpp" />
