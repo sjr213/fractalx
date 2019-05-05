@@ -16,7 +16,6 @@ using namespace ColorUtils;
 using namespace DxColor;
 using namespace Gdiplus;
 
-
 class CPaletteViewDlgImp : public CPaletteViewDlg
 {
 private:
@@ -24,11 +23,15 @@ private:
 	ColorContrast m_contrast;
 	CWnd* m_parent = nullptr;
 	std::function<void(const PinPalette&, const ColorContrast&)> m_newPaletteMethod;
-	std::shared_ptr<CDoubleBuffer> m_doubleBuffer;
-	CPoint m_topLeft = CPoint(0, 0);
+	std::shared_ptr<CDoubleBuffer> m_paletteBuffer;
+	std::shared_ptr<CDoubleBuffer> m_tickBuffer;
+	CPoint m_topLeftPalette = CPoint(0, 0);
+	CPoint m_topLeftTicks = CPoint(0, 0);
 	CRect m_paletteRect;
+	CRect m_tickRect;
 	bool m_dcNotReady = true;
 	bool m_paletteNeedsDrawing = true;
+	bool m_tickBackgroundNeedsDrawing = true;
 	std::vector<uint32_t> m_colors;
 	HICON m_hIcon;
 	std::shared_ptr<DxColor::CPinTracker> m_pinTracker;
@@ -41,6 +44,7 @@ private:
 	const int ColorLineHeight = 10;
 	const int BorderWidth = 10;
 	const int ControlRegionHeight = 50;
+	const int TickRectHeight = 25;
 
 	bool m_dirty = false;
 
@@ -50,7 +54,8 @@ public:
 		, m_palette(palette)
 		, m_contrast(contrast)
 		, m_parent(pParent)
-		, m_doubleBuffer(CDoubleBuffer::CreateBuffer())
+		, m_paletteBuffer(CDoubleBuffer::CreateBuffer())
+		, m_tickBuffer(CDoubleBuffer::CreateBuffer())
 	{}
 
 	virtual ~CPaletteViewDlgImp()
@@ -89,27 +94,55 @@ protected:
 
 	void InitDoubleBuffer(const CRect& clientRect)
 	{
-		CSize drawSize(NumberOfColors, ColorLineHeight);
-		m_doubleBuffer->SetDrawSize(drawSize);
-
 		CSize displaySize(clientRect.Size());
+		CPoint topLeft(0, 0);
+
 		if (displaySize.cx > 3 * BorderWidth)
 		{
 			displaySize.cx -= 2 * BorderWidth;
-			m_topLeft.x = BorderWidth;
+			topLeft.x = BorderWidth;
 		}
 
 		if (displaySize.cy > 2 * ControlRegionHeight)
 		{
 			displaySize.cy -= (2 * ControlRegionHeight);
-			m_topLeft.y = ControlRegionHeight;
+			topLeft.y = ControlRegionHeight;
 		}
 
-		m_paletteRect = CRect(m_topLeft, displaySize);
+#ifdef DEBUG
+		assert(displaySize.cy > ColorLineHeight + TickRectHeight);
+#endif
+		InitializePaletteBuffer(displaySize, topLeft);
+		InitializeTickBuffer(displaySize, topLeft);
+	}
 
-		m_doubleBuffer->SetDisplaySize(displaySize);
+	void InitializePaletteBuffer(CSize displaySize, CPoint topLeft)
+	{
+		CSize drawSize(NumberOfColors, ColorLineHeight);
+		m_paletteBuffer->SetDrawSize(drawSize);
 
-		m_pinTracker = std::make_shared<CPinTracker>(displaySize, NumberOfColors, 32, m_palette.Pins, m_topLeft);
+		m_topLeftPalette = topLeft;
+
+		CSize paletteSize = CSize(displaySize.cx, displaySize.cy - TickRectHeight);
+
+		m_paletteRect = CRect(m_topLeftPalette, paletteSize);
+
+		m_paletteBuffer->SetDisplaySize(paletteSize);
+
+		m_pinTracker = std::make_shared<CPinTracker>(paletteSize, NumberOfColors, 32, m_palette.Pins, m_topLeftPalette);
+	}
+
+	void InitializeTickBuffer(CSize displaySize, CPoint topLeft)
+	{
+		CSize drawSize(NumberOfColors, TickRectHeight);
+		m_tickBuffer->SetDrawSize(drawSize);
+
+		m_topLeftTicks = CPoint(m_topLeftPalette.x, m_topLeftPalette.y + displaySize.cy - TickRectHeight);
+
+		CSize tickSize = CSize(displaySize.cx, TickRectHeight);
+		m_tickRect = CRect(m_topLeftTicks, tickSize);
+
+		m_tickBuffer->SetDisplaySize(tickSize);
 	}
 
 	void PaletteChanged()
@@ -181,7 +214,8 @@ protected:
 	{
 		if (m_dcNotReady)
 		{
-			m_doubleBuffer->PrepDCs(dc);
+			m_paletteBuffer->PrepDCs(dc);
+			m_tickBuffer->PrepDCs(dc);
 			m_dcNotReady = false;
 		}	
 	}
@@ -213,7 +247,7 @@ protected:
 	{
 		if (m_paletteNeedsDrawing)
 		{		
-			CDC* pDC = m_doubleBuffer->GetDrawingDC();
+			CDC* pDC = m_paletteBuffer->GetDrawingDC();
 
 			if(pDC)
 				DrawPaletteColors(*pDC);
@@ -222,9 +256,53 @@ protected:
 		}
 	}
 
+	void DrawTickBackground(CDC& dc)
+	{
+		Graphics graphics(dc);
+
+		Gdiplus::Rect gRect(0, 0, NumberOfColors, TickRectHeight);
+
+		SolidBrush brush(Color::White);
+
+		graphics.FillRectangle(&brush, gRect);
+	}
+
+	void DrawTicks(CDC& dc)
+	{
+		Graphics graphics(dc);
+
+		Pen pen(Color::Black);
+
+		graphics.DrawLine(&pen, 0, 5, 0, TickRectHeight);
+
+		for (int i = 9; i < NumberOfColors; i += 10)
+		{
+			if(i % 100 == 99)
+				graphics.DrawLine(&pen, i, 5, i, TickRectHeight);
+			else
+				graphics.DrawLine(&pen, i, 15, i, TickRectHeight);
+		}
+	}
+
+	void DrawTickBackground()
+	{
+		if (m_tickBackgroundNeedsDrawing)
+		{
+			CDC* pDC = m_tickBuffer->GetDrawingDC();
+
+			if (pDC)
+			{
+				DrawTickBackground(*pDC);
+				DrawTicks(*pDC);
+			}
+
+			m_tickBackgroundNeedsDrawing = false;
+		}
+	}
+
 	void DrawPins()
 	{
-		auto pDC = m_doubleBuffer->GetDisplayDC();
+		auto pDC = m_paletteBuffer->GetDisplayDC();
 
 		if (!m_pinTracker)
 			return;
@@ -238,6 +316,11 @@ protected:
 		}
 	}
 
+	void DrawTicksPrep()
+	{
+		auto pDC = m_tickBuffer->GetDisplayDC();
+	}
+
 	void OnPaint()
 	{
 		CPaintDC dc(this); // device context for painting
@@ -246,7 +329,11 @@ protected:
 		DrawPalatte();		
 		DrawPins();
 
-		m_doubleBuffer->Draw(dc, m_topLeft);
+		DrawTickBackground();
+		DrawTicksPrep();
+
+		m_paletteBuffer->Draw(dc, m_topLeftPalette);
+		m_tickBuffer->Draw(dc, m_topLeftTicks);
 	}
 
 	void OnLButtonDown(UINT nFlags, CPoint point)
