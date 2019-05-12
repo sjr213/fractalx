@@ -190,7 +190,7 @@ namespace DxColor
 		newPin.Color1 = DxColor::Utilities::AverageColors(leftPin.Color1, rightPin.Color1, mult);
 		newPin.Color2 = DxColor::Utilities::AverageColors(leftPin.Color2, rightPin.Color2, mult);
 
-		m_pins.insert(begin(m_pins) + leftIndex, newPin);
+		m_pins.insert(begin(m_pins) + rightIndex, newPin);
 
 		SetPins();
 
@@ -213,7 +213,7 @@ namespace DxColor
 		ColorPin newPin = leftPin;
 		newPin.Index = newIndex;
 	
-		m_pins.insert(begin(m_pins) + leftIndex, newPin);
+		m_pins.push_back(newPin);
 
 		SetPins();
 
