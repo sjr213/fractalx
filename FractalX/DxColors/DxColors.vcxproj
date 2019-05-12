@@ -94,6 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,6 +111,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +158,7 @@
     <ClInclude Include="ColorPin.h" />
     <ClInclude Include="DoubleBuffer.h" />
     <ClInclude Include="DxColorsSerialization.h" />
+    <ClInclude Include="DxColorUtilities.h" />
     <ClInclude Include="EffectColors.h" />
     <ClInclude Include="hslUtilities.h" />
     <ClInclude Include="Light.h" />
@@ -167,6 +172,7 @@
     <ClCompile Include="ColorPin.cpp" />
     <ClCompile Include="DoubleBuffer.cpp" />
     <ClCompile Include="DxColorsSerialization.cpp" />
+    <ClCompile Include="DxColorUtilities.cpp" />
     <ClCompile Include="hslUtilities.cpp" />
     <ClCompile Include="Palettes.cpp" />
     <ClCompile Include="PinTracker.cpp" />

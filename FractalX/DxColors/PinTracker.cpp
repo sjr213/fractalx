@@ -1,10 +1,16 @@
 #include "stdafx.h"
 #include "PinTracker.h"
+
 #include <algorithm>
+#include <assert.h>
+#include "DxColorUtilities.h"
+#include <optional>
+
+using namespace std;
 
 namespace DxColor
 {
-	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins, CPoint topLeft)
+	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const vector<ColorPin>& pins, CPoint topLeft)
 		: m_screenSize(screenSize)
 		, m_numberOfColors(numberOfColors)
 		, m_iconDim(iconDimension)
@@ -18,7 +24,7 @@ namespace DxColor
 	{
 	}
 
-	void CPinTracker::SetPins(const std::vector<ColorPin>& pins)
+	void CPinTracker::SetPins(const vector<ColorPin>& pins)
 	{
 		m_pins = pins;
 
@@ -75,7 +81,7 @@ namespace DxColor
 		return static_cast<int>(m_numberOfColors * newPosition);
 	}
 
-	std::vector<ColorPin> CPinTracker::GetPins() const
+	vector<ColorPin> CPinTracker::GetPins() const
 	{
 		return m_pins;
 	}
@@ -137,5 +143,145 @@ namespace DxColor
 
 			m_rects.at(i) = CRect(left, top, left + m_iconDim, top + m_iconDim);
 		}
+	}
+
+	static optional<int> GetLeftPin(const vector<CRect>& rects, const CPoint& pt)
+	{
+		int nPins = static_cast<int>(rects.size());
+
+		for (int i = nPins - 1; i >= 0; --i)
+		{
+			if (rects.at(i).right < pt.x)
+				return i;
+		}
+
+		return nullopt;
+	}
+
+	static optional<int> GetRightPin(const vector<CRect>& rects, const CPoint& pt)
+	{
+		int nPins = static_cast<int>(rects.size());
+
+		for (int i = 0; i < nPins; ++i)
+		{
+			if (rects.at(i).left > pt.x)
+				return i;
+		}
+
+		return nullopt;
+	}
+
+	bool CPinTracker::AddPinBetween(int leftIndex, int rightIndex, const CPoint& pt)
+	{
+		const auto& leftPin = m_pins.at(leftIndex);
+		const auto& rightPin = m_pins.at(rightIndex);
+
+		// try averaging colors
+		ColorPin newPin = leftPin;
+
+		const CRect& leftRect = m_rects.at(leftIndex);
+		const CRect& rightRect = m_rects.at(rightIndex);
+
+		CPoint leftCenter = leftRect.CenterPoint();
+		CPoint rightCenter = rightRect.CenterPoint();
+
+		double mult = static_cast<double>(pt.x - leftCenter.x) / (rightCenter.x - leftCenter.x);
+		newPin.Index = leftPin.Index + mult * (rightPin.Index - leftPin.Index);
+		newPin.Color1 = DxColor::Utilities::AverageColors(leftPin.Color1, rightPin.Color1, mult);
+		newPin.Color2 = DxColor::Utilities::AverageColors(leftPin.Color2, rightPin.Color2, mult);
+
+		m_pins.insert(begin(m_pins) + leftIndex, newPin);
+
+		SetPins();
+
+		return true;
+	}
+
+	bool CPinTracker::AddPinRight(int leftIndex, const CPoint& pt)
+	{
+		const auto& leftPin = m_pins.at(leftIndex);
+		const CRect& leftRect = m_rects.at(leftIndex);
+		CPoint leftCenter = leftRect.CenterPoint();
+
+		assert(leftCenter.x < m_screenSize.cx);
+
+		double mult = static_cast<double>(pt.x - leftCenter.x) / (m_screenSize.cx - leftCenter.x);
+		double newIndex = leftPin.Index + mult * (1.0 - leftPin.Index);
+		newIndex = std::max(leftPin.Index + 0.001, newIndex);
+		newIndex = std::min(newIndex, 1.0);
+
+		ColorPin newPin = leftPin;
+		newPin.Index = newIndex;
+	
+		m_pins.insert(begin(m_pins) + leftIndex, newPin);
+
+		SetPins();
+
+		return true;
+	}
+
+	bool CPinTracker::AddPinLeft(int rightIndex, const CPoint& pt)
+	{
+		const auto& rightPin = m_pins.at(rightIndex);
+		const CRect& rightRect = m_rects.at(rightIndex);
+		CPoint rightCenter = rightRect.CenterPoint();
+
+		assert(pt.x >= 0);
+
+		double mult = static_cast<double>(pt.x) / (rightCenter.x - pt.x);
+		double newIndex = mult * rightPin.Index;
+		newIndex = std::max(0.0, newIndex);
+		newIndex = std::min(newIndex, 1.0);
+
+		ColorPin newPin = rightPin;
+		newPin.Index = newIndex;
+
+		m_pins.insert(begin(m_pins) + rightIndex, newPin);
+
+		SetPins();
+
+		return true;
+	}
+
+	bool CPinTracker::AddFirstPin(const CPoint& pt)
+	{
+		if (pt.x < 0)
+			return false;
+
+		if (pt.x > m_screenSize.cx)
+			return false;
+
+		ColorPin newPin;
+		double newIndex = static_cast<double>(pt.x) / m_screenSize.cx;
+		newIndex = std::max(0.0, newIndex);
+		newIndex = std::min(newIndex, 1.0);
+
+		m_pins.insert(begin(m_pins), newPin);
+
+		SetPins();
+
+		return true;
+	}
+
+	// returns false if pin is too close to another
+	bool CPinTracker::AddPin(const CPoint& pt)
+	{
+		if (GetIndex(pt) >= 0)
+			return false;
+
+		optional<int> leftPinIndex = GetLeftPin(m_rects, pt);
+		optional<int> rightPinIndex = GetRightPin(m_rects, pt);
+
+		// If left and right - AddPinBetween
+		if (leftPinIndex.has_value() && rightPinIndex.has_value())
+			return AddPinBetween(leftPinIndex.value(), rightPinIndex.value(), pt);
+
+		if (leftPinIndex.has_value())
+			return AddPinRight(leftPinIndex.value(), pt);
+
+		if (rightPinIndex.has_value())
+			return AddPinLeft(rightPinIndex.value(), pt);
+
+		return AddFirstPin(pt);
 	}
 }

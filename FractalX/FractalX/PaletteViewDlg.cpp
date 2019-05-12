@@ -539,6 +539,33 @@ protected:
 		m_pinEditDlg->Create(IDD_PIN_EDIT_DLG, NULL);
 	}
 
+	void OnAddPin()
+	{
+		if (!m_pinTracker->AddPin(m_pinPt))
+		{
+			AfxMessageBox(_T("No space for new pin!"));
+			return;
+		}
+
+		m_palette.Pins = m_pinTracker->GetPins();
+		PaletteChanged();
+	}
+
+	void OnUpdateAddPin(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(TRUE);
+	}
+
+	void OnSpreadPins()
+	{
+
+	}
+
+	void OnUpdateSpreadPins(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(TRUE);
+	}
+
 	LRESULT OnPinsChanged(WPARAM, LPARAM)
 	{
 		if (!m_pinEditDlg)
@@ -613,6 +640,10 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinEditDlgClosed, &CPaletteViewDlgImp::OnPinEditDlgClosed)
 	ON_BN_CLICKED(IDC_UPDATE_BUT, &CPaletteViewDlgImp::OnUpdate)
+	ON_COMMAND(ID_PALETTE_ADD_PIN, &CPaletteViewDlgImp::OnAddPin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_ADD_PIN, &CPaletteViewDlgImp::OnUpdateAddPin)
+	ON_COMMAND(ID_PALETTE_SPREAD_PINS, &CPaletteViewDlgImp::OnSpreadPins)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_SPREAD_PINS, &CPaletteViewDlgImp::OnUpdateSpreadPins)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent)

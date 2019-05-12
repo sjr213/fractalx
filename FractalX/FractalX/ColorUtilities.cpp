@@ -237,14 +237,31 @@ namespace fx
 		std::vector<uint32_t> CalculatePaletteColors(const PinPalette& palette, int nColors, const ColorContrast& contrast)
 		{
 			int nPins = static_cast<int>(palette.Pins.size());
-			ColorPin pin1 = palette.Pins.at(0);
+			
+			const auto defaultColor = BitesToXmcolor(255, 0, 0, 0);
 
 			std::vector<uint32_t> colors;
 			colors.reserve(nColors);
 
+			if (nPins == 0)
+			{
+				for (int i = 0; i < nColors; ++i)
+					colors.push_back(defaultColor);
+				return colors;
+			}
+
 			CalcParams params = CalculateParams(palette, contrast);
 
+			ColorPin pin1 = palette.Pins.at(0);
 			FillSpaceBeforeFirstPin(pin1, colors, nColors, contrast, params);
+
+			if (nPins < 2)
+			{
+				int nCurrentColors = colors.size();
+				for (int i = nCurrentColors; i < nColors; ++i)
+					colors.push_back(defaultColor);
+				return colors;
+			}
 
 			for (int i = 1; i < nPins; ++i)
 			{

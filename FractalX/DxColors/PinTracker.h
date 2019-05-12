@@ -25,6 +25,9 @@ namespace DxColor
 
 		CPoint GetTopLeft(int index) const;
 
+		// returns false if pin is too close to another
+		bool AddPin(const CPoint& pt);
+
 	protected:
 		void SetPins();
 		void SetTopLefts();
@@ -35,6 +38,11 @@ namespace DxColor
 
 		// display to window
 		double GetUnAdjustedPositionX() const;
+
+		bool AddPinBetween(int leftPin, int rightPin, const CPoint& pt);
+		bool AddPinRight(int leftPin, const CPoint& pt);
+		bool AddPinLeft(int rightIndex, const CPoint& pt);
+		bool AddFirstPin(const CPoint& pt);
 
 	private:
 		CSize m_screenSize;
