@@ -228,7 +228,7 @@ namespace DxColor
 
 		assert(pt.x >= 0);
 
-		double mult = static_cast<double>(pt.x) / (rightCenter.x - pt.x);
+		double mult = static_cast<double>(pt.x) / rightCenter.x;
 		double newIndex = mult * rightPin.Index;
 		newIndex = std::max(0.0, newIndex);
 		newIndex = std::min(newIndex, 1.0);
