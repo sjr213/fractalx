@@ -255,6 +255,7 @@ namespace DxColor
 		double newIndex = static_cast<double>(pt.x) / m_screenSize.cx;
 		newIndex = std::max(0.0, newIndex);
 		newIndex = std::min(newIndex, 1.0);
+		newPin.Index = newIndex;
 
 		m_pins.insert(begin(m_pins), newPin);
 
