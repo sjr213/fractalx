@@ -558,7 +558,11 @@ protected:
 
 	void OnSpreadPins()
 	{
-
+		if (m_pinTracker->SpreadPins())
+		{
+			m_palette.Pins = m_pinTracker->GetPins();
+			PaletteChanged();
+		}
 	}
 
 	void OnUpdateSpreadPins(CCmdUI* cmdUI)

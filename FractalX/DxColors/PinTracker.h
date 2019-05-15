@@ -28,6 +28,9 @@ namespace DxColor
 		// returns false if pin is too close to another
 		bool AddPin(const CPoint& pt);
 
+		// returns true if pins changed
+		bool SpreadPins();
+
 	protected:
 		void SetPins();
 		void SetTopLefts();
@@ -39,6 +42,7 @@ namespace DxColor
 		// display to window
 		double GetUnAdjustedPositionX() const;
 
+		// return true if successful and the pins should be redrawn
 		bool AddPinBetween(int leftPin, int rightPin, const CPoint& pt);
 		bool AddPinRight(int leftPin, const CPoint& pt);
 		bool AddPinLeft(int rightIndex, const CPoint& pt);

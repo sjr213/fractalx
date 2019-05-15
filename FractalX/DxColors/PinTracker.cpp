@@ -10,6 +10,8 @@ using namespace std;
 
 namespace DxColor
 {
+	const double MaxIndex = 1.0;
+
 	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const vector<ColorPin>& pins, CPoint topLeft)
 		: m_screenSize(screenSize)
 		, m_numberOfColors(numberOfColors)
@@ -74,7 +76,7 @@ namespace DxColor
 		double center = left + m_iconDim / 2.0;
 		double newPosition = center / m_screenSize.cx;
 
-		newPosition = std::max(0.0, std::min(newPosition, 1.0));
+		newPosition = std::max(0.0, std::min(newPosition, MaxIndex));
 
 		m_pins.at(index).Index = newPosition;
 
@@ -206,9 +208,9 @@ namespace DxColor
 		assert(leftCenter.x < m_screenSize.cx);
 
 		double mult = static_cast<double>(pt.x - leftCenter.x) / (m_screenSize.cx - leftCenter.x);
-		double newIndex = leftPin.Index + mult * (1.0 - leftPin.Index);
+		double newIndex = leftPin.Index + mult * (MaxIndex - leftPin.Index);
 		newIndex = std::max(leftPin.Index + 0.001, newIndex);
-		newIndex = std::min(newIndex, 1.0);
+		newIndex = std::min(newIndex, MaxIndex);
 
 		ColorPin newPin = leftPin;
 		newPin.Index = newIndex;
@@ -231,7 +233,7 @@ namespace DxColor
 		double mult = static_cast<double>(pt.x) / rightCenter.x;
 		double newIndex = mult * rightPin.Index;
 		newIndex = std::max(0.0, newIndex);
-		newIndex = std::min(newIndex, 1.0);
+		newIndex = std::min(newIndex, MaxIndex);
 
 		ColorPin newPin = rightPin;
 		newPin.Index = newIndex;
@@ -254,7 +256,7 @@ namespace DxColor
 		ColorPin newPin;
 		double newIndex = static_cast<double>(pt.x) / m_screenSize.cx;
 		newIndex = std::max(0.0, newIndex);
-		newIndex = std::min(newIndex, 1.0);
+		newIndex = std::min(newIndex, MaxIndex);
 		newPin.Index = newIndex;
 
 		m_pins.insert(begin(m_pins), newPin);
@@ -284,5 +286,27 @@ namespace DxColor
 			return AddPinLeft(rightPinIndex.value(), pt);
 
 		return AddFirstPin(pt);
+	}
+
+	bool CPinTracker::SpreadPins()
+	{
+		int nPins = static_cast<int>(m_pins.size());
+
+		if (nPins < 2)
+			return false;
+
+		double spacing = MaxIndex / (nPins - 1);
+
+		sort(begin(m_pins), end(m_pins), [&](const ColorPin& lf, const ColorPin& rt) { return lf.Index < rt.Index; });
+
+		for (int i = 0; i < nPins; ++i)
+		{
+			double index = clamp(i * spacing, 0.0, MaxIndex);
+			m_pins.at(i).Index = index;
+		}
+
+		SetPins();
+
+		return true;
 	}
 }
