@@ -361,6 +361,26 @@ protected:
 		UpdateData(FALSE);
 	}
 
+	bool DeletePin(const CPoint& pt, const CPoint& pinPt)
+	{
+		int y = pt.y - m_pinPt.y;
+
+		if (y > -30)
+			return false;
+
+		if (AfxMessageBox(_T("Delete Pin?"), MB_YESNO) == IDYES)
+		{
+			m_palette.Pins.erase(std::begin(m_palette.Pins) + m_activePinIndex);
+
+			m_pinTracker->SetPins(m_palette.Pins);
+
+			PaletteChanged();
+			return true;
+		}
+
+		return false;
+	}
+
 	void OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		if (m_activePinIndex >= 0)
@@ -368,6 +388,9 @@ protected:
 			ReleaseCapture();
 
 			int x =  point.x - m_pinPt.x;
+			
+			if (DeletePin(point, m_pinPt))
+				return;
 
 			// use this to determine new pin position 
 			// need to take into account window limits
@@ -558,6 +581,7 @@ protected:
 
 	void OnSpreadPins()
 	{
+
 		if (m_pinTracker->SpreadPins())
 		{
 			m_palette.Pins = m_pinTracker->GetPins();
