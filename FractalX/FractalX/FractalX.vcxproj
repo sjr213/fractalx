@@ -225,6 +225,7 @@
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SinglePinEditDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextureDlg.h" />
@@ -264,6 +265,7 @@
     <ClCompile Include="PositionRangePage.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
+    <ClCompile Include="SinglePinEditDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

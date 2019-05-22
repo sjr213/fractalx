@@ -11,6 +11,7 @@
 #include "PinTracker.h"
 #include "PinEditDlg.h"
 #include "Resource.h"
+#include "SinglePinEditDlg.h"
 
 using namespace ColorUtils;
 using namespace DxColor;
@@ -546,12 +547,12 @@ protected:
 		colorFile.Close();
 	}
 
-	void OnUpdateEditPin(CCmdUI* cmdUI)
+	void OnUpdateEditPins(CCmdUI* cmdUI)
 	{
 		cmdUI->Enable(TRUE);
 	}
 
-	void OnEditPin()
+	void OnEditPins()
 	{
 		if (m_pinEditDlg)
 			return;
@@ -560,6 +561,34 @@ protected:
 		m_pinEditDlg->SetPins(m_palette.Pins);
 
 		m_pinEditDlg->Create(IDD_PIN_EDIT_DLG, NULL);
+	}
+
+	void OnUpdateEditPin(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(TRUE);
+	}
+
+	void OnEditPin()
+	{
+		int index = m_pinTracker->GetIndex(m_pinPt);
+
+		if (index < 0)
+		{
+			AfxMessageBox(_T("No pin selected!"));
+			return;
+		}
+
+		auto pins = m_pinTracker->GetPins();
+		auto pin = pins.at(index);
+		auto color = pin.Color1;
+
+		auto pinEditDlg = CSinglePinEditDlg::CreateSinglePinEditDlg(pins, index, true, this);
+		if (pinEditDlg->DoModal() == IDOK)
+		{
+			m_pinTracker->SetPins(pinEditDlg->GetPins());
+			m_palette.Pins = m_pinTracker->GetPins();
+			PaletteChanged();
+		}
 	}
 
 	void OnAddPin()
@@ -663,8 +692,8 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)
-	ON_COMMAND(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnEditPin)
-	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
+	ON_COMMAND(ID_PALETTE_EDIT_PINS, &CPaletteViewDlgImp::OnEditPins)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PINS, &CPaletteViewDlgImp::OnUpdateEditPins)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinEditDlgClosed, &CPaletteViewDlgImp::OnPinEditDlgClosed)
 	ON_BN_CLICKED(IDC_UPDATE_BUT, &CPaletteViewDlgImp::OnUpdate)
@@ -672,6 +701,8 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_ADD_PIN, &CPaletteViewDlgImp::OnUpdateAddPin)
 	ON_COMMAND(ID_PALETTE_SPREAD_PINS, &CPaletteViewDlgImp::OnSpreadPins)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_SPREAD_PINS, &CPaletteViewDlgImp::OnUpdateSpreadPins)
+	ON_COMMAND(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnEditPin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent)
