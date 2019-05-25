@@ -19,6 +19,8 @@ private:
 	COLORREF m_rgb;
 	HSL m_hsl;
 	bool m_enableAlpha;
+	CComboBox m_colorCombo;
+	int m_colorIndex = 0;
 
 public:
 	CSinglePinEditDlgImpl(const std::vector<DxColor::ColorPin>& pins, int pinIndex, bool enableAlpha, CWnd* pParent)
@@ -27,9 +29,7 @@ public:
 		, m_pinIndex(pinIndex)
 		, m_enableAlpha(enableAlpha)
 	{
-		m_rawColor = m_pins.at(m_pinIndex).Color1;
-		m_rgb = ToColorRef(m_rawColor);
-		m_hsl = ToHsl(m_rawColor);
+		SetColors();
 	}
 
 	virtual ~CSinglePinEditDlgImpl() {}
@@ -42,13 +42,32 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	void SetColors()
+	{
+		m_rawColor = (m_colorIndex == 1) ? m_pins.at(m_pinIndex).Color2 : m_pins.at(m_pinIndex).Color1;
+		m_rgb = ToColorRef(m_rawColor);
+		m_hsl = ToHsl(m_rawColor);
+	}
+
 	BOOL OnInitDialog() override
 	{
 		CSinglePinEditDlg::OnInitDialog();
 
+		PopulateColorCombo();
+
 		EnableCtrls();
 
 		return TRUE;
+	}
+
+	void PopulateColorCombo()
+	{
+		m_colorCombo.ResetContent();
+
+		m_colorCombo.AddString(_T("Color 1"));
+		m_colorCombo.AddString(_T("Color 2"));
+
+		m_colorCombo.SetCurSel(m_colorIndex);
 	}
 
 	void EnableCtrls()
@@ -61,6 +80,8 @@ protected:
 	void DoDataExchange(CDataExchange* pDX) override
 	{
 		CSinglePinEditDlg::DoDataExchange(pDX);
+
+		DDX_Control(pDX, IDC_COLOR_COMBO, m_colorCombo);
 
 		int red = GetRValue(m_rgb);
 		DDX_Text(pDX, IDC_RED_EDIT, red);
@@ -124,7 +145,10 @@ protected:
 
 	void SetPinColor()
 	{
-		m_pins.at(m_pinIndex).Color1 = m_rawColor;
+		if (m_colorIndex == 0)
+			m_pins.at(m_pinIndex).Color1 = m_rawColor;
+		else if (m_colorIndex == 1)
+			m_pins.at(m_pinIndex).Color2 = m_rawColor;
 	}
 
 	void OnBnColorChooser()
@@ -172,6 +196,28 @@ protected:
 		graphics.DrawRectangle(&blackPen, rect);
 	}
 
+	void OnCbnSelchangeColorCombo()
+	{
+		UpdateData(TRUE);
+
+		SetPinColor();
+		
+		int index = m_colorCombo.GetCurSel();
+		if (index == CB_ERR)
+		{
+			m_colorIndex = 0;
+			m_colorCombo.SetCurSel(m_colorIndex);	
+		}
+		else
+		{
+			m_colorIndex = index;
+		}
+
+		SetColors();
+
+		UpdateData(FALSE);
+		Invalidate(TRUE);
+	}
 };
 
 BEGIN_MESSAGE_MAP(CSinglePinEditDlgImpl, CSinglePinEditDlg)
@@ -184,6 +230,7 @@ BEGIN_MESSAGE_MAP(CSinglePinEditDlgImpl, CSinglePinEditDlg)
 	ON_EN_KILLFOCUS(IDC_SATURATION_EDIT, &CSinglePinEditDlgImpl::OnKillFocusHsl)
 	ON_EN_KILLFOCUS(IDC_LIGHTNESS_EDIT, &CSinglePinEditDlgImpl::OnKillFocusHsl)
 	ON_BN_CLICKED(IDC_COLOR_CHOOSER_BUT, &CSinglePinEditDlgImpl::OnBnColorChooser)
+	ON_CBN_SELCHANGE(IDC_COLOR_COMBO, &CSinglePinEditDlgImpl::OnCbnSelchangeColorCombo)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CSinglePinEditDlg> CSinglePinEditDlg::CreateSinglePinEditDlg(const std::vector<ColorPin>& pins, int pinIndex, bool enableAlpha, CWnd* pParent /* = nullptr*/)
