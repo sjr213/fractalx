@@ -8,6 +8,9 @@ namespace DxColor
 	class CPinTracker
 	{
 	public:
+		static constexpr double MaxIndex = 1.0;
+		static constexpr int MaxIntIndex = 1000;	// not used by pin tracker yet since it used screensize.cx which is 1000 but should be updated
+
 		CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const std::vector<ColorPin>& pins, CPoint topLeft);
 		~CPinTracker();
 

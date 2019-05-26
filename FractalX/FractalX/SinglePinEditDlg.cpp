@@ -5,6 +5,7 @@
 #include "ColorUtils.h"
 #include <Gdiplus.h>
 #include "hslUtilities.h"
+#include "PinTracker.h"
 #include "Resource.h"
 
 using namespace DxColor;
@@ -21,7 +22,7 @@ private:
 	HSL m_hsl;
 	bool m_enableAlpha;
 	CComboBox m_colorCombo;
-	int m_colorIndex = 0;
+	int m_colorNumber = 0;
 
 public:
 	CSinglePinEditDlgImpl(const std::vector<DxColor::ColorPin>& pins, int pinIndex, bool enableAlpha, CWnd* pParent)
@@ -45,7 +46,7 @@ protected:
 
 	void SetColors()
 	{
-		m_rawColor = (m_colorIndex == 1) ? m_pins.at(m_pinIndex).Color2 : m_pins.at(m_pinIndex).Color1;
+		m_rawColor = (m_colorNumber == 1) ? m_pins.at(m_pinIndex).Color2 : m_pins.at(m_pinIndex).Color1;
 		m_rgb = ToColorRef(m_rawColor);
 		m_hsl = ToHsl(m_rawColor);
 	}
@@ -68,7 +69,7 @@ protected:
 		m_colorCombo.AddString(_T("Color 1"));
 		m_colorCombo.AddString(_T("Color 2"));
 
-		m_colorCombo.SetCurSel(m_colorIndex);
+		m_colorCombo.SetCurSel(m_colorNumber);
 	}
 
 	void EnableCtrls()
@@ -116,6 +117,18 @@ protected:
 		DDV_MinMaxDouble(pDX, light, 0.0, MAX_LIGHTNESS);
 
 		m_hsl = HSL(hue, sat, light);
+
+		int pinIndex = GetPinPositionIndex(m_pinIndex);
+		DDX_Text(pDX, IDC_INDEX_EDIT, pinIndex);
+
+		if (pDX->m_bSaveAndValidate)
+		{
+			if(! SetPinPositionIndex(pinIndex))
+			{
+				AfxMessageBox(_T("The index is out of range or overlaps another pin"));
+				pDX->Fail(); // throws an exception, aborts the data exchange
+			}
+		}
 	}
 
 	void OnKillFocusRGB()
@@ -146,9 +159,9 @@ protected:
 
 	void SetPinColor()
 	{
-		if (m_colorIndex == 0)
+		if (m_colorNumber == 0)
 			m_pins.at(m_pinIndex).Color1 = m_rawColor;
-		else if (m_colorIndex == 1)
+		else if (m_colorNumber == 1)
 			m_pins.at(m_pinIndex).Color2 = m_rawColor;
 	}
 
@@ -181,11 +194,11 @@ protected:
 		Pen blackPen(Color(255, 0, 0, 0), 2);
 
 		Gdiplus::Rect rect1(47, 51, 40, 40);
-		auto color1 = (m_colorIndex == 0) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color1);
+		auto color1 = (m_colorNumber == 0) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color1);
 		DrawColor1(graphics, backGroundBrush, blackPen, rect1, color1);
 
 		Gdiplus::Rect rect2(47, 125, 40, 40);
-		auto color2 = (m_colorIndex == 1) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color2);
+		auto color2 = (m_colorNumber == 1) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color2);
 		DrawColor1(graphics, backGroundBrush, blackPen, rect2, color2);
 	}
 
@@ -206,21 +219,59 @@ protected:
 
 		SetPinColor();
 		
-		int index = m_colorCombo.GetCurSel();
-		if (index == CB_ERR)
+		int colorNumber = m_colorCombo.GetCurSel();
+		if (colorNumber == CB_ERR)
 		{
-			m_colorIndex = 0;
-			m_colorCombo.SetCurSel(m_colorIndex);	
+			m_colorNumber = 0;
+			m_colorCombo.SetCurSel(m_colorNumber);	
 		}
 		else
 		{
-			m_colorIndex = index;
+			m_colorNumber = colorNumber;
 		}
 
 		SetColors();
 
 		UpdateData(FALSE);
 		Invalidate(FALSE);
+	}
+
+	int GetPinPositionIndex(int pinNumber)
+	{
+		double colorIndex = m_pins.at(pinNumber).Index;
+
+		return static_cast<int>(colorIndex * CPinTracker::MaxIntIndex + 0.4999);
+	}
+
+	void SetIndexOnPin(int index)
+	{
+		double newIndex = static_cast<double>(index) / CPinTracker::MaxIntIndex;
+		m_pins.at(m_pinIndex).Index = newIndex;
+	}
+
+	bool SetPinPositionIndex(int index)
+	{
+		if (index < 0 || index > CPinTracker::MaxIntIndex)
+			return false;
+
+		int nPins = static_cast<int>(m_pins.size());
+		for (int i = 0; i < nPins; ++i)
+		{
+			if (i == m_pinIndex)
+				continue;
+
+			int currentIndex = GetPinPositionIndex(i);
+			if (index == currentIndex)
+				return false;
+		}
+
+		SetIndexOnPin(index);
+		return true;
+	}
+
+	void OnKillfocusIndexEdit()
+	{
+		UpdateData(TRUE);
 	}
 };
 
@@ -235,6 +286,7 @@ BEGIN_MESSAGE_MAP(CSinglePinEditDlgImpl, CSinglePinEditDlg)
 	ON_EN_KILLFOCUS(IDC_LIGHTNESS_EDIT, &CSinglePinEditDlgImpl::OnKillFocusHsl)
 	ON_BN_CLICKED(IDC_COLOR_CHOOSER_BUT, &CSinglePinEditDlgImpl::OnBnColorChooser)
 	ON_CBN_SELCHANGE(IDC_COLOR_COMBO, &CSinglePinEditDlgImpl::OnCbnSelchangeColorCombo)
+	ON_EN_KILLFOCUS(IDC_INDEX_EDIT, &CSinglePinEditDlgImpl::OnKillfocusIndexEdit)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CSinglePinEditDlg> CSinglePinEditDlg::CreateSinglePinEditDlg(const std::vector<ColorPin>& pins, int pinIndex, bool enableAlpha, CWnd* pParent /* = nullptr*/)

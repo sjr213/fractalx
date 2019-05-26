@@ -10,8 +10,6 @@ using namespace std;
 
 namespace DxColor
 {
-	const double MaxIndex = 1.0;
-
 	CPinTracker::CPinTracker(CSize screenSize, int numberOfColors, int iconDimension, const vector<ColorPin>& pins, CPoint topLeft)
 		: m_screenSize(screenSize)
 		, m_numberOfColors(numberOfColors)
