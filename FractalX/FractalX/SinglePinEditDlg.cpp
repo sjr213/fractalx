@@ -9,6 +9,7 @@
 
 using namespace DxColor;
 using namespace ColorUtils;
+using namespace Gdiplus;
 
 class CSinglePinEditDlgImpl : public CSinglePinEditDlg
 {
@@ -127,7 +128,7 @@ protected:
 		SetPinColor();
 
 		UpdateData(FALSE);
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 	}
 
 	void OnKillFocusHsl()
@@ -140,7 +141,7 @@ protected:
 		SetPinColor();
 
 		UpdateData(FALSE);
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 	}
 
 	void SetPinColor()
@@ -168,31 +169,34 @@ protected:
 			SetPinColor();
 
 			UpdateData(FALSE);
-			Invalidate(TRUE);
+			Invalidate(FALSE);
 		}
 	}
 
 	void OnPaint()
 	{
-		using namespace Gdiplus;
-
 		CPaintDC dc(this);
 		Graphics graphics(dc);
-
-		Gdiplus::Rect rect(19, 37, 40, 40);
-
 		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
+		Pen blackPen(Color(255, 0, 0, 0), 2);
 
-		graphics.FillRectangle(&backGroundBrush, rect);
+		Gdiplus::Rect rect1(47, 51, 40, 40);
+		auto color1 = (m_colorIndex == 0) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color1);
+		DrawColor1(graphics, backGroundBrush, blackPen, rect1, color1);
 
-		SolidBrush colorBrush(ConvertToGdiColor(m_rawColor));
+		Gdiplus::Rect rect2(47, 125, 40, 40);
+		auto color2 = (m_colorIndex == 1) ? ConvertToGdiColor(m_rawColor) : ConvertToGdiColor(m_pins.at(m_pinIndex).Color2);
+		DrawColor1(graphics, backGroundBrush, blackPen, rect2, color2);
+	}
+
+	void DrawColor1(Graphics& graphics, const HatchBrush& backBrush, const Pen& blackPen, const Gdiplus::Rect& rect, const Gdiplus::Color& color)
+	{
+		graphics.FillRectangle(&backBrush, rect);
+
+		SolidBrush colorBrush(color);
 
 		graphics.FillRectangle(&colorBrush, rect);
 
-		// Create a Pen object.
-		Pen blackPen(Color(255, 0, 0, 0), 2);
-
-		// Draw the rectangle.
 		graphics.DrawRectangle(&blackPen, rect);
 	}
 
@@ -216,7 +220,7 @@ protected:
 		SetColors();
 
 		UpdateData(FALSE);
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 	}
 };
 
