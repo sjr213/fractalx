@@ -568,6 +568,21 @@ protected:
 		cmdUI->Enable(TRUE);
 	}
 
+	void EditPin(int pinIndex)
+	{
+		auto pins = m_pinTracker->GetPins();
+		auto pin = pins.at(pinIndex);
+		auto color = pin.Color1;
+
+		auto pinEditDlg = CSinglePinEditDlg::CreateSinglePinEditDlg(pins, pinIndex, true, this);
+		if (pinEditDlg->DoModal() == IDOK)
+		{
+			m_pinTracker->SetPins(pinEditDlg->GetPins());
+			m_palette.Pins = m_pinTracker->GetPins();
+			PaletteChanged();
+		}
+	}
+
 	void OnEditPin()
 	{
 		int index = m_pinTracker->GetIndex(m_pinPt);
@@ -578,22 +593,13 @@ protected:
 			return;
 		}
 
-		auto pins = m_pinTracker->GetPins();
-		auto pin = pins.at(index);
-		auto color = pin.Color1;
-
-		auto pinEditDlg = CSinglePinEditDlg::CreateSinglePinEditDlg(pins, index, true, this);
-		if (pinEditDlg->DoModal() == IDOK)
-		{
-			m_pinTracker->SetPins(pinEditDlg->GetPins());
-			m_palette.Pins = m_pinTracker->GetPins();
-			PaletteChanged();
-		}
+		EditPin(index);
 	}
 
 	void OnAddPin()
 	{
-		if (!m_pinTracker->AddPin(m_pinPt))
+		int newIndex = m_pinTracker->AddPin(m_pinPt);
+		if (newIndex < 0)
 		{
 			AfxMessageBox(_T("No space for new pin!"));
 			return;
@@ -601,6 +607,8 @@ protected:
 
 		m_palette.Pins = m_pinTracker->GetPins();
 		PaletteChanged();
+
+		EditPin(newIndex);
 	}
 
 	void OnUpdateAddPin(CCmdUI* cmdUI)
@@ -610,7 +618,6 @@ protected:
 
 	void OnSpreadPins()
 	{
-
 		if (m_pinTracker->SpreadPins())
 		{
 			m_palette.Pins = m_pinTracker->GetPins();

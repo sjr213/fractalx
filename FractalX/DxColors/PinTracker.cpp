@@ -171,7 +171,7 @@ namespace DxColor
 		return nullopt;
 	}
 
-	bool CPinTracker::AddPinBetween(int leftIndex, int rightIndex, const CPoint& pt)
+	int CPinTracker::AddPinBetween(int leftIndex, int rightIndex, const CPoint& pt)
 	{
 		const auto& leftPin = m_pins.at(leftIndex);
 		const auto& rightPin = m_pins.at(rightIndex);
@@ -194,10 +194,10 @@ namespace DxColor
 
 		SetPins();
 
-		return true;
+		return rightIndex;
 	}
 
-	bool CPinTracker::AddPinRight(int leftIndex, const CPoint& pt)
+	int CPinTracker::AddPinRight(int leftIndex, const CPoint& pt)
 	{
 		const auto& leftPin = m_pins.at(leftIndex);
 		const CRect& leftRect = m_rects.at(leftIndex);
@@ -217,10 +217,10 @@ namespace DxColor
 
 		SetPins();
 
-		return true;
+		return static_cast<int>(m_pins.size()-1);
 	}
 
-	bool CPinTracker::AddPinLeft(int rightIndex, const CPoint& pt)
+	int CPinTracker::AddPinLeft(int rightIndex, const CPoint& pt)
 	{
 		const auto& rightPin = m_pins.at(rightIndex);
 		const CRect& rightRect = m_rects.at(rightIndex);
@@ -240,10 +240,10 @@ namespace DxColor
 
 		SetPins();
 
-		return true;
+		return rightIndex;
 	}
 
-	bool CPinTracker::AddFirstPin(const CPoint& pt)
+	int CPinTracker::AddFirstPin(const CPoint& pt)
 	{
 		if (pt.x < 0)
 			return false;
@@ -261,14 +261,14 @@ namespace DxColor
 
 		SetPins();
 
-		return true;
+		return 0;
 	}
 
 	// returns false if pin is too close to another
-	bool CPinTracker::AddPin(const CPoint& pt)
+	int CPinTracker::AddPin(const CPoint& pt)
 	{
 		if (GetIndex(pt) >= 0)
-			return false;
+			return -1;
 
 		optional<int> leftPinIndex = GetLeftPin(m_rects, pt);
 		optional<int> rightPinIndex = GetRightPin(m_rects, pt);
