@@ -8,13 +8,16 @@
 #include "DoubleBuffer.h"
 #include <Gdiplus.h>
 #include "Messages.h"
+#include "PaletteSelectionDlg.h"
 #include "PinTracker.h"
 #include "PinEditDlg.h"
 #include "Resource.h"
 #include "SinglePinEditDlg.h"
 
+
 using namespace ColorUtils;
 using namespace DxColor;
+using namespace fx;
 using namespace Gdiplus;
 
 class CPaletteViewDlgImp : public CPaletteViewDlg
@@ -470,7 +473,7 @@ protected:
 	void OnImport()
 	{
 		CString fileName;
-		CString fileExt(_T("pins"));
+		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
 		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
 
@@ -481,28 +484,11 @@ protected:
 			
 		fileName = MyImportDlg.GetPathName();
 
-		// Create a CFile and then a CArchive
-		CFile colorFile;
-
-		// do something about exceptions
-		CFileException FileExcept;
-		if (!colorFile.Open(fileName, CFile::modeRead, &FileExcept))
-		{
-			CString error;
-			wchar_t message[100] = { 0 };
-			FileExcept.GetErrorMessage(message, 100);
-			error.Format(_T("Error opening file: %s: %s"), fileName, message);
-			AfxMessageBox(error, MB_ICONWARNING);
+		auto palette = ColorUtilities::LoadPalette(fileName);
+		if (!palette)
 			return;
-		}
 
-		CArchive ar(&colorFile, CArchive::load);
-		DxColor::SerializePalette(ar, m_palette);
-
-		// close up
-		ar.Close();
-		colorFile.Close();
-
+		m_palette = *palette;
 		m_pinTracker->SetPins(m_palette.Pins);
 
 		PaletteChanged();
@@ -511,7 +497,7 @@ protected:
 	void OnExport()
 	{
 		CString fileName = m_palette.Name;
-		CString fileExt(_T("pins"));
+		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
 		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
 
@@ -683,6 +669,12 @@ protected:
 
 		m_dirty = enable;
 	}
+
+	void OnBnClickedPalettes()
+	{
+		auto pPaletteDlg = CPaletteSelectionDlg::CreatePaletteSelectionDlg(this);
+		pPaletteDlg->DoModal();
+	}
 };
 
 BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
@@ -696,6 +688,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDC_IMPORT_BUT, &CPaletteViewDlgImp::OnImport)
 	ON_BN_CLICKED(IDC_EXPORT_BUT, &CPaletteViewDlgImp::OnExport)
 	ON_BN_CLICKED(IDC_CONTRAST_BUT, &CPaletteViewDlgImp::OnContrast)
+	ON_BN_CLICKED(IDC_PALETTES_BUT, &CPaletteViewDlgImp::OnBnClickedPalettes)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)

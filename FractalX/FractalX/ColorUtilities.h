@@ -6,12 +6,13 @@ namespace DxColor
 	struct ColorContrast;
 }
 
-namespace fx
+namespace fx::ColorUtilities
 {
-	namespace ColorUtilities
-	{
-		std::vector<uint32_t> CalculatePaletteColors(const DxColor::PinPalette& palette, int nColors, const DxColor::ColorContrast& contrast);
+	std::vector<uint32_t> CalculatePaletteColors(const DxColor::PinPalette& palette, int nColors, const DxColor::ColorContrast& contrast);
 
-		COLORREF ToColorRef(uint32_t color);
-	}
+	COLORREF ToColorRef(uint32_t color);
+
+	CString GetPaletteFileExtension();
+
+	std::shared_ptr<DxColor::PinPalette> LoadPalette(const CString& palettePath);
 }
