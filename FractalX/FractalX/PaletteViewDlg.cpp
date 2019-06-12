@@ -673,7 +673,17 @@ protected:
 	void OnBnClickedPalettes()
 	{
 		auto pPaletteDlg = CPaletteSelectionDlg::CreatePaletteSelectionDlg(this);
-		pPaletteDlg->DoModal();
+		if (pPaletteDlg->DoModal() == IDOK)
+		{
+			auto palette = pPaletteDlg->GetSelectedPalette();
+			if (!palette)
+				return;
+
+			m_palette = *palette;
+			m_pinTracker->SetPins(m_palette.Pins);
+
+			PaletteChanged();
+		}
 	}
 };
 
