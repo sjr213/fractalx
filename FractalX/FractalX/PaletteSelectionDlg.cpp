@@ -121,7 +121,12 @@ protected:
 		if (folderdlg.DoModal() != IDOK)
 			return;
 
-		m_palettePath = folderdlg.GetPathName();
+		ChangePalettePath(folderdlg.GetPathName());
+	}
+
+	void ChangePalettePath(CString newPath)
+	{
+		m_palettePath = newPath;
 
 		m_palettes = LoadPalettes(m_palettePath);
 
@@ -239,13 +244,19 @@ protected:
 
 		*pResult = 0;
 	}
+
+	void OnKillFocusPathEdit()
+	{
+		UpdateData(TRUE);
+		ChangePalettePath(m_palettePath);
+	}
 };
 
 
 BEGIN_MESSAGE_MAP(CPaletteSelectionDlgImpl, CPaletteSelectionDlg)
-//	ON_NOTIFY(NM_DBLCLK, IDC_TREE1, &CPaletteSelectionDlgImpl::OnNMDblclkTree1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CPaletteSelectionDlgImpl::OnSelChangedTreeCtrl)
 	ON_BN_CLICKED(IDC_BROWSE_BUT, &CPaletteSelectionDlgImpl::OnBrowse)
+	ON_EN_KILLFOCUS(IDC_PATH_EDIT, &CPaletteSelectionDlgImpl::OnKillFocusPathEdit)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPaletteSelectionDlg> CPaletteSelectionDlg::CreatePaletteSelectionDlg(CWnd* pParent /* = nullptr*/)
