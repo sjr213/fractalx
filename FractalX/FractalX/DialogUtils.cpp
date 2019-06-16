@@ -59,4 +59,29 @@ namespace DlgUtils
 			dlg.Invalidate(TRUE);
 		}
 	}
+
+	CString GetFileName(CString &str)
+	{
+		CString fnameStr;
+
+		if (str.GetLength() > 2 && str[1] == ':')
+		{
+			wchar_t path[_MAX_PATH];
+
+			wcscpy_s(path, _MAX_PATH, str.GetBuffer(1));
+
+			wchar_t drive[_MAX_DRIVE];
+			wchar_t dir[_MAX_DIR];
+			wchar_t fname[_MAX_FNAME];
+			wchar_t ext[_MAX_EXT];
+			_wsplitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT);
+
+			fnameStr = fname;
+
+		}
+		else
+			fnameStr = str;
+
+		return fnameStr;
+	}
 }

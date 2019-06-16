@@ -20,4 +20,6 @@ namespace DlgUtils
 	bool PointInRect(const Gdiplus::Rect& rect, const CPoint& pt);
 
 	void ChooseColor(DxColor::ColorArgb& color, bool enableAlpha, CDialogEx& dlg);
+
+	CString GetFileName(CString &str);
 }

@@ -5,6 +5,7 @@
 #include "ContrastDlg.h"
 #include "ColorUtils.h"
 #include "ColorUtilities.h"
+#include "DialogUtils.h"
 #include "DoubleBuffer.h"
 #include <Gdiplus.h>
 #include "Messages.h"
@@ -13,7 +14,6 @@
 #include "PinEditDlg.h"
 #include "Resource.h"
 #include "SinglePinEditDlg.h"
-
 
 using namespace ColorUtils;
 using namespace DxColor;
@@ -513,6 +513,9 @@ protected:
 		// Create a CFile and then a CArchive
 		CFile colorFile;
 
+		PinPalette paletteCopy = m_palette;
+		paletteCopy.Name = DlgUtils::GetFileName(fileName);
+
 		// do something about exceptions
 		CFileException FileExcept;
 		if (! colorFile.Open(fileName, CFile::modeCreate | CFile::modeWrite, &FileExcept))
@@ -527,7 +530,7 @@ protected:
 
 		CArchive ar(&colorFile, CArchive::store);
 
-		DxColor::SerializePalette(ar, m_palette);
+		DxColor::SerializePalette(ar, paletteCopy);
 
 		ar.Close();
 		colorFile.Close();

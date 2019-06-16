@@ -5,6 +5,7 @@
 #include "ColorPin.h"
 #include "ColorUtils.h"
 #include "ColorUtilities.h"
+#include "DialogUtils.h"
 #include "Resource.h"
 
 
@@ -42,6 +43,7 @@ namespace
 			auto palettePath = finder.GetFilePath();
 
 			auto palette = ColorUtilities::LoadPalette(palettePath);
+			palette->Name = DlgUtils::GetFileName(palettePath);
 			if(palette) 
 				palettes.emplace_back(palettePath, palette);
 		}
@@ -128,32 +130,6 @@ protected:
 		UpdateData(FALSE);
 	}
 
-	// replace this with a common function
-	CString GetFileName(CString &str)
-	{
-		CString fnameStr;
-
-		if (str.GetLength() > 2 && str[1] == ':')
-		{
-			wchar_t path[_MAX_PATH];
-
-			wcscpy_s(path, _MAX_PATH, str.GetBuffer(1));
-
-			wchar_t drive[_MAX_DRIVE];
-			wchar_t dir[_MAX_DIR];
-			wchar_t fname[_MAX_FNAME];
-			wchar_t ext[_MAX_EXT];
-			_wsplitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, ext, _MAX_EXT);
-
-			fnameStr = fname;
-
-		}
-		else
-			fnameStr = str;
-
-		return fnameStr;
-	}
-
 	void AddPalettesToList()
 	{
 		m_TreeCtrl.DeleteAllItems();
@@ -188,7 +164,7 @@ protected:
 
 			// GetFileName() is in common.h it returns just the filename with no path
 			m_TreeCtrl.InsertItem(TVIF_TEXT | TVIF_STATE | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM,	// nMask
-				GetFileName(fname2),			// lpszItem
+				DlgUtils::GetFileName(fname2),	// lpszItem
 				j,								// nImage
 				j,								// nSelectedImage
 				TVIS_EXPANDED,					// nState
