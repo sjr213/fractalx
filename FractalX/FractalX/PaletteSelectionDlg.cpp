@@ -7,6 +7,7 @@
 #include "ColorUtilities.h"
 #include "DialogUtils.h"
 #include "Resource.h"
+#include "FractalX.h"
 
 
 using namespace DxColor;
@@ -87,6 +88,16 @@ protected:
 	{
 		CPaletteSelectionDlg::OnInitDialog();
 
+		CFractalXApp* pApp = DYNAMIC_DOWNCAST(CFractalXApp, AfxGetApp());
+		if (pApp)
+		{
+			pApp->ReadPalettePath(m_palettePath);
+			m_palettes = LoadPalettes(m_palettePath);
+
+			AddPalettesToList();
+			UpdateData(FALSE);
+		}
+
 		EnableOK();
 
 		return TRUE;
@@ -133,6 +144,12 @@ protected:
 		AddPalettesToList();
 
 		UpdateData(FALSE);
+
+		CFractalXApp* pApp = DYNAMIC_DOWNCAST(CFractalXApp, AfxGetApp());
+		if (pApp)
+		{
+			pApp->WritePalettePath(m_palettePath);
+		}
 	}
 
 	void AddPalettesToList()
