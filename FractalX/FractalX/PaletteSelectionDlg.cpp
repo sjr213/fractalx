@@ -65,13 +65,20 @@ private:
 	CImageList m_ImageList;
 	CString m_palettePath;
 	int m_selectedPalette = -1;
+	std::function<void(const PinPalette&, const ColorContrast&)> m_newPaletteMethod;
 
 public:
-	CPaletteSelectionDlgImpl(CWnd* pParent)
+	CPaletteSelectionDlgImpl(const DxColor::ColorContrast& contrast, CWnd* pParent)
 		: CPaletteSelectionDlg(IDD_PALETTE_SELECTION_DLG, pParent)
+		, m_contrast(contrast)
 	{}
 
 	virtual ~CPaletteSelectionDlgImpl() {}
+
+	void SetNewPaletteMethod(std::function<void(const PinPalette&, const ColorContrast& contrast)> newPaletteMethod) override
+	{
+		m_newPaletteMethod = newPaletteMethod;
+	}
 
 	std::shared_ptr<PinPalette> GetSelectedPalette() override
 	{
@@ -110,11 +117,17 @@ protected:
 
 	void EnableOK()
 	{
+		bool enable = IsIndexValid();
 		CWnd* pWnd = GetDlgItem(IDOK);
 		if (pWnd)
-		{
-			bool enable = IsIndexValid();
+		{		
 			pWnd->EnableWindow(enable);
+		}
+
+		CWnd* pWndUpdate = GetDlgItem(IDC_UPDATE_BUT);
+		if (pWndUpdate)
+		{
+			pWndUpdate->EnableWindow(enable && m_newPaletteMethod != nullptr);
 		}
 	}
 
@@ -267,6 +280,16 @@ protected:
 		UpdateData(TRUE);
 		ChangePalettePath(m_palettePath);
 	}
+
+	void OnUpdateView()
+	{
+		bool enable = IsIndexValid();
+		if (enable && m_newPaletteMethod != nullptr)
+		{
+			auto palette = m_palettes.at(m_selectedPalette).Palette;
+			m_newPaletteMethod(*palette, m_contrast);
+		}
+	}
 };
 
 
@@ -274,9 +297,10 @@ BEGIN_MESSAGE_MAP(CPaletteSelectionDlgImpl, CPaletteSelectionDlg)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CPaletteSelectionDlgImpl::OnSelChangedTreeCtrl)
 	ON_BN_CLICKED(IDC_BROWSE_BUT, &CPaletteSelectionDlgImpl::OnBrowse)
 	ON_EN_KILLFOCUS(IDC_PATH_EDIT, &CPaletteSelectionDlgImpl::OnKillFocusPathEdit)
+	ON_BN_CLICKED(IDC_UPDATE_BUT, &CPaletteSelectionDlgImpl::OnUpdateView)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CPaletteSelectionDlg> CPaletteSelectionDlg::CreatePaletteSelectionDlg(CWnd* pParent /* = nullptr*/)
+std::shared_ptr<CPaletteSelectionDlg> CPaletteSelectionDlg::CreatePaletteSelectionDlg(const ColorContrast& contrast, CWnd* pParent /* = nullptr*/)
 {
-	return std::make_shared<CPaletteSelectionDlgImpl>(pParent);
+	return std::make_shared<CPaletteSelectionDlgImpl>(contrast, pParent);
 }

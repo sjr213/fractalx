@@ -2,6 +2,7 @@
 
 namespace DxColor
 {
+	struct ColorContrast;
 	struct PinPalette;
 }
 
@@ -12,7 +13,9 @@ public:
 
 	virtual std::shared_ptr<DxColor::PinPalette> GetSelectedPalette() = 0;
 
-	static std::shared_ptr<CPaletteSelectionDlg> CreatePaletteSelectionDlg(CWnd* pParent = nullptr);
+	virtual void SetNewPaletteMethod(std::function<void(const DxColor::PinPalette&, const DxColor::ColorContrast&)> newPaletteMethod) = 0;
+
+	static std::shared_ptr<CPaletteSelectionDlg> CreatePaletteSelectionDlg(const DxColor::ColorContrast& contrast, CWnd* pParent = nullptr);
 
 protected:
 	CPaletteSelectionDlg(UINT nIDTemplate, CWnd* pParent)

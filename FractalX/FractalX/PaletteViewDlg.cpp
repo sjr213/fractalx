@@ -53,7 +53,7 @@ private:
 	bool m_dirty = false;
 
 public:
-	CPaletteViewDlgImp(const PinPalette& palette, ColorContrast& contrast, CWnd* pParent)
+	CPaletteViewDlgImp(const PinPalette& palette, const ColorContrast& contrast, CWnd* pParent)
 		: CPaletteViewDlg(IDD_PALETTE_VIEW_DLG, pParent)
 		, m_palette(palette)
 		, m_contrast(contrast)
@@ -193,6 +193,16 @@ protected:
 			m_newPaletteMethod(m_palette, m_contrast);
 
 		m_parent->PostMessage(cMessage::tm_killPaletteView, 0, 0);
+	}
+
+	void UpdateViewPalette(const PinPalette& palette, const ColorContrast& contrast)
+	{
+		m_palette = palette;
+		m_contrast = contrast;
+		m_pinTracker->SetPins(m_palette.Pins);
+
+		PaletteChanged();
+		OnUpdate();
 	}
 
 	afx_msg void OnUpdate()
@@ -675,7 +685,12 @@ protected:
 
 	void OnBnClickedPalettes()
 	{
-		auto pPaletteDlg = CPaletteSelectionDlg::CreatePaletteSelectionDlg(this);
+		auto pPaletteDlg = CPaletteSelectionDlg::CreatePaletteSelectionDlg(m_contrast, this);
+		pPaletteDlg->SetNewPaletteMethod([&](const PinPalette& palette, const ColorContrast& contrast)
+		{
+			UpdateViewPalette(palette, contrast);
+		});
+
 		if (pPaletteDlg->DoModal() == IDOK)
 		{
 			auto palette = pPaletteDlg->GetSelectedPalette();
@@ -718,7 +733,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, DxColor::ColorContrast& contrast, CWnd* pParent)
+std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, const DxColor::ColorContrast& contrast, CWnd* pParent)
 {
 	return std::make_shared <CPaletteViewDlgImp>(palette, contrast, pParent);
 }
