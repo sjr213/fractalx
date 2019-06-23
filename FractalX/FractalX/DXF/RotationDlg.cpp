@@ -28,11 +28,11 @@ namespace DXF
 		CDialogEx::DoDataExchange(pDX);
 		DDX_Radio(pDX, IDC_FIXED_RAD, m_action);	
 		DDX_Text(pDX, IDC_X_ANGLE_EDIT, m_angleX);
-		DDV_MinMaxFloat(pDX, m_angleX, 0.0f, 360.0f);
+		DDV_MinMaxFloat(pDX, m_angleX, -360.0f, 360.0f);
 		DDX_Text(pDX, IDC_Y_ANGLE_EDIT, m_angleY);
-		DDV_MinMaxFloat(pDX, m_angleY, 0.0f, 360.0f);
+		DDV_MinMaxFloat(pDX, m_angleY, -360.0f, 360.0f);
 		DDX_Text(pDX, IDC_Z_ANGLE_EDIT, m_angleZ);
-		DDV_MinMaxFloat(pDX, m_angleZ, 0.0f, 360.0f);
+		DDV_MinMaxFloat(pDX, m_angleZ, -360.0f, 360.0f);
 	}
 
 
