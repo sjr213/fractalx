@@ -88,6 +88,11 @@ public:
 		return m_palettes.at(m_selectedPalette).Palette;
 	}
 
+	DxColor::ColorContrast GetContrast() override
+	{
+		return m_contrast;
+	}
+
 protected:
 	DECLARE_MESSAGE_MAP()
 

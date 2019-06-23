@@ -13,6 +13,8 @@ public:
 
 	virtual std::shared_ptr<DxColor::PinPalette> GetSelectedPalette() = 0;
 
+	virtual DxColor::ColorContrast GetContrast() = 0;
+
 	virtual void SetNewPaletteMethod(std::function<void(const DxColor::PinPalette&, const DxColor::ColorContrast&)> newPaletteMethod) = 0;
 
 	static std::shared_ptr<CPaletteSelectionDlg> CreatePaletteSelectionDlg(const DxColor::ColorContrast& contrast, CWnd* pParent = nullptr);
