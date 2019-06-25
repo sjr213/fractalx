@@ -14,6 +14,7 @@
 #include "PinEditDlg.h"
 #include "Resource.h"
 #include "SinglePinEditDlg.h"
+#include <sstream>
 
 using namespace ColorUtils;
 using namespace DxColor;
@@ -60,6 +61,7 @@ public:
 		, m_parent(pParent)
 		, m_paletteBuffer(CDoubleBuffer::CreateBuffer())
 		, m_tickBuffer(CDoubleBuffer::CreateBuffer())
+		, m_hIcon(NULL)
 	{}
 
 	virtual ~CPaletteViewDlgImp()
@@ -485,7 +487,11 @@ protected:
 		CString fileName;
 		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
-		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
+
+		std::wstringstream ss;
+		ss << L"color pin files (*" << fileExt.GetString() << L")|*" << fileExt.GetString() << L"|ALL Files |*.*||";
+
+		fileType = ss.str().c_str();
 
 		// Open a Save As dialog to get a name
 		CFileDialog MyImportDlg(TRUE, fileExt, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, fileType);
@@ -509,7 +515,11 @@ protected:
 		CString fileName = m_palette.Name;
 		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
-		fileType.Format(_T("color pin files (*%s)|*%s|ALL Files |*.*||"), fileExt, fileExt);
+
+		std::wstringstream ss;
+		ss << L"color pin files (*" << fileExt.GetString() << L")|*" << fileExt.GetString() << L"|ALL Files |*.*||";
+
+		fileType = ss.str().c_str();
 
 		// Open a Save As dialog to get a name
 		CFileDialog exportDlg(FALSE, fileExt, fileName, OFN_PATHMUSTEXIST, fileType);
@@ -530,10 +540,12 @@ protected:
 		CFileException FileExcept;
 		if (! colorFile.Open(fileName, CFile::modeCreate | CFile::modeWrite, &FileExcept))
 		{
-			CString error;
 			wchar_t message[100] = { 0 };
 			FileExcept.GetErrorMessage(message, 100);
-			error.Format(_T("Error opening file: %s: %s"), fileName, message);
+
+			std::wstringstream ss;
+			ss << L"Error opening file: " << fileName.GetString() << L": " << message;
+			CString error = ss.str().c_str();
 			AfxMessageBox(error, MB_ICONWARNING);
 			return;
 		}

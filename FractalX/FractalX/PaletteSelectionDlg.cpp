@@ -186,7 +186,7 @@ protected:
 			// we can consider adding something to remove a palette for which a hbitmap can't be made but this might 
 			// not be possible at this point
 			auto bm = GetBitmap(*pdata.Palette);
-			assert(bm != nullptr);
+			ASSERT(bm != nullptr);
 			if (bm)
 			{
 				CBitmap bmap;
@@ -197,13 +197,15 @@ protected:
 
 		m_TreeCtrl.SetImageList(&m_ImageList, TVSIL_NORMAL);
 
+		HTREEITEM lastItem = NULL;
+
 		// now load tree
 		for (int j = 0; j < nPalettes; j++)
 		{
 			CString fname2 = m_palettes[j].PalettePath;
 
 			// GetFileName() is in common.h it returns just the filename with no path
-			m_TreeCtrl.InsertItem(TVIF_TEXT | TVIF_STATE | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM,	// nMask
+			lastItem = m_TreeCtrl.InsertItem(TVIF_TEXT | TVIF_STATE | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM,	// nMask
 				DlgUtils::GetFileName(fname2),	// lpszItem
 				j,								// nImage
 				j,								// nSelectedImage
@@ -211,8 +213,7 @@ protected:
 				NULL,							// nStateMask
 				(LPARAM)j,						// lParam
 				TVI_ROOT,						// hParent
-				NULL);							// hInsertAfter
-
+				lastItem);							// hInsertAfter
 		}
 	}
 
