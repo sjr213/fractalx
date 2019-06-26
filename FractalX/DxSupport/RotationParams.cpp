@@ -53,4 +53,50 @@ namespace DXF
 			return 1;
 		}
 	}
+
+	RotationSpeed RotationSpeedFromInt(int val)
+	{
+		switch (val)
+		{
+		case 0:
+			return RotationSpeed::Slow;
+		case 1:
+			return RotationSpeed::Medium;
+		case 2:
+			return RotationSpeed::Fast;
+
+		default:
+			return RotationSpeed::Medium;
+		}
+	}
+
+	int RotationSpeedToInt(RotationSpeed speed)
+	{
+		switch (speed)
+		{
+		case RotationSpeed::Slow:
+			return 0;
+		case RotationSpeed::Medium:
+			return 1;
+		case RotationSpeed::Fast:
+			return 2;
+		default:
+			return 1;
+		}
+	}
+
+	int GetRotationSpeedMsec(RotationSpeed speed)
+	{
+		switch (speed)
+		{
+		case RotationSpeed::Slow:
+			return 500;
+		case RotationSpeed::Medium:
+			return 200;
+		case RotationSpeed::Fast:
+			return 50;
+		default:
+			return 200;
+		}
+	}
 }

@@ -30,6 +30,9 @@ namespace DXF
 		void OnCancel() override;
 		void OnOK() override;
 
+		void InitializeSpeedCombo();
+		void OnSpeedChanged();
+
 		afx_msg void OnKillfocusXAngleEdit();
 		afx_msg void OnKillfocusYAngleEdit();
 		afx_msg void OnKillfocusZAngleEdit();
@@ -39,8 +42,9 @@ namespace DXF
 		float m_angleX;
 		float m_angleY;
 		float m_angleZ;
+		int m_speed;
 
-
+		CComboBox m_SpeedCombo;
 	};
 }
 

@@ -7,6 +7,7 @@ namespace DXF
 		ON_EN_KILLFOCUS(IDC_X_ANGLE_EDIT, &CRotationDlg::OnKillfocusXAngleEdit)
 		ON_EN_KILLFOCUS(IDC_Y_ANGLE_EDIT, &CRotationDlg::OnKillfocusYAngleEdit)
 		ON_EN_KILLFOCUS(IDC_Z_ANGLE_EDIT, &CRotationDlg::OnKillfocusZAngleEdit)
+		ON_CBN_SELCHANGE(IDC_SPEED_COMBO, &CRotationDlg::OnSpeedChanged)
 	END_MESSAGE_MAP()
 
 	CRotationDlg::CRotationDlg()
@@ -15,6 +16,7 @@ namespace DXF
 		, m_angleX(0.f)
 		, m_angleY(0.f)
 		, m_angleZ(0.f)
+		, m_speed(1)
 	{
 	}
 
@@ -33,6 +35,9 @@ namespace DXF
 		DDV_MinMaxFloat(pDX, m_angleY, -360.0f, 360.0f);
 		DDX_Text(pDX, IDC_Z_ANGLE_EDIT, m_angleZ);
 		DDV_MinMaxFloat(pDX, m_angleZ, -360.0f, 360.0f);
+
+		DDX_Control(pDX, IDC_SPEED_COMBO, m_SpeedCombo);
+		DDX_CBIndex(pDX, IDC_SPEED_COMBO, m_speed);
 	}
 
 
@@ -40,10 +45,23 @@ namespace DXF
 	{
 		CDialogEx::OnInitDialog();
 
-		// TODO:  Add extra initialization here
+		InitializeSpeedCombo();
 
 		return TRUE;  // return TRUE unless you set the focus to a control
 					  // EXCEPTION: OCX Property Pages should return FALSE
+	}
+
+	void CRotationDlg::InitializeSpeedCombo()
+	{
+		auto pCombo = (CComboBox*)GetDlgItem(IDC_SPEED_COMBO);
+		if (!pCombo)
+			return;
+
+		pCombo->InsertString(0, _T("Slow"));
+		pCombo->InsertString(1, _T("Medium"));
+		pCombo->InsertString(2, _T("Fast"));
+
+		pCombo->SetCurSel(m_speed);
 	}
 
 
@@ -65,6 +83,7 @@ namespace DXF
 	RotationParams CRotationDlg::GetRotationParams()
 	{
 		RotationParams rp(RotationActionFromInt(m_action), -1.0f * m_angleX, -1.0f * m_angleY, -1.0f * m_angleZ);
+		rp.Speed = RotationSpeedFromInt(m_speed);
 
 		return rp;
 	}
@@ -75,21 +94,31 @@ namespace DXF
 		m_angleX = -1.0f * rp.AngleXDegrees;
 		m_angleY = -1.0f * rp.AngleYDegrees;
 		m_angleZ = -1.0f * rp.AngleZDegrees;
+		m_speed = RotationSpeedToInt(rp.Speed);
+	}
+
+	void CRotationDlg::OnKillfocusXAngleEdit()
+	{
+		UpdateData(TRUE);
+	}
+
+
+	void CRotationDlg::OnKillfocusYAngleEdit()
+	{
+		UpdateData(TRUE);
+	}
+
+	void CRotationDlg::OnKillfocusZAngleEdit()
+	{
+		UpdateData(TRUE);
+	}
+
+	void CRotationDlg::OnSpeedChanged()
+	{
+		UpdateData(TRUE);
 	}
 }
 
-void DXF::CRotationDlg::OnKillfocusXAngleEdit()
-{
-	UpdateData(TRUE);
-}
 
 
-void DXF::CRotationDlg::OnKillfocusYAngleEdit()
-{
-	UpdateData(TRUE);
-}
 
-void DXF::CRotationDlg::OnKillfocusZAngleEdit()
-{
-	UpdateData(TRUE);
-}
