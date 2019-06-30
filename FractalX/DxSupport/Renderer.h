@@ -28,6 +28,8 @@ namespace DXF
 
 		virtual void SetRotationParams(const RotationParams& rp) = 0;
 
+		virtual RotationParams GetRotationParams() = 0;
+
 		// Basic game loop
 		virtual void Tick() = 0;
 
