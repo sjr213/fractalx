@@ -20,6 +20,7 @@ using namespace ColorUtils;
 using namespace DxColor;
 using namespace fx;
 using namespace Gdiplus;
+using namespace std;
 
 class CPaletteViewDlgImp : public CPaletteViewDlg
 {
@@ -27,9 +28,9 @@ private:
 	PinPalette m_palette;
 	ColorContrast m_contrast;
 	CWnd* m_parent = nullptr;
-	std::function<void(const PinPalette&, const ColorContrast&)> m_newPaletteMethod;
-	std::shared_ptr<CDoubleBuffer> m_paletteBuffer;
-	std::shared_ptr<CDoubleBuffer> m_tickBuffer;
+	function<void(const PinPalette&, const ColorContrast&)> m_newPaletteMethod;
+	shared_ptr<CDoubleBuffer> m_paletteBuffer;
+	shared_ptr<CDoubleBuffer> m_tickBuffer;
 	CPoint m_topLeftPalette = CPoint(0, 0);
 	CPoint m_topLeftTicks = CPoint(0, 0);
 	CRect m_paletteRect;
@@ -37,13 +38,14 @@ private:
 	bool m_dcNotReady = true;
 	bool m_paletteNeedsDrawing = true;
 	bool m_tickBackgroundNeedsDrawing = true;
-	std::vector<uint32_t> m_colors;
+	vector<uint32_t> m_colors;
 	HICON m_hIcon;
-	std::shared_ptr<DxColor::CPinTracker> m_pinTracker;
+	shared_ptr<CPinTracker> m_pinTracker;
 	int m_activePinIndex = -1;
 	CPoint m_pinPt;
 	CString m_indexText;
-	std::unique_ptr<CPinEditDlg> m_pinEditDlg;
+	unique_ptr<CPinEditDlg> m_pinEditDlg;
+	shared_ptr<ColorPin> m_pCopiedPin;
 
 	const int NumberOfColors = 1000;
 	const int ColorLineHeight = 10;
@@ -70,7 +72,7 @@ public:
 			DestroyIcon(m_hIcon);
 	}
 
-	void SetNewPaletteMethod(std::function<void(const PinPalette&, const ColorContrast& contrast)> newPaletteMethod) override
+	void SetNewPaletteMethod(function<void(const PinPalette&, const ColorContrast& contrast)> newPaletteMethod) override
 	{
 		m_newPaletteMethod = newPaletteMethod;
 	}
@@ -91,7 +93,7 @@ protected:
 
 		InitDoubleBuffer(clientRect);
 
-		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
+		m_colors = ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
 
 		EnableUpdate(false);
 
@@ -135,7 +137,7 @@ protected:
 
 		m_paletteBuffer->SetDisplaySize(paletteSize);
 
-		m_pinTracker = std::make_shared<CPinTracker>(paletteSize, NumberOfColors, 32, m_palette.Pins, m_topLeftPalette);
+		m_pinTracker = make_shared<CPinTracker>(paletteSize, NumberOfColors, 32, m_palette.Pins, m_topLeftPalette);
 	}
 
 	void InitializeTickBuffer(CSize displaySize, CPoint topLeft)
@@ -153,9 +155,9 @@ protected:
 
 	void PaletteChanged()
 	{
-		DxColor::ValidatePalette(m_palette);
+		ValidatePalette(m_palette);
 
-		m_colors = fx::ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
+		m_colors = ColorUtilities::CalculatePaletteColors(m_palette, NumberOfColors, m_contrast);
 
 		m_paletteNeedsDrawing = true;
 
@@ -240,9 +242,9 @@ protected:
 	{
 		Graphics graphics(dc);
 
-		Gdiplus::Rect gRect(0, 0, NumberOfColors, ColorLineHeight);
+		Rect gRect(0, 0, NumberOfColors, ColorLineHeight);
 
-		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleNarrowHorizontal, Color::Black, Color::White);
+		HatchBrush backGroundBrush(HatchStyle::HatchStyleNarrowHorizontal, Color::Black, Color::White);
 
 		graphics.FillRectangle(&backGroundBrush, gRect);
 
@@ -276,7 +278,7 @@ protected:
 	{
 		Graphics graphics(dc);
 
-		Gdiplus::Rect gRect(0, 0, NumberOfColors, TickRectHeight);
+		Rect gRect(0, 0, NumberOfColors, TickRectHeight);
 
 		SolidBrush brush(Color::White);
 
@@ -386,7 +388,7 @@ protected:
 
 		if (AfxMessageBox(_T("Delete Pin?"), MB_YESNO) == IDYES)
 		{
-			m_palette.Pins.erase(std::begin(m_palette.Pins) + m_activePinIndex);
+			m_palette.Pins.erase(begin(m_palette.Pins) + m_activePinIndex);
 
 			m_pinTracker->SetPins(m_palette.Pins);
 
@@ -457,24 +459,56 @@ protected:
 		pinMenu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
 	}
 
-	void OnUpdateDeletePin(CCmdUI* cmdUI)
+	afx_msg void OnUpdatePinSelected(CCmdUI* cmdUI)
 	{
 		int nPin = m_pinTracker->GetIndex(m_pinPt);
 
 		cmdUI->Enable(nPin >= 0);
 	}
 
-	void OnDeletePin()
+	afx_msg void OnDeletePin()
 	{
 		int nPin = m_pinTracker->GetIndex(m_pinPt);
 		if (nPin < 0)
 			return;
 		 
-		m_palette.Pins.erase(std::begin(m_palette.Pins) + nPin);
+		m_palette.Pins.erase(begin(m_palette.Pins) + nPin);
 
 		m_pinTracker->SetPins(m_palette.Pins);
 
 		PaletteChanged();
+	}
+
+	afx_msg void OnCopyPin()
+	{
+		int nPin = m_pinTracker->GetIndex(m_pinPt);
+		if (nPin < 0)
+			return;
+
+		auto pins = m_pinTracker->GetPins();
+		m_pCopiedPin = make_shared<ColorPin>(pins.at(nPin));
+	}
+
+	afx_msg void OnPastePin()
+	{
+		if (!m_pCopiedPin)
+			return;
+
+		int newIndex = m_pinTracker->AddPin(m_pinPt, m_pCopiedPin);
+		if (newIndex < 0)
+		{
+			AfxMessageBox(_T("No space for new pin!"));
+			return;
+		}
+
+		m_palette.Pins = m_pinTracker->GetPins();
+		PaletteChanged();
+	}
+
+	afx_msg void OnUpdatePastePin(CCmdUI* cmdUI)
+	{
+		bool spaceFree = m_pinTracker->GetIndex(m_pinPt) < 0;
+		cmdUI->Enable(spaceFree && m_pCopiedPin != nullptr);
 	}
 
 	void OnKillfocusEdit()
@@ -488,7 +522,7 @@ protected:
 		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
 
-		std::wstringstream ss;
+		wstringstream ss;
 		ss << L"color pin files (*" << fileExt.GetString() << L")|*" << fileExt.GetString() << L"|ALL Files |*.*||";
 
 		fileType = ss.str().c_str();
@@ -516,7 +550,7 @@ protected:
 		CString fileExt = ColorUtilities::GetPaletteFileExtension();
 		CString fileType;
 
-		std::wstringstream ss;
+		wstringstream ss;
 		ss << L"color pin files (*" << fileExt.GetString() << L")|*" << fileExt.GetString() << L"|ALL Files |*.*||";
 
 		fileType = ss.str().c_str();
@@ -543,7 +577,7 @@ protected:
 			wchar_t message[100] = { 0 };
 			FileExcept.GetErrorMessage(message, 100);
 
-			std::wstringstream ss;
+			wstringstream ss;
 			ss << L"Error opening file: " << fileName.GetString() << L": " << message;
 			CString error = ss.str().c_str();
 			AfxMessageBox(error, MB_ICONWARNING);
@@ -552,29 +586,29 @@ protected:
 
 		CArchive ar(&colorFile, CArchive::store);
 
-		DxColor::SerializePalette(ar, paletteCopy);
+		SerializePalette(ar, paletteCopy);
 
 		ar.Close();
 		colorFile.Close();
 	}
 
-	void OnUpdateEditPins(CCmdUI* cmdUI)
+	afx_msg void OnUpdateEditPins(CCmdUI* cmdUI)
 	{
 		cmdUI->Enable(TRUE);
 	}
 
-	void OnEditPins()
+	afx_msg void OnEditPins()
 	{
 		if (m_pinEditDlg)
 			return;
 
-		m_pinEditDlg = std::make_unique<CPinEditDlg>(this);
+		m_pinEditDlg = make_unique<CPinEditDlg>(this);
 		m_pinEditDlg->SetPins(m_palette.Pins);
 
 		m_pinEditDlg->Create(IDD_PIN_EDIT_DLG, NULL);
 	}
 
-	void OnUpdateEditPin(CCmdUI* cmdUI)
+	afx_msg void OnUpdateEditPin(CCmdUI* cmdUI)
 	{
 		cmdUI->Enable(TRUE);
 	}
@@ -594,7 +628,7 @@ protected:
 		}
 	}
 
-	void OnEditPin()
+	afx_msg void OnEditPin()
 	{
 		int index = m_pinTracker->GetIndex(m_pinPt);
 
@@ -607,9 +641,9 @@ protected:
 		EditPin(index);
 	}
 
-	void OnAddPin()
+	afx_msg void OnAddPin()
 	{
-		int newIndex = m_pinTracker->AddPin(m_pinPt);
+		int newIndex = m_pinTracker->AddPin(m_pinPt, nullptr);
 		if (newIndex < 0)
 		{
 			AfxMessageBox(_T("No space for new pin!"));
@@ -622,12 +656,13 @@ protected:
 		EditPin(newIndex);
 	}
 
-	void OnUpdateAddPin(CCmdUI* cmdUI)
+	afx_msg void OnUpdateAddPin(CCmdUI* cmdUI)
 	{
-		cmdUI->Enable(TRUE);
+		bool spaceFree = m_pinTracker->GetIndex(m_pinPt) < 0;
+		cmdUI->Enable(spaceFree);
 	}
 
-	void OnSpreadPins()
+	afx_msg void OnSpreadPins()
 	{
 		if (m_pinTracker->SpreadPins())
 		{
@@ -636,12 +671,13 @@ protected:
 		}
 	}
 
-	void OnUpdateSpreadPins(CCmdUI* cmdUI)
+	afx_msg void OnUpdateSpreadPins(CCmdUI* cmdUI)
 	{
-		cmdUI->Enable(TRUE);
+		bool canSpread = m_palette.Pins.size() > 0;
+		cmdUI->Enable(canSpread);
 	}
 
-	LRESULT OnPinsChanged(WPARAM, LPARAM)
+	afx_msg LRESULT OnPinsChanged(WPARAM, LPARAM)
 	{
 		if (!m_pinEditDlg)
 			return 0;
@@ -654,7 +690,7 @@ protected:
 		return 0;
 	}
 
-	LRESULT OnPinEditDlgClosed(WPARAM wparam, LPARAM)
+	afx_msg LRESULT OnPinEditDlgClosed(WPARAM wparam, LPARAM)
 	{
 		// OK
 		if (wparam == 1 && m_pinEditDlg)
@@ -731,7 +767,7 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_BN_CLICKED(IDC_PALETTES_BUT, &CPaletteViewDlgImp::OnBnClickedPalettes)
 	ON_EN_KILLFOCUS(IDC_PALETTE_NAME_EDIT, &CPaletteViewDlgImp::OnKillfocusEdit)
 	ON_COMMAND(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnDeletePin)
-	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdateDeletePin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_DELETE_PIN, &CPaletteViewDlgImp::OnUpdatePinSelected)
 	ON_COMMAND(ID_PALETTE_EDIT_PINS, &CPaletteViewDlgImp::OnEditPins)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PINS, &CPaletteViewDlgImp::OnUpdateEditPins)
 	ON_REGISTERED_MESSAGE(cMessage::tm_pinsChanged, &CPaletteViewDlgImp::OnPinsChanged)
@@ -743,9 +779,13 @@ BEGIN_MESSAGE_MAP(CPaletteViewDlgImp, CPaletteViewDlg)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_SPREAD_PINS, &CPaletteViewDlgImp::OnUpdateSpreadPins)
 	ON_COMMAND(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnEditPin)
 	ON_UPDATE_COMMAND_UI(ID_PALETTE_EDIT_PIN, &CPaletteViewDlgImp::OnUpdateEditPin)
+	ON_COMMAND(ID_PALETTE_COPYPIN, &CPaletteViewDlgImp::OnCopyPin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_COPYPIN, &CPaletteViewDlgImp::OnUpdatePinSelected)
+	ON_COMMAND(ID_PALETTE_PASTEPIN, &CPaletteViewDlgImp::OnPastePin)
+	ON_UPDATE_COMMAND_UI(ID_PALETTE_PASTEPIN, &CPaletteViewDlgImp::OnUpdatePastePin)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, const DxColor::ColorContrast& contrast, CWnd* pParent)
+shared_ptr<CPaletteViewDlg> CPaletteViewDlg::CreatePaletteViewDlg(const PinPalette& palette, const ColorContrast& contrast, CWnd* pParent)
 {
-	return std::make_shared <CPaletteViewDlgImp>(palette, contrast, pParent);
+	return make_shared <CPaletteViewDlgImp>(palette, contrast, pParent);
 }

@@ -29,7 +29,7 @@ namespace DxColor
 		CPoint GetTopLeft(int index) const;
 
 		// returns new pin index or -1 if failed
-		int AddPin(const CPoint& pt);
+		int AddPin(const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin);
 
 		// returns true if pins changed
 		bool SpreadPins();
@@ -46,10 +46,10 @@ namespace DxColor
 		double GetUnAdjustedPositionX() const;
 
 		// returns new pin index or -1 if failed
-		int AddPinBetween(int leftPin, int rightPin, const CPoint& pt);
-		int AddPinRight(int leftPin, const CPoint& pt);
-		int AddPinLeft(int rightIndex, const CPoint& pt);
-		int AddFirstPin(const CPoint& pt);
+		int AddPinBetween(int leftPin, int rightPin, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin);
+		int AddPinRight(int leftPin, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin);
+		int AddPinLeft(int rightIndex, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin);
+		int AddFirstPin(const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin);
 
 	private:
 		CSize m_screenSize;

@@ -171,13 +171,13 @@ namespace DxColor
 		return nullopt;
 	}
 
-	int CPinTracker::AddPinBetween(int leftIndex, int rightIndex, const CPoint& pt)
+	int CPinTracker::AddPinBetween(int leftIndex, int rightIndex, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin)
 	{
 		const auto& leftPin = m_pins.at(leftIndex);
 		const auto& rightPin = m_pins.at(rightIndex);
 
 		// try averaging colors
-		ColorPin newPin = leftPin;
+		ColorPin newPin = pPin!= nullptr ? *pPin: leftPin;
 
 		const CRect& leftRect = m_rects.at(leftIndex);
 		const CRect& rightRect = m_rects.at(rightIndex);
@@ -187,8 +187,12 @@ namespace DxColor
 
 		double mult = static_cast<double>(pt.x - leftCenter.x) / (rightCenter.x - leftCenter.x);
 		newPin.Index = leftPin.Index + mult * (rightPin.Index - leftPin.Index);
-		newPin.Color1 = DxColor::Utilities::AverageColors(leftPin.Color1, rightPin.Color1, mult);
-		newPin.Color2 = DxColor::Utilities::AverageColors(leftPin.Color2, rightPin.Color2, mult);
+
+		if (!pPin)
+		{
+			newPin.Color1 = DxColor::Utilities::AverageColors(leftPin.Color1, rightPin.Color1, mult);
+			newPin.Color2 = DxColor::Utilities::AverageColors(leftPin.Color2, rightPin.Color2, mult);
+		}
 
 		m_pins.insert(begin(m_pins) + rightIndex, newPin);
 
@@ -197,7 +201,7 @@ namespace DxColor
 		return rightIndex;
 	}
 
-	int CPinTracker::AddPinRight(int leftIndex, const CPoint& pt)
+	int CPinTracker::AddPinRight(int leftIndex, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin)
 	{
 		const auto& leftPin = m_pins.at(leftIndex);
 		const CRect& leftRect = m_rects.at(leftIndex);
@@ -210,7 +214,7 @@ namespace DxColor
 		newIndex = std::max(leftPin.Index + 0.001, newIndex);
 		newIndex = std::min(newIndex, MaxIndex);
 
-		ColorPin newPin = leftPin;
+		ColorPin newPin = pPin != nullptr ? *pPin : leftPin;
 		newPin.Index = newIndex;
 	
 		m_pins.push_back(newPin);
@@ -220,7 +224,7 @@ namespace DxColor
 		return static_cast<int>(m_pins.size()-1);
 	}
 
-	int CPinTracker::AddPinLeft(int rightIndex, const CPoint& pt)
+	int CPinTracker::AddPinLeft(int rightIndex, const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin)
 	{
 		const auto& rightPin = m_pins.at(rightIndex);
 		const CRect& rightRect = m_rects.at(rightIndex);
@@ -233,7 +237,7 @@ namespace DxColor
 		newIndex = std::max(0.0, newIndex);
 		newIndex = std::min(newIndex, MaxIndex);
 
-		ColorPin newPin = rightPin;
+		ColorPin newPin = pPin != nullptr ? *pPin : rightPin;
 		newPin.Index = newIndex;
 
 		m_pins.insert(begin(m_pins) + rightIndex, newPin);
@@ -243,7 +247,7 @@ namespace DxColor
 		return rightIndex;
 	}
 
-	int CPinTracker::AddFirstPin(const CPoint& pt)
+	int CPinTracker::AddFirstPin(const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin)
 	{
 		if (pt.x < 0)
 			return false;
@@ -251,7 +255,7 @@ namespace DxColor
 		if (pt.x > m_screenSize.cx)
 			return false;
 
-		ColorPin newPin;
+		ColorPin newPin = pPin != nullptr ? *pPin : ColorPin();;
 		double newIndex = static_cast<double>(pt.x) / m_screenSize.cx;
 		newIndex = std::max(0.0, newIndex);
 		newIndex = std::min(newIndex, MaxIndex);
@@ -265,7 +269,7 @@ namespace DxColor
 	}
 
 	// returns false if pin is too close to another
-	int CPinTracker::AddPin(const CPoint& pt)
+	int CPinTracker::AddPin(const CPoint& pt, const std::shared_ptr<DxColor::ColorPin>& pPin)
 	{
 		if (GetIndex(pt) >= 0)
 			return -1;
@@ -275,15 +279,15 @@ namespace DxColor
 
 		// If left and right - AddPinBetween
 		if (leftPinIndex.has_value() && rightPinIndex.has_value())
-			return AddPinBetween(leftPinIndex.value(), rightPinIndex.value(), pt);
+			return AddPinBetween(leftPinIndex.value(), rightPinIndex.value(), pt, pPin);
 
 		if (leftPinIndex.has_value())
-			return AddPinRight(leftPinIndex.value(), pt);
+			return AddPinRight(leftPinIndex.value(), pt, pPin);
 
 		if (rightPinIndex.has_value())
-			return AddPinLeft(rightPinIndex.value(), pt);
+			return AddPinLeft(rightPinIndex.value(), pt, pPin);
 
-		return AddFirstPin(pt);
+		return AddFirstPin(pt, pPin);
 	}
 
 	bool CPinTracker::SpreadPins()
