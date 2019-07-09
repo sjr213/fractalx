@@ -125,7 +125,7 @@ namespace DxColor
 	void SpacePins(PinPalette& palette)
 	{
 		if (palette.Pins.size() < 2)
-			throw std::exception("less than 2 pins");
+			return;
 
 		std::sort(begin(palette.Pins), end(palette.Pins), [&](const ColorPin& lf, const ColorPin& rt)
 		{

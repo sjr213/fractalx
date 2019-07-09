@@ -452,6 +452,15 @@ protected:
 		CMenu pinMenu;
 		pinMenu.LoadMenu(IDR_PALETTE_VIEW_CONTEXT_MENU);
 
+		// You can't edit a pin if the pin selection dlg is active == CanEditPins()
+		pinMenu.EnableMenuItem(ID_PALETTE_DELETE_PIN, CanEditPins() && IsPinSelected() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_EDIT_PINS, CanEditPins() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_ADD_PIN, CanEditPins() && CanAddPin() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_SPREAD_PINS, CanEditPins() && CanSpreadPins() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_EDIT_PIN, CanEditPins() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_COPYPIN, CanEditPins() && IsPinSelected() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+		pinMenu.EnableMenuItem(ID_PALETTE_PASTEPIN, CanEditPins() && CanPastePin() ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+
 		m_pinPt = point;
 
 		ClientToScreen(&point);
@@ -459,19 +468,25 @@ protected:
 		pinMenu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
 	}
 
-	afx_msg void OnUpdatePinSelected(CCmdUI* cmdUI)
+	bool IsPinSelected()
 	{
 		int nPin = m_pinTracker->GetIndex(m_pinPt);
 
-		cmdUI->Enable(nPin >= 0);
+		return nPin >= 0;
+	}
+
+	afx_msg void OnUpdatePinSelected(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(IsPinSelected());
 	}
 
 	afx_msg void OnDeletePin()
 	{
-		int nPin = m_pinTracker->GetIndex(m_pinPt);
-		if (nPin < 0)
+		if (!IsPinSelected())
 			return;
 		 
+		int nPin = m_pinTracker->GetIndex(m_pinPt);
+
 		m_palette.Pins.erase(begin(m_palette.Pins) + nPin);
 
 		m_pinTracker->SetPins(m_palette.Pins);
@@ -491,7 +506,7 @@ protected:
 
 	afx_msg void OnPastePin()
 	{
-		if (!m_pCopiedPin)
+		if (!CanPastePin())
 			return;
 
 		int newIndex = m_pinTracker->AddPin(m_pinPt, m_pCopiedPin);
@@ -505,10 +520,16 @@ protected:
 		PaletteChanged();
 	}
 
-	afx_msg void OnUpdatePastePin(CCmdUI* cmdUI)
+	bool CanPastePin()
 	{
 		bool spaceFree = m_pinTracker->GetIndex(m_pinPt) < 0;
-		cmdUI->Enable(spaceFree && m_pCopiedPin != nullptr);
+
+		return spaceFree && (m_pCopiedPin != nullptr);
+	}
+
+	afx_msg void OnUpdatePastePin(CCmdUI* cmdUI)
+	{
+		cmdUI->Enable(CanPastePin());
 	}
 
 	void OnKillfocusEdit()
@@ -594,12 +615,17 @@ protected:
 
 	afx_msg void OnUpdateEditPins(CCmdUI* cmdUI)
 	{
-		cmdUI->Enable(TRUE);
+		cmdUI->Enable(CanEditPins());
+	}
+
+	bool CanEditPins()
+	{
+		return (m_pinEditDlg == nullptr);
 	}
 
 	afx_msg void OnEditPins()
 	{
-		if (m_pinEditDlg)
+		if (!CanEditPins())
 			return;
 
 		m_pinEditDlg = make_unique<CPinEditDlg>(this);
@@ -610,7 +636,7 @@ protected:
 
 	afx_msg void OnUpdateEditPin(CCmdUI* cmdUI)
 	{
-		cmdUI->Enable(TRUE);
+		cmdUI->Enable(CanEditPins());
 	}
 
 	void EditPin(int pinIndex)
@@ -642,9 +668,8 @@ protected:
 	}
 
 	afx_msg void OnAddPin()
-	{
-		int newIndex = m_pinTracker->AddPin(m_pinPt, nullptr);
-		if (newIndex < 0)
+	{	
+		if (! CanAddPin())
 		{
 			AfxMessageBox(_T("No space for new pin!"));
 			return;
@@ -653,17 +678,26 @@ protected:
 		m_palette.Pins = m_pinTracker->GetPins();
 		PaletteChanged();
 
+		int newIndex = m_pinTracker->AddPin(m_pinPt, nullptr);
 		EditPin(newIndex);
+	}
+
+	bool CanAddPin()
+	{
+		return (m_pinTracker->GetIndex(m_pinPt) < 0);
 	}
 
 	afx_msg void OnUpdateAddPin(CCmdUI* cmdUI)
 	{
 		bool spaceFree = m_pinTracker->GetIndex(m_pinPt) < 0;
-		cmdUI->Enable(spaceFree);
+		cmdUI->Enable(CanAddPin());
 	}
 
 	afx_msg void OnSpreadPins()
 	{
+		if (!CanSpreadPins())
+			return;
+
 		if (m_pinTracker->SpreadPins())
 		{
 			m_palette.Pins = m_pinTracker->GetPins();
@@ -671,10 +705,14 @@ protected:
 		}
 	}
 
+	bool CanSpreadPins()
+	{
+		return (m_palette.Pins.size() > 1);
+	}
+
 	afx_msg void OnUpdateSpreadPins(CCmdUI* cmdUI)
 	{
-		bool canSpread = m_palette.Pins.size() > 0;
-		cmdUI->Enable(canSpread);
+		cmdUI->Enable(CanSpreadPins());
 	}
 
 	afx_msg LRESULT OnPinsChanged(WPARAM, LPARAM)
