@@ -628,10 +628,27 @@ protected:
 		if (!CanEditPins())
 			return;
 
+		EnableEditingButtons(false);
+
 		m_pinEditDlg = make_unique<CPinEditDlg>(this);
 		m_pinEditDlg->SetPins(m_palette.Pins);
 
 		m_pinEditDlg->Create(IDD_PIN_EDIT_DLG, NULL);
+	}
+
+	void EnableEditingButtons(bool enable)
+	{
+		CWnd* pImport = GetDlgItem(IDC_IMPORT_BUT);
+		if (pImport)
+			pImport->EnableWindow(enable);
+
+		CWnd* pContrast = GetDlgItem(IDC_CONTRAST_BUT);
+		if (pContrast)
+			pContrast->EnableWindow(enable);
+
+		CWnd* pPalettes = GetDlgItem(IDC_PALETTES_BUT);
+		if (pPalettes)
+			pPalettes->EnableWindow(enable);
 	}
 
 	afx_msg void OnUpdateEditPin(CCmdUI* cmdUI)
@@ -743,6 +760,8 @@ protected:
 		{
 			m_pinEditDlg.reset();
 		}
+
+		EnableEditingButtons(true);
 
 		return 0;
 	}
