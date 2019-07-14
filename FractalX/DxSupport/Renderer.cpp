@@ -670,7 +670,7 @@ namespace DXF
 
 		static float RoundDegrees(float deg)
 		{
-			return fmod(deg, 360.0);
+			return fmod(deg, 360.0f);
 		}
 
 		void SetWorld(float time)
