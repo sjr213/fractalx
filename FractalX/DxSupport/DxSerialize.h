@@ -13,6 +13,8 @@ namespace DXF
 	struct RotationParams;
 	struct DxPerspective;
 
+	bool IsVersionSupported(int version, int minVersion, int maxVersion);
+
 	void Serialize(CArchive& ar, size_t& n);
 
 	void Serialize(CArchive& ar, unsigned int& n);

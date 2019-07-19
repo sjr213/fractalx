@@ -10,6 +10,11 @@
 
 namespace DXF
 {
+	bool IsVersionSupported(int version, int minVersion, int maxVersion)
+	{
+		return (version >= minVersion && version <= maxVersion);
+	}
+
 	void Serialize(CArchive& ar, size_t& n)
 	{
 		if (ar.IsStoring())
