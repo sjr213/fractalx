@@ -3,7 +3,6 @@
 
 namespace DXF
 {
-
 	struct StretchDistanceParams;
 	struct FractalParams;
 	struct BulbParams;

@@ -31,23 +31,32 @@ namespace DXF
 
 	void Serialize(CArchive& ar, FractalParams& fractalParams)
 	{
-		const int FractalParamVersion = 1;
+		const int FractalParamVersion = 2;
 
 		if (ar.IsStoring())
 		{
 			ar << FractalParamVersion;
 			ar << fractalParams.ConstantC << fractalParams.Power << fractalParams.Bailout;
+			ar << FractalTypeToInt(fractalParams.FractalModelType);
 		}
 		else
 		{
 			int version = 0;
 			ar >> version;
 
-			assert(version == FractalParamVersion);
-			if (version != FractalParamVersion)
+			if (version < 1 || version > FractalParamVersion)
+			{
+				assert(false);
 				return;
-
+			}
+				
 			ar >> fractalParams.ConstantC >> fractalParams.Power >> fractalParams.Bailout;
+
+			int type = 1;
+			if (version > 1)
+				ar >> type;
+
+			fractalParams.FractalModelType = FractalTypeFromInt(type);
 		}
 	}
 

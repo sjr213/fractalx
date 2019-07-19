@@ -3,6 +3,15 @@
 
 namespace DXF
 {
+	enum class FractalType
+	{
+		StandardBulb = 1
+	};
+
+	int FractalTypeToInt(FractalType fractalType);
+
+	FractalType FractalTypeFromInt(int type);
+
 	struct StretchDistanceParams
 	{
 		bool StretchDistance = false;
@@ -16,6 +25,7 @@ namespace DXF
 		double ConstantC = 1.0;
 		double Power = 8.0;		
 		double Bailout = 2.0;
+		FractalType FractalModelType = FractalType::StandardBulb;
 	};
 
 	struct BulbParams

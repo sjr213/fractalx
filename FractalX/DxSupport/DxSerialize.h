@@ -7,7 +7,6 @@ namespace DirectX
 
 namespace DXF
 {
-
 	struct DxVertexData;
 	struct TriangleData;
 	struct RotationParams;
