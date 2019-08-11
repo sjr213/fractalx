@@ -20,11 +20,6 @@ namespace DXF
 
 	std::shared_ptr<DxVertexData> CreateSphereModel(int n, SeedTriangles seeds, const std::function<void(double)>& setProgress);
 
-	// new 
 	std::shared_ptr<DxVertexData> CreateBulb(const TriangleData& tData, TraceParams traceParams, 
-		const std::function<void(double)>& setProgress);
-
-	// old
-	std::shared_ptr<DxVertexData> CreateBulb(ModelData modelData, TraceParams traceParams, 
 		const std::function<void(double)>& setProgress);
 }

@@ -15,18 +15,82 @@ using namespace DirectX::SimpleMath;
 
 namespace DXF
 {
-	static DirectX::XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
+	namespace
 	{
-		return distance * direction + origin;
+		DirectX::XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
+		{
+			return distance * direction + origin;
+		}
+
+		DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+		{
+			Vector3 n(v1.y * v2.z - v1.z * v2.y,
+				v1.z * v2.x - v1.x * v2.z,
+				v1.x * v2.y - v1.y * v2.x);
+
+			n.Normalize();
+
+			return n;
+		}
+
+		// From Luna DirectX 11, 7.2.1
+		void CalculateNormals(DxVertexData& data)
+		{
+			size_t nTriangles = data.Indices.size() / 3;
+
+			for (size_t i = 0; i < nTriangles; ++i)
+			{
+				unsigned int i0 = data.Indices[i * 3 + 0];
+				unsigned int i1 = data.Indices[i * 3 + 1];
+				unsigned int i2 = data.Indices[i * 3 + 2];
+
+				DirectX::VertexPositionNormalTexture v0 = data.Vertices[i0];
+				DirectX::VertexPositionNormalTexture v1 = data.Vertices[i1];
+				DirectX::VertexPositionNormalTexture v2 = data.Vertices[i2];
+
+				// compute face normals
+				DirectX::XMFLOAT3 e0 = v1.position - v0.position;
+				DirectX::XMFLOAT3 e1 = v2.position - v0.position;
+				DirectX::XMFLOAT3 faceNormal = CrossProduct(e0, e1);
+
+				// This triangle shares the following three vertices.
+				// so add this face normal into the average of these
+				// vertex normals.
+				data.Vertices[i0].normal = data.Vertices[i0].normal + faceNormal;
+				data.Vertices[i1].normal = data.Vertices[i1].normal + faceNormal;
+				data.Vertices[i2].normal = data.Vertices[i2].normal + faceNormal;
+			}
+
+			// normalize all vertex normals
+			for (DirectX::VertexPositionNormalTexture& vertex : data.Vertices)
+			{
+				Vector3 v = vertex.normal;
+				v.Normalize();
+				vertex.normal = v;
+			}
+		}
+
+		// Cartesian converters
+		void StandardCartesianConverter(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		{
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
+		}
+
+		void CartesianConverterAltX1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		{
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * tan(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
+		}
 	}
 
-	class BasicRayTracerImpl : public BasicRayTracer
+	class BasicRayTracer : public IRayTracer
 	{
 	private:
 		TraceParams m_traceParams;
+		std::function<void(XMFLOAT3&, const double&, const double&, const double&)> m_cartesianConverter;
 
 	protected:
 
+		// This may vary
 		void CalculateNextCycle(XMFLOAT3& z, double& r, double& dr)
 		{
 			// convert to polar coordinates
@@ -41,7 +105,7 @@ namespace DXF
 			phi = phi * m_traceParams.Fractal.Power;
 
 			// convert back to Cartesian coordinates
-			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
+			m_cartesianConverter(z, zr, theta, phi);
 		}
 
 		double EstimateDistance(XMFLOAT3& pos)
@@ -138,21 +202,7 @@ namespace DXF
 			// We might want to set lastDistance to distance if it breaks on first step
 			return lastDistance;
 		}
-/*
-		XMFLOAT3 CalculateNormal(const XMFLOAT3& pos, float normalDelta)
-		{
-			double plusX = EstimateDistance(AddScaler(pos, normalDelta));
-			double minusX = EstimateDistance(AddScaler(pos, -1.0f * normalDelta));
-			double plusY = EstimateDistance(AddScaler(pos, normalDelta));
-			double minusY = EstimateDistance(AddScaler(pos, -1.0f * normalDelta));
-			double plusZ = EstimateDistance(AddScaler(pos, normalDelta));
-			double minusZ = EstimateDistance(AddScaler(pos, -1.0f * normalDelta));
 
-			Vector3 norm(static_cast<float>(plusX - minusX), static_cast<float>(plusY - minusY), static_cast<float>(plusZ - minusZ));
-			norm.Normalize();
-			return norm;
-		}
-*/
 		StretchDistanceParams EstimateStretchRange(const TriangleData& data, const std::function<void(double)>& setProgress)
 		{
 			double minDistance = std::numeric_limits<double>::max();
@@ -196,63 +246,18 @@ namespace DXF
 			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
 		}
 
-		DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
-		{
-			Vector3 n(	v1.y * v2.z - v1.z * v2.y,
-									v1.z * v2.x - v1.x * v2.z, 
-									v1.x * v2.y - v1.y * v2.x );
-
-			n.Normalize();
-
-			return n;
-		}
-
-		// From Luna DirectX 11, 7.2.1
-		void CalculateNormals(DxVertexData& data)
-		{
-			size_t nTriangles = data.Indices.size() / 3;
-
-			for (size_t i = 0; i < nTriangles; ++i)
-			{
-				unsigned int i0 = data.Indices[i * 3 + 0];
-				unsigned int i1 = data.Indices[i * 3 + 1];
-				unsigned int i2 = data.Indices[i * 3 + 2];
-
-				DirectX::VertexPositionNormalTexture v0 = data.Vertices[i0];
-				DirectX::VertexPositionNormalTexture v1 = data.Vertices[i1];
-				DirectX::VertexPositionNormalTexture v2 = data.Vertices[i2];
-
-				// compute face normals
-				DirectX::XMFLOAT3 e0 = v1.position - v0.position;
-				DirectX::XMFLOAT3 e1 = v2.position - v0.position;
-				DirectX::XMFLOAT3 faceNormal = CrossProduct(e0, e1);
-
-				// This triangle shares the following three vertices.
-				// so add this face normal into the average of these
-				// vertex normals.
-				data.Vertices[i0].normal = data.Vertices[i0].normal + faceNormal;
-				data.Vertices[i1].normal = data.Vertices[i1].normal + faceNormal;
-				data.Vertices[i2].normal = data.Vertices[i2].normal + faceNormal;
-			}
-
-			// normalize all vertex normals
-			for (DirectX::VertexPositionNormalTexture& vertex : data.Vertices)
-			{
-				Vector3 v = vertex.normal;
-				v.Normalize();
-				vertex.normal = v;
-			}
-		}
-
 	public:
 
-		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const TraceParams& traceParams, 
-			const std::function<void(double)>& setProgress) override
-		{
-			m_traceParams = traceParams;
+		BasicRayTracer(const TraceParams& traceParams,
+			const std::function<void(XMFLOAT3&, const double&, const double&, const double&)>& cartesianConverter)
+			: m_traceParams(traceParams)
+			, m_cartesianConverter(cartesianConverter)
+		{}
 
+		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
+		{
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
-			vData->StretchParams = traceParams.Stretch;
+			vData->StretchParams = m_traceParams.Stretch;
 
 			double total = data.Vertices.size() + 2.0;
 			int progress = 1;
@@ -262,7 +267,7 @@ namespace DXF
 			{
 				return RayMarch(start, direction, p);
 			};
-			if (traceParams.Bulb.Fractional)
+			if (m_traceParams.Bulb.Fractional)
 				marcher = [this](const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
 			{
 				return RayMarchFractional(start, direction, p);
@@ -272,7 +277,7 @@ namespace DXF
 
 			for (const XMFLOAT3& v : data.Vertices)
 			{
-				XMFLOAT3 pt = MakeStartingPoint(traceParams.Bulb.Distance, traceParams.Bulb.Origin, v);
+				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				XMFLOAT3 direction = -1.0f * v;
 				Vector3 p;
@@ -299,11 +304,8 @@ namespace DXF
 			return vData;
 		}
 
-		std::shared_ptr<DxVertexData> RayTraceStretch(const TriangleData& data, const TraceParams& traceParams,
-			const std::function<void(double)>& setProgress) override
+		std::shared_ptr<DxVertexData> RayTraceStretch(const TriangleData& data, const std::function<void(double)>& setProgress) override
 		{
-			m_traceParams = traceParams;
-
 			auto setLocalProgress = setProgress;
 
 			if (m_traceParams.Stretch.EstimateMinMax)
@@ -358,9 +360,8 @@ namespace DXF
 
 	};
 
-
-	std::shared_ptr<BasicRayTracer> BasicRayTracer::CreateBasicRayTracer()
+	std::shared_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams)
 	{
-		return std::make_shared<BasicRayTracerImpl>();
+		return std::make_shared<BasicRayTracer>(traceParams, StandardCartesianConverter);
 	}
 }

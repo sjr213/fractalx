@@ -83,47 +83,20 @@ namespace DXF
 
 	std::shared_ptr<DxVertexData> CreateBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
 	{
-		std::shared_ptr<BasicRayTracer> rayTracer = BasicRayTracer::CreateBasicRayTracer();
+		std::shared_ptr<IRayTracer> rayTracer = CreateBasicRayTracer(traceParams);
 
 		if (traceParams.Stretch.StretchDistance)
 		{
-			return rayTracer->RayTraceStretch(tData, traceParams, [&](double progress)
+			return rayTracer->RayTraceStretch(tData, [&](double progress)
 			{
 				setProgress(progress);
 			});
 		}
 		else
 		{
-			return rayTracer->RayTrace(tData, traceParams, [&](double progress)
+			return rayTracer->RayTrace(tData, [&](double progress)
 			{
 				setProgress(progress);
-			});
-		}
-	}
-
-	std::shared_ptr<DxVertexData> CreateBulb(ModelData modelData, TraceParams traceParams, const std::function<void(double)>& setProgress)
-	{
-		auto tData = GenerateCrudeTriangles(modelData.VertexIterations, modelData.TriangleSeeds, [&](double progress)
-		{
-			setProgress(progress / 3.0);
-		});
-
-		NormalizeVectors(*tData);
-
-		std::shared_ptr<BasicRayTracer> rayTracer = BasicRayTracer::CreateBasicRayTracer();
-
-		if (traceParams.Stretch.StretchDistance)
-		{
-			return rayTracer->RayTraceStretch(*tData, traceParams, [&](double progress)
-			{
-				setProgress(0.333 + 2.0*progress / 3.0);
-			});
-		}
-		else
-		{
-			return rayTracer->RayTrace(*tData, traceParams, [&](double progress)
-			{
-				setProgress(0.333 + 2.0*progress / 3.0);
 			});
 		}
 	}

@@ -161,6 +161,7 @@
     <ClInclude Include="DxfColorFactory.h" />
     <ClInclude Include="DxLight.h" />
     <ClInclude Include="DxSerialize.h" />
+    <ClInclude Include="IRayTracer.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="Perspective.h" />
     <ClInclude Include="Renderer.h" />
