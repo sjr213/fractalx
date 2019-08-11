@@ -362,6 +362,9 @@ namespace DXF
 
 	std::shared_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams)
 	{
+		if(traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltX1)
+			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltX1);
+
 		return std::make_shared<BasicRayTracer>(traceParams, StandardCartesianConverter);
 	}
 }

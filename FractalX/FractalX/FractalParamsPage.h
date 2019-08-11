@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TraceParams.h"
+
 class CFractalParamsPage : public CMFCPropertyPage
 {
 	DECLARE_DYNAMIC(CFractalParamsPage)
@@ -22,10 +24,18 @@ public:
 
 	double GetPower() const;
 
+	void SetModelType(DXF::FractalType fractalType);
+
+	DXF::FractalType GetModelType() const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
 	virtual void DoDataExchange(CDataExchange* pDX);
+
+	void InitializeFractalTypeCombo();
+
+	void OnFractalTypeChanged();
 
 	virtual BOOL OnSetActive();
 
@@ -38,4 +48,7 @@ private:
 	double m_bailout;
 	double m_constantC;
 	double m_power;
+	int m_modelType;
+
+	CComboBox m_modelCombo;
 };

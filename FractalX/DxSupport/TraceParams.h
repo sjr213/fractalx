@@ -5,12 +5,15 @@ namespace DXF
 {
 	enum class FractalType
 	{
-		StandardBulb = 1
+		StandardBulb = 1,
+		CartesianConvertAltX1 = 2
 	};
 
 	int FractalTypeToInt(FractalType fractalType);
 
 	FractalType FractalTypeFromInt(int type);
+
+	CString FractalTypeString(FractalType fractalType);
 
 	struct StretchDistanceParams
 	{
