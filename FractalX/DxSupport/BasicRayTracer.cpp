@@ -80,6 +80,21 @@ namespace DXF
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * tan(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
 		}
+
+		void CartesianConverterAltX2(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		{
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(cos(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
+		}
+
+		void CartesianConverterAltY1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		{
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * tan(theta)), static_cast<float>(cos(theta)));
+		}
+
+		void CartesianConverterAltZ1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		{
+			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(sin(theta)*cos(theta)));
+		}
 	}
 
 	class BasicRayTracer : public IRayTracer
@@ -364,6 +379,15 @@ namespace DXF
 	{
 		if(traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltX1)
 			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltX1);
+
+		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltX2)
+			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltX2);
+
+		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltY1)
+			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltY1);
+
+		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltZ1)
+			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltZ1);
 
 		return std::make_shared<BasicRayTracer>(traceParams, StandardCartesianConverter);
 	}

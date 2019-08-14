@@ -99,6 +99,9 @@ void CFractalParamsPage::InitializeFractalTypeCombo()
 
 	pCombo->InsertString(0, FractalTypeString(FractalType::StandardBulb));
 	pCombo->InsertString(1, FractalTypeString(FractalType::CartesianConvertAltX1));
+	pCombo->InsertString(2, FractalTypeString(FractalType::CartesianConvertAltX2));
+	pCombo->InsertString(3, FractalTypeString(FractalType::CartesianConvertAltY1));
+	pCombo->InsertString(4, FractalTypeString(FractalType::CartesianConvertAltZ1));
 
 	pCombo->SetCurSel(m_modelType);
 }

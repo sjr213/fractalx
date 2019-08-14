@@ -6,7 +6,10 @@ namespace DXF
 	enum class FractalType
 	{
 		StandardBulb = 1,
-		CartesianConvertAltX1 = 2
+		CartesianConvertAltX1 = 2,
+		CartesianConvertAltX2 = 3,
+		CartesianConvertAltY1 = 4,
+		CartesianConvertAltZ1 = 5
 	};
 
 	int FractalTypeToInt(FractalType fractalType);
