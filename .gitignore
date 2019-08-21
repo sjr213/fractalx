@@ -19,8 +19,7 @@ ipch/
 debug/
 release/
 *.user
+*.db-shm
+*.db-wal
 
 
-
-FractalX/.vs/FractalX/v15/Solution.VC.db-shm
-FractalX/.vs/FractalX/v15/Solution.VC.db-wal
