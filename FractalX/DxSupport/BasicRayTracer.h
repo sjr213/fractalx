@@ -4,5 +4,5 @@
 
 namespace DXF
 {
-	std::shared_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams);
+	std::unique_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams);
 }

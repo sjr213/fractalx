@@ -375,20 +375,20 @@ namespace DXF
 
 	};
 
-	std::shared_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams)
+	std::unique_ptr<IRayTracer> CreateBasicRayTracer(const TraceParams& traceParams)
 	{
-		if(traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltX1)
-			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltX1);
+		if(traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltX1)
+			return std::make_unique<BasicRayTracer>(traceParams, CartesianConverterAltX1);
 
-		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltX2)
-			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltX2);
+		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltX2)
+			return std::make_unique<BasicRayTracer>(traceParams, CartesianConverterAltX2);
 
-		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltY1)
-			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltY1);
+		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltY1)
+			return std::make_unique<BasicRayTracer>(traceParams, CartesianConverterAltY1);
 
-		if (traceParams.Fractal.FractalModelType == FractalType::CartesianConvertAltZ1)
-			return std::make_shared<BasicRayTracer>(traceParams, CartesianConverterAltZ1);
+		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltZ1)
+			return std::make_unique<BasicRayTracer>(traceParams, CartesianConverterAltZ1);
 
-		return std::make_shared<BasicRayTracer>(traceParams, StandardCartesianConverter);
+		return std::make_unique<BasicRayTracer>(traceParams, StandardCartesianConverter);
 	}
 }

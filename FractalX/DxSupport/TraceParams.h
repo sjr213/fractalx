@@ -1,23 +1,13 @@
 #pragma once
+
 #include <SimpleMath.h>
+
+#include "FractalType.h"
+#include "CartesianConversionType.h"
+#include "BulbNormalizeType.h"
 
 namespace DXF
 {
-	enum class FractalType
-	{
-		StandardBulb = 1,
-		CartesianConvertAltX1 = 2,
-		CartesianConvertAltX2 = 3,
-		CartesianConvertAltY1 = 4,
-		CartesianConvertAltZ1 = 5
-	};
-
-	int FractalTypeToInt(FractalType fractalType);
-
-	FractalType FractalTypeFromInt(int type);
-
-	CString FractalTypeString(FractalType fractalType);
-
 	struct StretchDistanceParams
 	{
 		bool StretchDistance = false;
@@ -32,6 +22,9 @@ namespace DXF
 		double Power = 8.0;		
 		double Bailout = 2.0;
 		FractalType FractalModelType = FractalType::StandardBulb;
+		CartesianConversionType CartesianType = CartesianConversionType::StandardConversion;
+		BulbNormalizeType NormalizationType = BulbNormalizeType::StandardNormalization;
+		double NormalizationRoot = 0.5;
 	};
 
 	struct BulbParams

@@ -87,6 +87,15 @@
     <ClInclude Include="IRayTracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FractalType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CartesianConversionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulbNormalizeType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +144,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TraceParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FractalType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CartesianConversionType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulbNormalizeType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

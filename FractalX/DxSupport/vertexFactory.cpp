@@ -15,6 +15,29 @@ using namespace DirectX::SimpleMath;
 
 namespace DXF
 {
+	namespace
+	{
+		std::shared_ptr<DxVertexData> CreateBasicBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
+		{
+			std::unique_ptr<IRayTracer> rayTracer = CreateBasicRayTracer(traceParams);
+
+			if (traceParams.Stretch.StretchDistance)
+			{
+				return rayTracer->RayTraceStretch(tData, [&](double progress)
+					{
+						setProgress(progress);
+					});
+			}
+			else
+			{
+				return rayTracer->RayTrace(tData, [&](double progress)
+					{
+						setProgress(progress);
+					});
+			}
+		}
+	}
+
 	std::shared_ptr<DxVertexData> CreateData()
 	{
 		std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
@@ -83,22 +106,10 @@ namespace DXF
 
 	std::shared_ptr<DxVertexData> CreateBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
 	{
-		std::shared_ptr<IRayTracer> rayTracer = CreateBasicRayTracer(traceParams);
+		if(traceParams.Fractal.FractalModelType == FractalType::StandardBulb)
+			return CreateBasicBulb(tData, traceParams, setProgress);
 
-		if (traceParams.Stretch.StretchDistance)
-		{
-			return rayTracer->RayTraceStretch(tData, [&](double progress)
-			{
-				setProgress(progress);
-			});
-		}
-		else
-		{
-			return rayTracer->RayTrace(tData, [&](double progress)
-			{
-				setProgress(progress);
-			});
-		}
+		return nullptr;
 	}
 
 }

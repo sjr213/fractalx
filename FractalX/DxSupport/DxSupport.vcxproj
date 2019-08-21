@@ -155,12 +155,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BasicRayTracer.h" />
+    <ClInclude Include="BulbNormalizeType.h" />
+    <ClInclude Include="CartesianConversionType.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
     <ClInclude Include="DxFactoryMethods.h" />
     <ClInclude Include="DxfColorFactory.h" />
     <ClInclude Include="DxLight.h" />
     <ClInclude Include="DxSerialize.h" />
+    <ClInclude Include="FractalType.h" />
     <ClInclude Include="IRayTracer.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="Perspective.h" />
@@ -181,10 +184,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicRayTracer.cpp" />
+    <ClCompile Include="BulbNormalizeType.cpp" />
+    <ClCompile Include="CartesianConversionType.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />
     <ClCompile Include="DxfColorFactory.cpp" />
     <ClCompile Include="DxSerialize.cpp" />
+    <ClCompile Include="FractalType.cpp" />
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RotationParams.cpp" />

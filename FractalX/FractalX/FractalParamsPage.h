@@ -28,6 +28,18 @@ public:
 
 	DXF::FractalType GetModelType() const;
 
+	void SetCartesianType(DXF::CartesianConversionType cartesianType);
+
+	DXF::CartesianConversionType GetCartesianType() const;
+
+	void SetNormalizationType(DXF::BulbNormalizeType normalizationType);
+
+	DXF::BulbNormalizeType GetNormalizationType() const;
+
+	void SetNormalizationRoot(double root);
+
+	double GetNormalizationRoot() const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -35,7 +47,11 @@ protected:
 
 	void InitializeFractalTypeCombo();
 
-	void OnFractalTypeChanged();
+	void InitializeCartesianTypeCombo();
+
+	void InitializeNormalizationTypeCombo();
+
+	void OnComboChanged();
 
 	virtual BOOL OnSetActive();
 
@@ -49,6 +65,11 @@ private:
 	double m_constantC;
 	double m_power;
 	int m_modelType;
+	int m_cartesianType;
+	int m_normalizationType;
+	double m_normalizationRoot;
 
 	CComboBox m_modelCombo;
+	CComboBox m_cartesianCombo;
+	CComboBox m_normalizationCombo;
 };

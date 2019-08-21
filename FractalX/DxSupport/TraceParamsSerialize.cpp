@@ -31,13 +31,16 @@ namespace DXF
 
 	void Serialize(CArchive& ar, FractalParams& fractalParams)
 	{
-		const int FractalParamVersion = 2;
+		const int FractalParamVersion = 3;
 
 		if (ar.IsStoring())
 		{
 			ar << FractalParamVersion;
 			ar << fractalParams.ConstantC << fractalParams.Power << fractalParams.Bailout;
 			ar << FractalTypeToInt(fractalParams.FractalModelType);
+			ar << CartesianConversionTypeToInt(fractalParams.CartesianType);
+			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
+			ar << fractalParams.NormalizationRoot;
 		}
 		else
 		{
@@ -51,12 +54,27 @@ namespace DXF
 			}
 				
 			ar >> fractalParams.ConstantC >> fractalParams.Power >> fractalParams.Bailout;
+	
+			if (version < 2)
+				return;
 
 			int type = 1;
-			if (version > 1)
-				ar >> type;
+			ar >> type;
 
 			fractalParams.FractalModelType = FractalTypeFromInt(type);
+
+			if (version < 3)
+				return;
+
+			int cartesianType = 1;
+			ar >> cartesianType;
+			fractalParams.CartesianType = CartesianConversionTypeFromInt(cartesianType);
+
+			int normalizationType = 1;
+			ar >> normalizationType;
+			fractalParams.NormalizationType = BulbNormalizeTypeFromInt(normalizationType);
+
+			ar >> fractalParams.NormalizationRoot;
 		}
 	}
 
