@@ -145,6 +145,7 @@ void CFractalParamsPage::InitializeFractalTypeCombo()
 		return;
 
 	pCombo->InsertString(0, FractalTypeString(FractalType::StandardBulb));
+	pCombo->InsertString(1, FractalTypeString(FractalType::DoubleBulb));
 
 	pCombo->SetCurSel(m_modelType);
 }
@@ -174,7 +175,7 @@ void CFractalParamsPage::InitializeNormalizationTypeCombo()
 	pCombo->InsertString(0, BulbNormalizeTypeString(BulbNormalizeType::StandardNormalization));
 	pCombo->InsertString(1, BulbNormalizeTypeString(BulbNormalizeType::AltRoots));
 
-	pCombo->SetCurSel(m_modelType);
+	pCombo->SetCurSel(m_normalizationType);
 }
 
 void CFractalParamsPage::OnOK()

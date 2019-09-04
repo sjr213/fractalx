@@ -11,6 +11,8 @@ namespace DXF
 		{
 		case FractalType::StandardBulb:
 			return 1;
+		case FractalType::DoubleBulb:
+			return 2;
 		default:
 			assert(false);
 			return 1;
@@ -23,6 +25,8 @@ namespace DXF
 		{
 		case 1:
 			return FractalType::StandardBulb;
+		case 2:
+			return FractalType::DoubleBulb;
 		default:
 			assert(false);
 			return FractalType::StandardBulb;
@@ -35,6 +39,8 @@ namespace DXF
 		{
 		case FractalType::StandardBulb:
 			return _T("Standard Bulb");
+		case FractalType::DoubleBulb:
+			return _T("Double Bulb");
 		default:
 			assert(false);
 			return _T("Unknown");

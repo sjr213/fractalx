@@ -157,6 +157,7 @@
     <ClInclude Include="BasicRayTracer.h" />
     <ClInclude Include="BulbNormalizeType.h" />
     <ClInclude Include="CartesianConversionType.h" />
+    <ClInclude Include="DoubleRayTracer.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
     <ClInclude Include="DxFactoryMethods.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="IRayTracer.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="Perspective.h" />
+    <ClInclude Include="RayTracerCommon.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RotationParams.h" />
     <ClInclude Include="SeedTriangles.h" />
@@ -177,7 +179,7 @@
     <ClInclude Include="TraceParams.h" />
     <ClInclude Include="TraceParamsSerialize.h" />
     <ClInclude Include="TriangleLoader.h" />
-    <ClInclude Include="VectorHelpers.h" />
+    <ClInclude Include="Vector3Double.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="vertexFactory.h" />
     <ClInclude Include="VertexStatistics.h" />
@@ -186,12 +188,14 @@
     <ClCompile Include="BasicRayTracer.cpp" />
     <ClCompile Include="BulbNormalizeType.cpp" />
     <ClCompile Include="CartesianConversionType.cpp" />
+    <ClCompile Include="DoubleRayTracer.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />
     <ClCompile Include="DxfColorFactory.cpp" />
     <ClCompile Include="DxSerialize.cpp" />
     <ClCompile Include="FractalType.cpp" />
     <ClCompile Include="ModelData.cpp" />
+    <ClCompile Include="RayTracerCommon.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RotationParams.cpp" />
     <ClCompile Include="SeedTriangles.cpp" />
@@ -205,6 +209,7 @@
     <ClCompile Include="TraceParams.cpp" />
     <ClCompile Include="TraceParamsSerialize.cpp" />
     <ClCompile Include="TriangleLoader.cpp" />
+    <ClCompile Include="Vector3Double.cpp" />
     <ClCompile Include="vertexFactory.cpp" />
     <ClCompile Include="VertexStatistics.cpp" />
   </ItemGroup>

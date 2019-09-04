@@ -5,6 +5,7 @@
 
 #include "BasicRayTracer.h"
 #include <DirectXColors.h>
+#include "DoubleRayTracer.h"
 #include <SimpleMath.h>
 #include "SphereApproximator.h"
 #include "TraceParams.h"
@@ -17,24 +18,12 @@ namespace DXF
 {
 	namespace
 	{
-		std::shared_ptr<DxVertexData> CreateBasicBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
+		std::unique_ptr<IRayTracer> CreateRayTracer(const TraceParams& traceParams)
 		{
-			std::unique_ptr<IRayTracer> rayTracer = CreateBasicRayTracer(traceParams);
+			if (traceParams.Fractal.FractalModelType == FractalType::DoubleBulb)
+				return CreateDoubleRayTracer(traceParams);
 
-			if (traceParams.Stretch.StretchDistance)
-			{
-				return rayTracer->RayTraceStretch(tData, [&](double progress)
-					{
-						setProgress(progress);
-					});
-			}
-			else
-			{
-				return rayTracer->RayTrace(tData, [&](double progress)
-					{
-						setProgress(progress);
-					});
-			}
+			return CreateBasicRayTracer(traceParams);
 		}
 	}
 
@@ -106,10 +95,22 @@ namespace DXF
 
 	std::shared_ptr<DxVertexData> CreateBulb(const TriangleData& tData, TraceParams traceParams, const std::function<void(double)>& setProgress)
 	{
-		if(traceParams.Fractal.FractalModelType == FractalType::StandardBulb)
-			return CreateBasicBulb(tData, traceParams, setProgress);
+		std::unique_ptr<IRayTracer> rayTracer = CreateRayTracer(traceParams);
 
-		return nullptr;
+		if (traceParams.Stretch.StretchDistance)
+		{
+			return rayTracer->RayTraceStretch(tData, [&](double progress)
+				{
+					setProgress(progress);
+				});
+		}
+		else
+		{
+			return rayTracer->RayTrace(tData, [&](double progress)
+				{
+					setProgress(progress);
+				});
+		}
 	}
 
 }

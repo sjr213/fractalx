@@ -4,7 +4,8 @@ namespace DXF
 {
 	enum class FractalType
 	{
-		StandardBulb = 1
+		StandardBulb = 1,
+		DoubleBulb = 2
 	};
 
 	int FractalTypeToInt(FractalType fractalType);
