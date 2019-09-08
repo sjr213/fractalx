@@ -27,27 +27,27 @@ namespace DXF
 		}
 
 		// Cartesian converters
-		void StandardCartesianConverter(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		void StandardCartesianConverter(XMFLOAT3& z, double zr, double theta, double phi)
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
 		}
 
-		void CartesianConverterAltX1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltX1(XMFLOAT3& z, double zr, double theta, double phi)
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * tan(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
 		}
 
-		void CartesianConverterAltX2(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltX2(XMFLOAT3& z, double zr, double theta, double phi)
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(cos(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(cos(theta)));
 		}
 
-		void CartesianConverterAltY1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltY1(XMFLOAT3& z, double zr, double theta, double phi)
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * tan(theta)), static_cast<float>(cos(theta)));
 		}
 
-		void CartesianConverterAltZ1(XMFLOAT3& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltZ1(XMFLOAT3& z, double zr, double theta, double phi)
 		{
 			z = static_cast<float>(zr) * XMFLOAT3(static_cast<float>(sin(theta) * cos(phi)), static_cast<float>(sin(phi) * sin(theta)), static_cast<float>(sin(theta)*cos(theta)));
 		}
@@ -57,7 +57,7 @@ namespace DXF
 	{
 	private:
 		TraceParams m_traceParams;
-		std::function<void(XMFLOAT3&, const double&, const double&, const double&)> m_cartesianConverter;
+		std::function<void(XMFLOAT3&, double, double, double)> m_cartesianConverter;
 
 	protected:
 

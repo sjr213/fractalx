@@ -26,27 +26,27 @@ namespace DXF
 		}
 
 		// Cartesian converters
-		void StandardCartesianConverter(Vector3Double& z, const double& zr, const double& theta, const double& phi)
+		void StandardCartesianConverter(Vector3Double& z, double zr, double theta, double phi)
 		{	
 			z = zr * Vector3Double(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
 		}
 
-		void CartesianConverterAltX1(Vector3Double& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltX1(Vector3Double& z, double zr, double theta, double phi)
 		{		
 			z = zr * Vector3Double(sin(theta) * tan(phi), sin(phi) * sin(theta), cos(theta));
 		}
 
-		void CartesianConverterAltX2(Vector3Double& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltX2(Vector3Double& z, double zr, double theta, double phi)
 		{	
 			z = zr * Vector3Double(cos(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
 		}
 
-		void CartesianConverterAltY1(Vector3Double& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltY1(Vector3Double& z, double zr, double theta, double phi)
 		{	
 			z = zr * Vector3Double(sin(theta) * cos(phi), sin(phi) * tan(theta), cos(theta));
 		}
 
-		void CartesianConverterAltZ1(Vector3Double& z, const double& zr, const double& theta, const double& phi)
+		void CartesianConverterAltZ1(Vector3Double& z, double zr, double theta, double phi)
 		{
 			z = zr * Vector3Double(sin(theta) * cos(phi), sin(phi) * sin(theta), sin(theta) * cos(theta));
 		}
@@ -56,7 +56,7 @@ namespace DXF
 	{
 	private:
 		TraceParams m_traceParams;
-		std::function<void(Vector3Double&, const double&, const double&, const double&)> m_cartesianConverter;
+		std::function<void(Vector3Double&, double, double, double)> m_cartesianConverter;
 
 	protected:
 
