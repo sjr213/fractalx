@@ -232,6 +232,9 @@ namespace DXF
 			, m_cartesianConverter(cartesianConverter)
 		{}
 
+		virtual ~DoubleRayTracer()
+		{}
+
 		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
 		{
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
