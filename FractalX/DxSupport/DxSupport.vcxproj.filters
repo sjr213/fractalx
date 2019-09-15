@@ -102,6 +102,15 @@
     <ClInclude Include="RayTracerCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TrigOption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CartesianConverterFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CartesianConverterGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -168,6 +177,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RayTracerCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CartesianConverterFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CartesianConverterGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

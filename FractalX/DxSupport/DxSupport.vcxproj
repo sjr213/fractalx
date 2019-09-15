@@ -74,6 +74,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -100,6 +101,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -157,6 +159,8 @@
     <ClInclude Include="BasicRayTracer.h" />
     <ClInclude Include="BulbNormalizeType.h" />
     <ClInclude Include="CartesianConversionType.h" />
+    <ClInclude Include="CartesianConverterFactory.h" />
+    <ClInclude Include="CartesianConverterGroup.h" />
     <ClInclude Include="DoubleRayTracer.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
@@ -179,6 +183,7 @@
     <ClInclude Include="TraceParams.h" />
     <ClInclude Include="TraceParamsSerialize.h" />
     <ClInclude Include="TriangleLoader.h" />
+    <ClInclude Include="TrigOption.h" />
     <ClInclude Include="Vector3Double.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="vertexFactory.h" />
@@ -188,6 +193,8 @@
     <ClCompile Include="BasicRayTracer.cpp" />
     <ClCompile Include="BulbNormalizeType.cpp" />
     <ClCompile Include="CartesianConversionType.cpp" />
+    <ClCompile Include="CartesianConverterFactory.cpp" />
+    <ClCompile Include="CartesianConverterGroup.cpp" />
     <ClCompile Include="DoubleRayTracer.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />
@@ -209,6 +216,7 @@
     <ClCompile Include="TraceParams.cpp" />
     <ClCompile Include="TraceParamsSerialize.cpp" />
     <ClCompile Include="TriangleLoader.cpp" />
+    <ClCompile Include="TrigOption.cpp" />
     <ClCompile Include="Vector3Double.cpp" />
     <ClCompile Include="vertexFactory.cpp" />
     <ClCompile Include="VertexStatistics.cpp" />

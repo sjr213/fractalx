@@ -2,12 +2,15 @@
 
 #include <SimpleMath.h>
 
-#include "FractalType.h"
-#include "CartesianConversionType.h"
 #include "BulbNormalizeType.h"
+#include "CartesianConverterGroup.h"
+#include "CartesianConversionType.h"
+#include "FractalType.h"
 
 namespace DXF
 {
+
+
 	struct StretchDistanceParams
 	{
 		bool StretchDistance = false;
@@ -25,6 +28,7 @@ namespace DXF
 		CartesianConversionType CartesianType = CartesianConversionType::StandardConversion;
 		BulbNormalizeType NormalizationType = BulbNormalizeType::StandardNormalization;
 		double NormalizationRoot = 0.5;
+		CartesianConverterGroup ConversionGroup;
 	};
 
 	struct BulbParams

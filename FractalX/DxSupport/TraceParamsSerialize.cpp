@@ -5,6 +5,42 @@
 
 namespace DXF
 {
+	void Serialize(CArchive& ar, CartesianConverterGroup& gr)
+	{
+		const int CCGVersion = 1;
+
+		if (ar.IsStoring())
+		{
+			ar << CCGVersion;
+			ar << gr.MultiplerX << TrigOptionToInt(gr.ThetaOptionX) <<TrigOptionToInt(gr.PhiOptionX);
+			ar << gr.MultiplerY << TrigOptionToInt(gr.ThetaOptionY) << TrigOptionToInt(gr.PhiOptionY);
+			ar << gr.MultiplerZ << TrigOptionToInt(gr.ThetaOptionZ) << TrigOptionToInt(gr.PhiOptionZ);
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == CCGVersion);
+			if (version != CCGVersion)
+				return;
+
+			int thetaOpt = 0, phiOpt = 0;
+
+			ar >> gr.MultiplerX >> thetaOpt >> phiOpt;
+			gr.ThetaOptionX = TrigOptionFromInt(thetaOpt);
+			gr.PhiOptionX = TrigOptionFromInt(phiOpt);
+
+			ar >> gr.MultiplerY >> thetaOpt >> phiOpt;
+			gr.ThetaOptionY = TrigOptionFromInt(thetaOpt);
+			gr.PhiOptionY = TrigOptionFromInt(phiOpt);
+
+			ar >> gr.MultiplerZ >> thetaOpt >> phiOpt;
+			gr.ThetaOptionZ = TrigOptionFromInt(thetaOpt);
+			gr.PhiOptionZ = TrigOptionFromInt(phiOpt);
+		}
+	}
+
 	void Serialize(CArchive& ar, StretchDistanceParams& stretchParams)
 	{
 		const int StretchVersion = 1;
@@ -31,7 +67,7 @@ namespace DXF
 
 	void Serialize(CArchive& ar, FractalParams& fractalParams)
 	{
-		const int FractalParamVersion = 3;
+		const int FractalParamVersion = 4;
 
 		if (ar.IsStoring())
 		{
@@ -41,6 +77,7 @@ namespace DXF
 			ar << CartesianConversionTypeToInt(fractalParams.CartesianType);
 			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
 			ar << fractalParams.NormalizationRoot;
+			Serialize(ar, fractalParams.ConversionGroup);
 		}
 		else
 		{
@@ -75,6 +112,11 @@ namespace DXF
 			fractalParams.NormalizationType = BulbNormalizeTypeFromInt(normalizationType);
 
 			ar >> fractalParams.NormalizationRoot;
+
+			if (version < 4)
+				return;
+
+			Serialize(ar, fractalParams.ConversionGroup);
 		}
 	}
 

@@ -2,6 +2,7 @@
 #include "DoubleRayTracer.h"
 
 #include <algorithm>
+#include "CartesianConverterFactory.h"
 #include <limits>
 #include "RayTracerCommon.h"
 #include <SimpleMath.h>
@@ -9,6 +10,7 @@
 #include "TraceParams.h"
 #include "VertexData.h"
 #include "Vector3Double.h"
+
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -357,18 +359,7 @@ namespace DXF
 
 	std::unique_ptr<IRayTracer> CreateDoubleRayTracer(const TraceParams& traceParams)
 	{
-		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltX1)
-			return std::make_unique<DoubleRayTracer>(traceParams, CartesianConverterAltX1);
-
-		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltX2)
-			return std::make_unique<DoubleRayTracer>(traceParams, CartesianConverterAltX2);
-
-		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltY1)
-			return std::make_unique<DoubleRayTracer>(traceParams, CartesianConverterAltY1);
-
-		if (traceParams.Fractal.CartesianType == CartesianConversionType::CartesianConvertAltZ1)
-			return std::make_unique<DoubleRayTracer>(traceParams, CartesianConverterAltZ1);
-
-		return std::make_unique<DoubleRayTracer>(traceParams, StandardCartesianConverter);
+		auto converter = CreateConverter(traceParams.Fractal.ConversionGroup);
+		return std::make_unique<DoubleRayTracer>(traceParams, converter);
 	}
 }
