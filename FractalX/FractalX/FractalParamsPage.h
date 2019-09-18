@@ -40,6 +40,10 @@ public:
 
 	double GetNormalizationRoot() const;
 
+	void SetCartesianConversionGroup(DXF::CartesianConverterGroup& group);
+
+	std::shared_ptr<DXF::CartesianConverterGroup> GetCartesianConversionGroup();
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -59,6 +63,8 @@ protected:
 
 	afx_msg void OnKillfocusEdit();
 
+	void OnCustomBut();
+
 private:
 
 	double m_bailout;
@@ -68,6 +74,7 @@ private:
 	int m_cartesianType;
 	int m_normalizationType;
 	double m_normalizationRoot;
+	std::shared_ptr<DXF::CartesianConverterGroup> m_cartesianGroup;
 
 	CComboBox m_modelCombo;
 	CComboBox m_cartesianCombo;

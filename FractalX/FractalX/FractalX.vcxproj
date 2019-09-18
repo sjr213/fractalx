@@ -194,6 +194,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CancelException.h" />
+    <ClInclude Include="CartesianConversionDlg.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColorSelectorDlg.h" />
     <ClInclude Include="ColorUtilities.h" />
@@ -237,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CancelException.cpp" />
+    <ClCompile Include="CartesianConversionDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColorSelectorDlg.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />

@@ -59,6 +59,7 @@ void CModelSheet::SetTraceParams(const DXF::TraceParams& traceParams)
 	m_fractalParamsPage.SetCartesianType(m_traceParams.Fractal.CartesianType);
 	m_fractalParamsPage.SetNormalizationType(m_traceParams.Fractal.NormalizationType);
 	m_fractalParamsPage.SetNormalizationRoot(m_traceParams.Fractal.NormalizationRoot);
+	m_fractalParamsPage.SetCartesianConversionGroup(m_traceParams.Fractal.ConversionGroup);
 	m_positionRangePage.SetOrigin(m_traceParams.Bulb.Origin);
 	m_positionRangePage.SetStretchParams(m_traceParams.Stretch);
 }
@@ -81,6 +82,7 @@ void CModelSheet::OnOk()
 	m_traceParams.Fractal.CartesianType = m_fractalParamsPage.GetCartesianType();
 	m_traceParams.Fractal.NormalizationType = m_fractalParamsPage.GetNormalizationType();
 	m_traceParams.Fractal.NormalizationRoot = m_fractalParamsPage.GetNormalizationRoot();
+	m_traceParams.Fractal.ConversionGroup = *m_fractalParamsPage.GetCartesianConversionGroup();
 	m_traceParams.Bulb.Origin = m_positionRangePage.GetOrigin();
 	m_traceParams.Stretch = m_positionRangePage.GetStretchParams();
 }

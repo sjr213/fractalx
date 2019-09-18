@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include "CartesianConversionDlg.h"
 #include "FractalX.h"
 #include "FractalParamsPage.h"
 #include "TraceParams.h"
 
 #include "ModelSheet.h"
+
 
 using namespace DXF;
 
@@ -18,6 +20,7 @@ CFractalParamsPage::CFractalParamsPage()
 	, m_cartesianType(CartesianConversionTypeToInt(CartesianConversionType::StandardConversion))
 	, m_normalizationType(BulbNormalizeTypeToInt(BulbNormalizeType::StandardNormalization))
 	, m_normalizationRoot(0.5)
+	, m_cartesianGroup(new CartesianConverterGroup)
 {}
 
 CFractalParamsPage::~CFractalParamsPage()
@@ -93,6 +96,16 @@ double CFractalParamsPage::GetNormalizationRoot() const
 	return m_normalizationRoot;
 }
 
+void CFractalParamsPage::SetCartesianConversionGroup(DXF::CartesianConverterGroup& group)
+{
+	*m_cartesianGroup = group;
+}
+
+std::shared_ptr<CartesianConverterGroup> CFractalParamsPage::GetCartesianConversionGroup()
+{
+	return m_cartesianGroup;
+}
+
 BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_BAILOUT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_CONSTANT_C_EDIT, &CFractalParamsPage::OnKillfocusEdit)
@@ -101,6 +114,7 @@ BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_CBN_SELCHANGE(IDC_CARTESIAN_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_EN_KILLFOCUS(IDC_ROOT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
+	ON_BN_CLICKED(IDC_CUSTOM_CONVERSION_BUT, &CFractalParamsPage::OnCustomBut)
 END_MESSAGE_MAP()
 
 void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
@@ -195,4 +209,14 @@ void CFractalParamsPage::OnKillfocusEdit()
 void CFractalParamsPage::OnComboChanged()
 {
 	UpdateData(TRUE);
+}
+
+void CFractalParamsPage::OnCustomBut()
+{
+	auto pDlg = CCartesianConversionDlg::CreateCartesianConversionDlg(*m_cartesianGroup, this);
+
+	if (pDlg->DoModal() == IDOK)
+	{
+		m_cartesianGroup = pDlg->GetConversionGroup();
+	}
 }
