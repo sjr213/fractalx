@@ -18,11 +18,11 @@ public:
 
 	void SetModelData(const DXF::ModelData& data);
 
-	void SetTraceParams(const DXF::TraceParams& traceParams);
+	void SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceParams);
 
 	DXF::ModelData GetModelData() const;
 
-	DXF::TraceParams GetTraceParams() const;
+	std::shared_ptr<DXF::TraceParams> GetTraceParams() const;
 
 	void OnOk();
 
@@ -41,5 +41,5 @@ protected:
 
 	DXF::ModelData m_data;
 
-	DXF::TraceParams m_traceParams;
+	std::shared_ptr<DXF::TraceParams> m_traceParams;
 };

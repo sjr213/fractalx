@@ -11,12 +11,14 @@ IMPLEMENT_DYNAMIC(CModelSheet, CMFCPropertySheet)
 
 CModelSheet::CModelSheet(UINT nIDCaption, CWnd* pParentWnd, UINT iSelectPage)
 	:CMFCPropertySheet(nIDCaption, pParentWnd, iSelectPage)
+	, m_traceParams(std::make_shared<TraceParams>())
 {
 	AddPages();
 }
 
 CModelSheet::CModelSheet(LPCTSTR pszCaption, CWnd* pParentWnd, UINT iSelectPage)
 	: CMFCPropertySheet(pszCaption, pParentWnd, iSelectPage)
+	, m_traceParams(std::make_shared<TraceParams>())
 {
 	AddPages();
 }
@@ -48,23 +50,23 @@ ModelData CModelSheet::GetModelData() const
 	return m_data;
 }
 
-void CModelSheet::SetTraceParams(const DXF::TraceParams& traceParams)
+void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceParams)
 {
-	m_traceParams = traceParams;
-	m_traceParamsPage.SetTraceParams(m_traceParams);
-	m_fractalParamsPage.SetBailOut(m_traceParams.Fractal.Bailout);
-	m_fractalParamsPage.SetConstantC(m_traceParams.Fractal.ConstantC);
-	m_fractalParamsPage.SetPower(m_traceParams.Fractal.Power);
-	m_fractalParamsPage.SetModelType(m_traceParams.Fractal.FractalModelType);
-	m_fractalParamsPage.SetCartesianType(m_traceParams.Fractal.CartesianType);
-	m_fractalParamsPage.SetNormalizationType(m_traceParams.Fractal.NormalizationType);
-	m_fractalParamsPage.SetNormalizationRoot(m_traceParams.Fractal.NormalizationRoot);
-	m_fractalParamsPage.SetCartesianConversionGroup(m_traceParams.Fractal.ConversionGroup);
-	m_positionRangePage.SetOrigin(m_traceParams.Bulb.Origin);
-	m_positionRangePage.SetStretchParams(m_traceParams.Stretch);
+	*m_traceParams = *traceParams;
+	m_traceParamsPage.SetTraceParams(*m_traceParams);
+	m_fractalParamsPage.SetBailOut(m_traceParams->Fractal.Bailout);
+	m_fractalParamsPage.SetConstantC(m_traceParams->Fractal.ConstantC);
+	m_fractalParamsPage.SetPower(m_traceParams->Fractal.Power);
+	m_fractalParamsPage.SetModelType(m_traceParams->Fractal.FractalModelType);
+	m_fractalParamsPage.SetCartesianType(m_traceParams->Fractal.CartesianType);
+	m_fractalParamsPage.SetNormalizationType(m_traceParams->Fractal.NormalizationType);
+	m_fractalParamsPage.SetNormalizationRoot(m_traceParams->Fractal.NormalizationRoot);
+	m_fractalParamsPage.SetCartesianConversionGroup(m_traceParams->Fractal.ConversionGroup);
+	m_positionRangePage.SetOrigin(m_traceParams->Bulb.Origin);
+	m_positionRangePage.SetStretchParams(m_traceParams->Stretch);
 }
 
-DXF::TraceParams CModelSheet::GetTraceParams() const
+std::shared_ptr<DXF::TraceParams> CModelSheet::GetTraceParams() const
 {
 	return m_traceParams;
 }
@@ -74,15 +76,15 @@ void CModelSheet::OnOk()
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
 	m_data.TriangleSeeds = m_vertexPage.GetSeedTriangles();
 
-	m_traceParams = m_traceParamsPage.GetTraceParams();
-	m_traceParams.Fractal.Bailout = m_fractalParamsPage.GetBailOut();
-	m_traceParams.Fractal.ConstantC = m_fractalParamsPage.GetConstantC();
-	m_traceParams.Fractal.Power = m_fractalParamsPage.GetPower();
-	m_traceParams.Fractal.FractalModelType = m_fractalParamsPage.GetModelType();
-	m_traceParams.Fractal.CartesianType = m_fractalParamsPage.GetCartesianType();
-	m_traceParams.Fractal.NormalizationType = m_fractalParamsPage.GetNormalizationType();
-	m_traceParams.Fractal.NormalizationRoot = m_fractalParamsPage.GetNormalizationRoot();
-	m_traceParams.Fractal.ConversionGroup = *m_fractalParamsPage.GetCartesianConversionGroup();
-	m_traceParams.Bulb.Origin = m_positionRangePage.GetOrigin();
-	m_traceParams.Stretch = m_positionRangePage.GetStretchParams();
+	*m_traceParams = m_traceParamsPage.GetTraceParams();
+	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();
+	m_traceParams->Fractal.ConstantC = m_fractalParamsPage.GetConstantC();
+	m_traceParams->Fractal.Power = m_fractalParamsPage.GetPower();
+	m_traceParams->Fractal.FractalModelType = m_fractalParamsPage.GetModelType();
+	m_traceParams->Fractal.CartesianType = m_fractalParamsPage.GetCartesianType();
+	m_traceParams->Fractal.NormalizationType = m_fractalParamsPage.GetNormalizationType();
+	m_traceParams->Fractal.NormalizationRoot = m_fractalParamsPage.GetNormalizationRoot();
+	m_traceParams->Fractal.ConversionGroup = *m_fractalParamsPage.GetCartesianConversionGroup();
+	m_traceParams->Bulb.Origin = m_positionRangePage.GetOrigin();
+	m_traceParams->Stretch = m_positionRangePage.GetStretchParams();
 }
