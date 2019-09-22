@@ -47,7 +47,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual void DoDataExchange(CDataExchange* pDX);
+	void DoDataExchange(CDataExchange* pDX) override;
 
 	void InitializeFractalTypeCombo();
 
@@ -57,7 +57,9 @@ protected:
 
 	void OnComboChanged();
 
-	virtual BOOL OnSetActive();
+	BOOL OnInitDialog() override;
+
+	BOOL OnSetActive() override;
 
 	void OnOK() override;
 

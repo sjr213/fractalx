@@ -143,12 +143,19 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_normalizationRoot, 0.001, 10);
 }
 
-BOOL CFractalParamsPage::OnSetActive()
+BOOL CFractalParamsPage::OnInitDialog()
 {
+	CPropertyPage::OnInitDialog();
+
 	InitializeFractalTypeCombo();
 	InitializeCartesianTypeCombo();
 	InitializeNormalizationTypeCombo();
 
+	return TRUE;
+}
+
+BOOL CFractalParamsPage::OnSetActive()
+{
 	return CPropertyPage::OnSetActive();
 }
 
