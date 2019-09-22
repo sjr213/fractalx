@@ -127,9 +127,16 @@ protected:
 		CCartesianConversionDlg::OnOK();
 	}
 
+	void OnDefaultsClicked()
+	{
+		*m_group = CartesianConverterGroup();
+		UpdateData(FALSE);
+	}
+
 };
 
 BEGIN_MESSAGE_MAP(CartesianConversionDlgImp, CCartesianConversionDlg)
+	ON_BN_CLICKED(IDC_DEFAULT_BUT, &CartesianConversionDlgImp::OnDefaultsClicked)
 END_MESSAGE_MAP()
 
 
