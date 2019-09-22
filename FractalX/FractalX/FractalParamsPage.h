@@ -55,6 +55,10 @@ protected:
 
 	void InitializeNormalizationTypeCombo();
 
+	void EnableCtrls();
+
+	void OnModelComboChanged();
+
 	void OnComboChanged();
 
 	BOOL OnInitDialog() override;

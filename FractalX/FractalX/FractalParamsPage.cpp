@@ -110,7 +110,7 @@ BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_BAILOUT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_CONSTANT_C_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_POWER_EDIT, &CFractalParamsPage::OnKillfocusEdit)
-	ON_CBN_SELCHANGE(IDC_MODEL_TYPE_COMBO, &CFractalParamsPage::OnComboChanged)
+	ON_CBN_SELCHANGE(IDC_MODEL_TYPE_COMBO, &CFractalParamsPage::OnModelComboChanged)
 	ON_CBN_SELCHANGE(IDC_CARTESIAN_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_EN_KILLFOCUS(IDC_ROOT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
@@ -156,7 +156,22 @@ BOOL CFractalParamsPage::OnInitDialog()
 
 BOOL CFractalParamsPage::OnSetActive()
 {
+	EnableCtrls();
+
 	return CPropertyPage::OnSetActive();
+}
+
+void CFractalParamsPage::EnableCtrls()
+{
+	bool stdBulb = FractalTypeFromInt(m_modelType+1) == FractalType::StandardBulb;
+
+	CWnd* pCartesianTypeCombo = GetDlgItem(IDC_CARTESIAN_COMBO);
+	if (pCartesianTypeCombo)
+		pCartesianTypeCombo->EnableWindow(stdBulb);
+
+	CWnd* pCustomeBut = GetDlgItem(IDC_CUSTOM_CONVERSION_BUT);
+	if (pCustomeBut)
+		pCustomeBut->EnableWindow(!stdBulb);
 }
 
 void CFractalParamsPage::InitializeFractalTypeCombo()
@@ -216,6 +231,12 @@ void CFractalParamsPage::OnKillfocusEdit()
 void CFractalParamsPage::OnComboChanged()
 {
 	UpdateData(TRUE);
+}
+
+void CFractalParamsPage::OnModelComboChanged()
+{
+	UpdateData(TRUE);
+	EnableCtrls();
 }
 
 void CFractalParamsPage::OnCustomBut()
