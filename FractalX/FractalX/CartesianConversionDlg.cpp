@@ -2,10 +2,11 @@
 #include "CartesianConversionDlg.h"
 
 #include "CartesianConverterGroup.h"
-
+#include "TrigOption.h"
 #include "Resource.h"
 
 using namespace DXF;
+using namespace std;
 
 namespace
 {
@@ -16,7 +17,7 @@ namespace
 class CartesianConversionDlgImp : public CCartesianConversionDlg
 {
 private:
-	std::shared_ptr<CartesianConverterGroup> m_group;
+	shared_ptr<CartesianConverterGroup> m_group;
 
 	CComboBox m_thetaXCombo;
 	CComboBox m_phiXCombo;
@@ -33,7 +34,7 @@ public:
 
 	virtual ~CartesianConversionDlgImp() {}
 
-	std::shared_ptr<CartesianConverterGroup> GetConversionGroup() override
+	shared_ptr<CartesianConverterGroup> GetConversionGroup() override
 	{
 		return m_group;
 	}
@@ -140,7 +141,7 @@ BEGIN_MESSAGE_MAP(CartesianConversionDlgImp, CCartesianConversionDlg)
 END_MESSAGE_MAP()
 
 
-std::shared_ptr<CCartesianConversionDlg> CCartesianConversionDlg::CreateCartesianConversionDlg(const CartesianConverterGroup& ccg, CWnd* pParent)
+shared_ptr<CCartesianConversionDlg> CCartesianConversionDlg::CreateCartesianConversionDlg(const CartesianConverterGroup& ccg, CWnd* pParent)
 {
-	return std::make_shared<CartesianConversionDlgImp>(std::make_shared<CartesianConverterGroup>(ccg), pParent);
+	return make_shared<CartesianConversionDlgImp>(make_shared<CartesianConverterGroup>(ccg), pParent);
 }
