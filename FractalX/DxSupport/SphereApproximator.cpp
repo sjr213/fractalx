@@ -39,7 +39,7 @@ namespace DXF
 		};
 
 		if (seeds > SeedTriangles::One)
-			seedTriangles.push_back(Triangle(0, 3, 2));
+			seedTriangles.push_back(Triangle(0, 2, 3));
 
 		if (seeds > SeedTriangles::Two)
 		{
@@ -52,7 +52,7 @@ namespace DXF
 			seedTriangles.push_back(Triangle(5, 2, 1));
 			seedTriangles.push_back(Triangle(5, 3, 2));
 			seedTriangles.push_back(Triangle(5, 4, 3));
-			seedTriangles.push_back(Triangle(5, 1, 4));
+			seedTriangles.push_back(Triangle(5, 1, 4));		
 		}
 
 		return seedTriangles;
