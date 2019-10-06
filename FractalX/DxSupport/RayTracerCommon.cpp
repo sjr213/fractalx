@@ -3,12 +3,24 @@
 
 #include <SimpleMath.h>
 #include "VertexData.h"
+#include <DirectXMath.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+using namespace std;
 
 namespace DXF
 {
+	static void SumFaceNormals(const XMFLOAT3& posA, const XMFLOAT3& posB, const XMFLOAT3& posC, XMVECTOR& normalA, XMVECTOR& normalB, XMVECTOR& normalC)
+	{
+		auto planeNormal = XMPlaneNormalize(XMPlaneFromPoints(
+			XMLoadFloat3(&posA), XMLoadFloat3(&posB), XMLoadFloat3(&posC)));
+
+		normalA += planeNormal * 2.0f;
+		normalB += planeNormal;
+		normalC += planeNormal;
+	}
+
 	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
 	{
 		return distance * direction + origin;
@@ -61,15 +73,32 @@ namespace DXF
 			vertex.normal = v;
 		}
 	}
-	/*
-	Vector3 AddScaler(const Vector3& v, float s)
-	{
-		Vector3 outV = v;
-		outV.x += s;
-		outV.y += s;
-		outV.z += s;
 
-		return outV;
+	// More common procedure like CT
+	// does not look as sharp as CalculateNormals()
+	void CalculateNormals2(DxVertexData& data)
+	{
+		auto& vertices = data.Vertices;
+		vector<XMVECTOR> normals(vertices.size());
+		auto& indices = data.Indices;
+
+		for (size_t i = 0; i < indices.size(); i += 3)
+		{
+			auto index1 = indices[i];
+			auto index2 = indices[i + 1];
+			auto index3 = indices[i + 2];
+
+			SumFaceNormals(vertices[index1].position, vertices[index2].position, vertices[index3].position,
+				normals.at(index1), normals.at(index2), normals.at(index3));
+		}
+
+		auto currentVertex = vertices.begin();
+		auto currentNormal = normals.begin();
+
+		for (unsigned int i = 0; i < vertices.size(); ++i, ++currentVertex, ++currentNormal)
+		{
+			XMVector3Normalize(*currentNormal);
+			XMStoreFloat3(&currentVertex->normal, *currentNormal);
+		}
 	}
-	*/
 }

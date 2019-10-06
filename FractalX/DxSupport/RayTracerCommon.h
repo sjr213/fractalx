@@ -14,4 +14,5 @@ namespace DXF
 
 	void CalculateNormals(DxVertexData& data);
 
+	void CalculateNormals2(DxVertexData& data);
 }
