@@ -21,9 +21,13 @@ namespace DXF
 		normalC += planeNormal;
 	}
 
-	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
+	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction, const tuple<double, double, double>& constantC)
 	{
-		return distance * direction + origin;
+		auto pt = distance * direction + origin;
+		pt.x += static_cast<float>(get<0>(constantC));
+		pt.y += static_cast<float>(get<1>(constantC));
+		pt.z += static_cast<float>(get<2>(constantC));
+		return pt;
 	}
 
 	XMFLOAT3 CrossProduct(const XMFLOAT3& v1, const XMFLOAT3& v2)

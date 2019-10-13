@@ -192,7 +192,7 @@ namespace DXF
 			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
 			{
 				const XMFLOAT3& v = data.Vertices.at(nVertex);
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
 
 				Vector3Double dV = v;
 				Vector3Double direction = -1.0 * dV;
@@ -274,7 +274,7 @@ namespace DXF
 
 			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
 
 				Vector3Double direction = -1.0 * Vector3Double(v);
 				Vector3Double p;
@@ -328,7 +328,7 @@ namespace DXF
 
 			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
 
 				Vector3Double direction = -1.0f * Vector3Double(v);
 				Vector3Double p;
