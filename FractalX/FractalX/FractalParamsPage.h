@@ -16,9 +16,9 @@ public:
 
 	double GetBailOut() const;
 
-	void SetConstantC(double constantC);
+	void SetDerivative(double derivative);
 
-	double GetConstantC() const;
+	double GetDerivative() const;
 
 	void SetPower(double power);
 
@@ -74,7 +74,7 @@ protected:
 private:
 
 	double m_bailout;
-	double m_constantC;
+	double m_derivative;
 	double m_power;
 	int m_modelType;
 	int m_cartesianType;

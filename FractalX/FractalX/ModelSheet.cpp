@@ -55,7 +55,7 @@ void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceP
 	*m_traceParams = *traceParams;
 	m_traceParamsPage.SetTraceParams(*m_traceParams);
 	m_fractalParamsPage.SetBailOut(m_traceParams->Fractal.Bailout);
-	m_fractalParamsPage.SetConstantC(m_traceParams->Fractal.ConstantC);
+	m_fractalParamsPage.SetDerivative(m_traceParams->Fractal.Derivative);
 	m_fractalParamsPage.SetPower(m_traceParams->Fractal.Power);
 	m_fractalParamsPage.SetModelType(m_traceParams->Fractal.FractalModelType);
 	m_fractalParamsPage.SetCartesianType(m_traceParams->Fractal.CartesianType);
@@ -78,7 +78,7 @@ void CModelSheet::OnOk()
 
 	*m_traceParams = m_traceParamsPage.GetTraceParams();
 	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();
-	m_traceParams->Fractal.ConstantC = m_fractalParamsPage.GetConstantC();
+	m_traceParams->Fractal.Derivative = m_fractalParamsPage.GetDerivative();
 	m_traceParams->Fractal.Power = m_fractalParamsPage.GetPower();
 	m_traceParams->Fractal.FractalModelType = m_fractalParamsPage.GetModelType();
 	m_traceParams->Fractal.CartesianType = m_fractalParamsPage.GetCartesianType();

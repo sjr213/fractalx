@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(CFractalParamsPage, CMFCPropertyPage)
 CFractalParamsPage::CFractalParamsPage()
 	: CMFCPropertyPage(CFractalParamsPage::IDD)
 	, m_bailout(2.0)
-	, m_constantC(1.0)
+	, m_derivative(1.0)
 	, m_power(8.0)
 	, m_modelType(FractalTypeToInt(FractalType::StandardBulb))
 	, m_cartesianType(CartesianConversionTypeToInt(CartesianConversionType::StandardConversion))
@@ -36,14 +36,14 @@ double CFractalParamsPage::GetBailOut() const
 	return m_bailout;
 }
 
-void CFractalParamsPage::SetConstantC(double constantC)
+void CFractalParamsPage::SetDerivative(double derivative)
 {
-	m_constantC = constantC;
+	m_derivative = derivative;
 }
 
-double CFractalParamsPage::GetConstantC() const
+double CFractalParamsPage::GetDerivative() const
 {
-	return m_constantC;
+	return m_derivative;
 }
 
 void CFractalParamsPage::SetPower(double power)
@@ -124,8 +124,8 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BAILOUT_EDIT, m_bailout);
 	DDV_MinMaxDouble(pDX, m_bailout, 1, 10000);
 
-	DDX_Text(pDX, IDC_CONSTANT_C_EDIT, m_constantC);
-	DDV_MinMaxDouble(pDX, m_constantC, -10000, 10000);
+	DDX_Text(pDX, IDC_CONSTANT_C_EDIT, m_derivative);
+	DDV_MinMaxDouble(pDX, m_derivative, -10000, 10000);
 
 	DDX_Text(pDX, IDC_POWER_EDIT, m_power);
 	DDV_MinMaxDouble(pDX, m_power, 0, 10000);

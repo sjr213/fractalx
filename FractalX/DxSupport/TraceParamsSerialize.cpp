@@ -72,7 +72,7 @@ namespace DXF
 		if (ar.IsStoring())
 		{
 			ar << FractalParamVersion;
-			ar << fractalParams.ConstantC << fractalParams.Power << fractalParams.Bailout;
+			ar << fractalParams.Derivative << fractalParams.Power << fractalParams.Bailout;
 			ar << FractalTypeToInt(fractalParams.FractalModelType);
 			ar << CartesianConversionTypeToInt(fractalParams.CartesianType);
 			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
@@ -90,7 +90,7 @@ namespace DXF
 				return;
 			}
 				
-			ar >> fractalParams.ConstantC >> fractalParams.Power >> fractalParams.Bailout;
+			ar >> fractalParams.Derivative >> fractalParams.Power >> fractalParams.Bailout;
 	
 			if (version < 2)
 				return;

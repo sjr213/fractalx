@@ -68,7 +68,7 @@ namespace DXF
 			double theta = acos(z.z / r);
 			double phi = atan2(z.y, z.x);
 
-			dr = pow(r, m_traceParams.Fractal.Power - 1.0) *  m_traceParams.Fractal.Power * dr + m_traceParams.Fractal.ConstantC;
+			dr = pow(r, m_traceParams.Fractal.Power - 1.0) *  m_traceParams.Fractal.Power * dr + m_traceParams.Fractal.Derivative;
 
 			// scale and rotate the point
 			double zr = pow(r, m_traceParams.Fractal.Power);

@@ -21,7 +21,7 @@ namespace DXF
 
 	struct FractalParams
 	{
-		double ConstantC = 1.0;
+		double Derivative = 1.0;
 		double Power = 8.0;		
 		double Bailout = 2.0;
 		FractalType FractalModelType = FractalType::StandardBulb;
