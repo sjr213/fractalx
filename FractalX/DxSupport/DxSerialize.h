@@ -40,5 +40,7 @@ namespace DXF
 
 	void Serialize(CArchive& ar, std::tuple<float, float, float>& f3);
 
+	void Serialize(CArchive& ar, std::tuple<double, double, double>& d3);
+
 	void Serialize(CArchive& ar, DxPerspective& perspective);
 }

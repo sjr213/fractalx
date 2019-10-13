@@ -67,7 +67,7 @@ namespace DXF
 
 	void Serialize(CArchive& ar, FractalParams& fractalParams)
 	{
-		const int FractalParamVersion = 4;
+		const int FractalParamVersion = 5;
 
 		if (ar.IsStoring())
 		{
@@ -78,6 +78,7 @@ namespace DXF
 			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
 			ar << fractalParams.NormalizationRoot;
 			Serialize(ar, fractalParams.ConversionGroup);
+			Serialize(ar, fractalParams.ConstantC);
 		}
 		else
 		{
@@ -117,6 +118,11 @@ namespace DXF
 				return;
 
 			Serialize(ar, fractalParams.ConversionGroup);
+
+			if (version < 5)
+				return;
+
+			Serialize(ar, fractalParams.ConstantC);
 		}
 	}
 

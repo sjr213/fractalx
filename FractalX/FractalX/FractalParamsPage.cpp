@@ -21,6 +21,7 @@ CFractalParamsPage::CFractalParamsPage()
 	, m_normalizationType(BulbNormalizeTypeToInt(BulbNormalizeType::StandardNormalization))
 	, m_normalizationRoot(0.5)
 	, m_cartesianGroup(new CartesianConverterGroup)
+	, m_constantC(std::make_tuple(0.0,0.0,0.0))
 {}
 
 CFractalParamsPage::~CFractalParamsPage()
@@ -106,6 +107,16 @@ std::shared_ptr<CartesianConverterGroup> CFractalParamsPage::GetCartesianConvers
 	return m_cartesianGroup;
 }
 
+void CFractalParamsPage::SetConstantC(const std::tuple<double, double, double>& constantC)
+{
+	m_constantC = constantC;
+}
+
+std::tuple<double, double, double> CFractalParamsPage::GetConstantC() const
+{
+	return m_constantC;
+}
+
 BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_BAILOUT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_CONSTANT_C_EDIT, &CFractalParamsPage::OnKillfocusEdit)
@@ -115,6 +126,9 @@ BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_EN_KILLFOCUS(IDC_ROOT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_BN_CLICKED(IDC_CUSTOM_CONVERSION_BUT, &CFractalParamsPage::OnCustomBut)
+	ON_CBN_SELCHANGE(IDC_C_X_EDIT, &CFractalParamsPage::OnKillfocusEdit)
+	ON_CBN_SELCHANGE(IDC_C_Y_EDIT, &CFractalParamsPage::OnKillfocusEdit)
+	ON_CBN_SELCHANGE(IDC_C_Z_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 END_MESSAGE_MAP()
 
 void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
@@ -141,6 +155,21 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Text(pDX, IDC_ROOT_EDIT, m_normalizationRoot);
 	DDV_MinMaxDouble(pDX, m_normalizationRoot, 0.001, 10);
+
+	double x = std::get<0>(m_constantC);
+	DDX_Text(pDX, IDC_C_X_EDIT, x);
+	DDV_MinMaxDouble(pDX, x, -100000.0, 100000.0);
+	std::get<0>(m_constantC) = x;
+
+	double y = std::get<1>(m_constantC);
+	DDX_Text(pDX, IDC_C_Y_EDIT, y);
+	DDV_MinMaxDouble(pDX, y, -100000.0, 100000.0);
+	std::get<1>(m_constantC) = y;
+
+	double z = std::get<2>(m_constantC);
+	DDX_Text(pDX, IDC_C_Z_EDIT, z);
+	DDV_MinMaxDouble(pDX, z, -100000.0, 100000.0);
+	std::get<2>(m_constantC) = z;
 }
 
 BOOL CFractalParamsPage::OnInitDialog()

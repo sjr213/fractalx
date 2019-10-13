@@ -157,6 +157,18 @@ namespace DXF
 		}
 	}
 
+	void Serialize(CArchive& ar, std::tuple<double, double, double>& d3)
+	{
+		if (ar.IsStoring())
+		{
+			ar << std::get<0>(d3) << std::get<1>(d3) << std::get<2>(d3);
+		}
+		else
+		{
+			ar >> std::get<0>(d3) >> std::get<1>(d3) >> std::get<2>(d3);
+		}
+	}
+
 	void Serialize(CArchive& ar, DxPerspective& perspective)
 	{
 		if (ar.IsStoring())

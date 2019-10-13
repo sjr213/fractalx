@@ -44,6 +44,10 @@ public:
 
 	std::shared_ptr<DXF::CartesianConverterGroup> GetCartesianConversionGroup();
 
+	void SetConstantC(const std::tuple<double, double, double>& constantC);
+
+	std::tuple<double, double, double> GetConstantC() const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -81,6 +85,7 @@ private:
 	int m_normalizationType;
 	double m_normalizationRoot;
 	std::shared_ptr<DXF::CartesianConverterGroup> m_cartesianGroup;
+	std::tuple<double, double, double> m_constantC;
 
 	CComboBox m_modelCombo;
 	CComboBox m_cartesianCombo;
