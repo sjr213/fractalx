@@ -17,6 +17,7 @@
 #include <dxgi1_2.h>
 #include "Effects.h"
 #include "ModelData.h"
+#include "MyDxHelpers.h"
 #include "PrimitiveBatch.h"
 #include "RotationParams.h"
 #include "SimpleMath.h"
@@ -320,6 +321,37 @@ namespace DXF
 		{
 			m_lights = lights;
 			SetLighting(*m_effect);
+		}
+
+		std::optional<std::tuple<float, float, float>> Map2Dto3D(int x, int y) override
+		{
+			if (!m_d3dDevice)
+				return std::nullopt;
+
+			CD3D11_VIEWPORT viewport[1];
+			UINT nViewPorts = 1;
+			m_d3dContext->RSGetViewports(&nViewPorts, viewport);
+			if (nViewPorts < 1)
+				return std::nullopt;
+
+			XMVECTOR pointA(XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
+			XMVECTOR pointB(XMVectorSet(static_cast<float>(x), static_cast<float>(y), -1.0f, 0.0f));	
+
+			XMVECTOR pointATransform = XMVector3Unproject(pointA, viewport->TopLeftX, viewport->TopLeftY,
+				viewport->Width, viewport->Height, viewport->MinDepth, viewport->MaxDepth,
+				m_proj, m_view, m_world);
+
+			XMVECTOR pointBTransform = XMVector3Unproject(pointB, viewport->TopLeftX, viewport->TopLeftY,
+				viewport->Width, viewport->Height, viewport->MinDepth, viewport->MaxDepth,
+				m_proj, m_view, m_world);
+
+			XMVECTOR projectedVector = pointATransform - pointBTransform;
+
+			double closestDistance = DBL_MAX;
+			if (! DxHelpers::GetIntersection(m_vertices, m_indices, pointATransform, projectedVector, closestDistance))
+				return std::nullopt;
+
+			return DxHelpers::Create3DTuple(closestDistance, pointATransform, projectedVector);
 		}
 
 	protected:
@@ -794,12 +826,15 @@ namespace DXF
 				DXF::ThrowIfFailed(hr, "device lost during present");
 			}
 		}
+
 	};
 
 	std::shared_ptr<Renderer> Renderer::CreateRenderer()
 	{
 		return std::make_shared<RendererImp>();
 	}
+
+
 }
 
 

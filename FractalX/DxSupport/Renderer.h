@@ -2,9 +2,10 @@
 #pragma once
 
 #include "ModelData.h"
+#include <optional>
 #include "Perspective.h"
-#include "VertexData.h"
 #include <tuple>
+#include "VertexData.h"
 
 class CDC;
 
@@ -66,6 +67,8 @@ namespace DXF
 		virtual void SetEffectColors(DxEffectColors& effectColors) = 0;
 
 		virtual void SetLights(DxLights& lights) = 0;
+
+		virtual std::optional<std::tuple<float, float, float>> Map2Dto3D(int x, int y) = 0;
 
 	protected:
 		Renderer() {}

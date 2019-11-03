@@ -171,6 +171,7 @@
     <ClInclude Include="FractalType.h" />
     <ClInclude Include="IRayTracer.h" />
     <ClInclude Include="ModelData.h" />
+    <ClInclude Include="MyDxHelpers.h" />
     <ClInclude Include="Perspective.h" />
     <ClInclude Include="RayTracerCommon.h" />
     <ClInclude Include="Renderer.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="DxSerialize.cpp" />
     <ClCompile Include="FractalType.cpp" />
     <ClCompile Include="ModelData.cpp" />
+    <ClCompile Include="MyDxHelpers.cpp" />
     <ClCompile Include="RayTracerCommon.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RotationParams.cpp" />
