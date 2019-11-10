@@ -5,6 +5,7 @@
 #include <optional>
 #include "Perspective.h"
 #include <tuple>
+#include "Vertex.h"
 #include "VertexData.h"
 
 class CDC;
@@ -48,13 +49,12 @@ namespace DXF
 
 		virtual DxPerspective GetPerspective() const = 0;
 
-		virtual void SetView(const std::tuple<float, float, float>& camera, const std::tuple<float, float, float>& target) = 0;
+		virtual void SetView(const Vertex<float>& camera, const Vertex<float>& target) = 0;
 
-		virtual void SetTarget(const std::tuple<float, float, float>& target) = 0;
+		virtual void SetTarget(const Vertex<float>& target) = 0;
 
-		virtual std::tuple<float, float, float> GetCamera() const = 0;
-
-		virtual std::tuple<float, float, float> GetTarget() const = 0;
+		virtual Vertex<float> GetCamera() const = 0;
+		virtual Vertex<float> GetTarget() const = 0;
 
 		virtual bool IsReady() = 0;
 

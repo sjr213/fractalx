@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SeedTriangles.h"
 
+#include <assert.h>
+
 namespace DXF
 {
 	CString GetSeedTriangleString(SeedTriangles seedTriangles)

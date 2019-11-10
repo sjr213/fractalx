@@ -4,6 +4,8 @@
 #include "ViewDlg.h"
 #include "afxdialogex.h"
 
+using namespace DXF;
+
 
 IMPLEMENT_DYNAMIC(CViewDlg, CDialogEx)
 
@@ -16,22 +18,22 @@ CViewDlg::~CViewDlg()
 {
 }
 
-std::tuple<float, float, float> CViewDlg::GetCamera() const
+Vertex<float> CViewDlg::GetCamera() const
 {
 	return m_camera;
 }
 
-std::tuple<float, float, float> CViewDlg::GetTarget() const
+Vertex<float> CViewDlg::GetTarget() const
 {
 	return m_target;
 }
 
-void CViewDlg::SetCamera(const std::tuple<float, float, float>& camera)
+void CViewDlg::SetCamera(const Vertex<float>& camera)
 {
 	m_camera = camera;
 }
 
-void CViewDlg::SetTarget(const std::tuple<float, float, float>& target)
+void CViewDlg::SetTarget(const Vertex<float>& target)
 {
 	m_target = target;
 }
@@ -40,35 +42,23 @@ void CViewDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 
-	float cx = std::get<0>(m_camera);
-	DDX_Text(pDX, IDC_CAMERA_X_EDIT, cx);
-	DDV_MinMaxFloat(pDX, cx, -10000.0f, 10000.0f);
-	std::get<0>(m_camera) = cx;
+	DDX_Text(pDX, IDC_CAMERA_X_EDIT, m_camera.X);
+	DDV_MinMaxFloat(pDX, m_camera.X, -10000.0f, 10000.0f);
 
-	float cy = std::get<1>(m_camera);
-	DDX_Text(pDX, IDC_CAMERA_Y_EDIT, cy);
-	DDV_MinMaxFloat(pDX, cy, -10000.0f, 10000.0f);
-	std::get<1>(m_camera) = cy;
+	DDX_Text(pDX, IDC_CAMERA_Y_EDIT, m_camera.Y);
+	DDV_MinMaxFloat(pDX, m_camera.Y, -10000.0f, 10000.0f);
 
-	float cz = std::get<2>(m_camera);
-	DDX_Text(pDX, IDC_CAMERA_Z_EDIT, cz);
-	DDV_MinMaxFloat(pDX, cz, -10000.0f, 10000.0f);
-	std::get<2>(m_camera) = cz;
+	DDX_Text(pDX, IDC_CAMERA_Z_EDIT, m_camera.Z);
+	DDV_MinMaxFloat(pDX, m_camera.Z, -10000.0f, 10000.0f);
 
-	float x = std::get<0>(m_target);
-	DDX_Text(pDX, IDC_TARGET_X_EDIT, x);
-	DDV_MinMaxFloat(pDX, x, -10000.0f, 10000.0f);
-	std::get<0>(m_target) = x;
+	DDX_Text(pDX, IDC_TARGET_X_EDIT, m_target.X);
+	DDV_MinMaxFloat(pDX, m_target.X, -10000.0f, 10000.0f);
 
-	float y = std::get<1>(m_target);
-	DDX_Text(pDX, IDC_TARGET_Y_EDIT, y);
-	DDV_MinMaxFloat(pDX, y, -10000.0f, 10000.0f);
-	std::get<1>(m_target) = y;
+	DDX_Text(pDX, IDC_TARGET_Y_EDIT, m_target.Y);
+	DDV_MinMaxFloat(pDX, m_target.Y, -10000.0f, 10000.0f);
 
-	float z = std::get<2>(m_target);
-	DDX_Text(pDX, IDC_TARGET_Z_EDIT, z);
-	DDV_MinMaxFloat(pDX, z, -10000.0f, 10000.0f);
-	std::get<2>(m_target) = z;
+	DDX_Text(pDX, IDC_TARGET_Z_EDIT, m_target.Z);
+	DDV_MinMaxFloat(pDX, m_target.Z, -10000.0f, 10000.0f);
 }
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tuple>
+#include <Vertex.h>
 
 class CViewDlg : public CDialogEx
 {
@@ -10,11 +10,11 @@ public:
 	CViewDlg(CWnd* pParent = nullptr);
 	~CViewDlg();
 
-	std::tuple<float, float, float> GetCamera() const;
-	std::tuple<float, float, float> GetTarget() const;
+	DXF::Vertex<float> GetCamera() const;
+	DXF::Vertex<float> GetTarget() const;
 
-	void SetCamera(const std::tuple<float, float, float>& camera);
-	void SetTarget(const std::tuple<float, float, float>& target);
+	void SetCamera(const DXF::Vertex<float>& camera);
+	void SetTarget(const DXF::Vertex<float>& target);
 
 	// Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -28,7 +28,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 
-	std::tuple<float, float, float> m_camera = std::make_tuple(0.0f, 0.0f, 0.0f);
-	std::tuple<float, float, float> m_target = std::make_tuple(0.0f, 0.0f, 0.0f);
+	DXF::Vertex<float> m_camera = DXF::Vertex<float>(0.0f, 0.0f, 0.0f);
+	DXF::Vertex<float> m_target = DXF::Vertex<float>(0.0f, 0.0f, 0.0f);
 };
 

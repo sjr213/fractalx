@@ -34,15 +34,15 @@ private:
 	CClickMappedPictureCtrl m_coordCtrl;
 	RotationParams m_rotationParamsOriginal;
 	RotationParams m_rotationParams;
-	std::tuple<float, float, float> m_targetOriginal;
-	std::tuple<float, float, float> m_target;
+	Vertex<float> m_targetOriginal;
+	Vertex<float> m_target;
 	CWnd* m_parent = nullptr;
 	float m_distance;
 	float m_angle;
 
 public:
 	CPositionAngleDlgImp(const DXF::RotationParams& rotationParams,
-		const std::tuple<float, float, float>& target, CWnd* pParent)
+		const Vertex<float>& target, CWnd* pParent)
 		: CPositionAngleDlg(IDD, pParent)
 		, m_rotationParamsOriginal(rotationParams)
 		, m_rotationParams(rotationParams)
@@ -67,12 +67,12 @@ public:
 		return std::make_shared<RotationParams>(m_rotationParams);
 	}
 
-	void SetTarget(const std::tuple<float, float, float>& target) override
+	void SetTarget(const Vertex<float>& target) override
 	{
 		m_target = target;
 	}
 
-	std::tuple<float, float, float> GetTarget() const override
+	Vertex<float> GetTarget() const override
 	{
 		return m_target;
 	}
@@ -141,20 +141,14 @@ protected:
 		DDX_Text(pDX, IDC_ANGLE_EDIT, m_angle);
 		DDV_MinMaxFloat(pDX, m_angle, 0.1f, 180.0f);
 
-		float x = std::get<0>(m_target);
-		DDX_Text(pDX, IDC_POS_X_EDIT, x);
-		DDV_MinMaxFloat(pDX, x, -10.0f, +10.0f);
-		std::get<0>(m_target) = x;
+		DDX_Text(pDX, IDC_POS_X_EDIT, m_target.X);
+		DDV_MinMaxFloat(pDX, m_target.X, -10.0f, +10.0f);
 
-		float y = std::get<1>(m_target);
-		DDX_Text(pDX, IDC_POS_Y_EDIT, y);
-		DDV_MinMaxFloat(pDX, y, -10.0f, +10.0f);
-		std::get<1>(m_target) = y;
+		DDX_Text(pDX, IDC_POS_Y_EDIT, m_target.Y);
+		DDV_MinMaxFloat(pDX, m_target.Y, -10.0f, +10.0f);
 
-		float z = std::get<2>(m_target);
-		DDX_Text(pDX, IDC_POS_Z_EDIT, z);
-		DDV_MinMaxFloat(pDX, z, -10.0f, +10.0f);
-		std::get<2>(m_target) = z;
+		DDX_Text(pDX, IDC_POS_Z_EDIT, m_target.Z);
+		DDV_MinMaxFloat(pDX, m_target.Z, -10.0f, +10.0f);
 
 		float angleX = m_rotationParams.AngleXDegrees;
 		DDX_Text(pDX, IDC_X_ANGLE_EDIT, angleX);
@@ -221,7 +215,7 @@ protected:
 		switch (static_cast<int>(wparam))
 		{
 		case X_Minus:
-			std::get<0>(m_target) = std::get<0>(m_target) - m_distance;
+			m_target.X = m_target.X - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CCW:
@@ -232,7 +226,7 @@ protected:
 			}
 			break;
 		case X_Plus:
-			std::get<0>(m_target) = std::get<0>(m_target) + m_distance;
+			m_target.X = m_target.X + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CW:
@@ -243,7 +237,7 @@ protected:
 			}
 			break;
 		case Y_Minus:
-			std::get<1>(m_target) = std::get<1>(m_target) - m_distance;
+			m_target.Y = m_target.Y - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CCW:
@@ -254,7 +248,7 @@ protected:
 			}
 			break;
 		case Y_Plus:
-			std::get<1>(m_target) = std::get<1>(m_target) + m_distance;
+			m_target.Y = m_target.Y + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CW:
@@ -265,7 +259,7 @@ protected:
 			}
 			break;
 		case Z_Minus:
-			std::get<2>(m_target) = std::get<2>(m_target) - m_distance;
+			m_target.Z = m_target.Z - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CCW:
@@ -276,7 +270,7 @@ protected:
 			}
 			break;
 		case Z_Plus:
-			std::get<2>(m_target) = std::get<2>(m_target) + m_distance;
+			m_target.Z = m_target.Z + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CW:
@@ -327,7 +321,7 @@ BEGIN_MESSAGE_MAP(CPositionAngleDlgImp, CPositionAngleDlg)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPositionAngleDlg> CPositionAngleDlg::CreatePositionAngleDlg(const RotationParams& rotationParams,
-	const std::tuple<float, float, float>& target, CWnd* pParent)
+	const Vertex<float>& target, CWnd* pParent)
 {
 	return std::make_shared <CPositionAngleDlgImp>(rotationParams, target, pParent);
 }

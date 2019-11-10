@@ -83,8 +83,8 @@ namespace DXF
 		float m_nearPlaneView = 0.1f;
 		float m_farPlaneView = 10.0f;
 
-		std::tuple<float, float, float> m_camera = std::make_tuple(0.f, 0.f, 0.3f);
-		std::tuple<float, float, float> m_target = std::make_tuple(0.0f, 0.0f, 0.0f);
+		Vertex<float> m_camera = Vertex<float>(0.f, 0.f, 0.3f);
+		Vertex<float> m_target = Vertex<float>(0.0f, 0.0f, 0.0f);
 
 		DirectX::SimpleMath::Color m_backgroundColor;
 
@@ -222,7 +222,7 @@ namespace DXF
 			CreateProjectionMatrix();
 		}
 
-		void SetView(const std::tuple<float, float, float>& camera, const std::tuple<float, float, float>& target) override
+		void SetView(const Vertex<float>& camera, const Vertex<float>& target) override
 		{
 			if (!m_d3dDevice)
 				return;
@@ -233,7 +233,7 @@ namespace DXF
 			CreateViewMatrix();
 		}
 
-		void SetTarget(const std::tuple<float, float, float>& target) override
+		void SetTarget(const Vertex<float>& target) override
 		{
 			if (!m_d3dDevice)
 				return;
@@ -243,13 +243,13 @@ namespace DXF
 			CreateViewMatrix();
 		}
 
-		std::tuple<float, float, float> GetCamera() const override
+		Vertex<float> GetCamera() const override
 		{
 			return m_camera;
 
 		}
 
-		std::tuple<float, float, float> GetTarget() const override
+		Vertex<float> GetTarget() const override
 		{
 			return m_target;
 		}
@@ -476,7 +476,7 @@ namespace DXF
 		void CreateViewMatrix()
 		{
 			m_view = Matrix::CreateLookAt(
-				Vector3(std::get<0>(m_camera), std::get<1>(m_camera), std::get<2>(m_camera)),
+				Vector3(m_camera.X, m_camera.Y, m_camera.Z),
 				Vector3::Zero,
 				Vector3::UnitY);
 		}
@@ -709,7 +709,7 @@ namespace DXF
 		{
 			float radians = time/2;
 			float degrees = XMConvertToDegrees(radians);
-			auto transMatrix = Matrix::CreateTranslation(std::get<0>(m_target), std::get<1>(m_target), std::get<2>(m_target));
+			auto transMatrix = Matrix::CreateTranslation(m_target.X, m_target.Y, m_target.Z);
 
 			if (m_rotationParams.Action == RotationAction::RotateX)
 			{

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ModelData.h"
 
+#include <assert.h>
+
 namespace DXF
 {
 	void SerializeModelData(CArchive& ar, ModelData& modelData)
