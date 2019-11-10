@@ -186,6 +186,7 @@
     <ClInclude Include="TriangleLoader.h" />
     <ClInclude Include="TrigOption.h" />
     <ClInclude Include="Vector3Double.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="vertexFactory.h" />
     <ClInclude Include="VertexStatistics.h" />

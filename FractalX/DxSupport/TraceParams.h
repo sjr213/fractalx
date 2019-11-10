@@ -6,6 +6,7 @@
 #include "CartesianConverterGroup.h"
 #include "CartesianConversionType.h"
 #include "FractalType.h"
+#include "Vertex.h"
 
 namespace DXF
 {
@@ -29,7 +30,7 @@ namespace DXF
 		BulbNormalizeType NormalizationType = BulbNormalizeType::StandardNormalization;
 		double NormalizationRoot = 0.5;
 		CartesianConverterGroup ConversionGroup;
-		std::tuple<double, double, double> ConstantC = std::make_tuple(0.0,0.0,0.0);
+		Vertex<double> ConstantC = Vertex<double>(0.0,0.0,0.0);
 	};
 
 	struct BulbParams

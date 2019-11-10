@@ -21,12 +21,12 @@ namespace DXF
 		normalC += planeNormal;
 	}
 
-	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction, const tuple<double, double, double>& constantC)
+	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction, const Vertex<double>& constantC)
 	{
 		auto pt = distance * direction + origin;
-		pt.x += static_cast<float>(get<0>(constantC));
-		pt.y += static_cast<float>(get<1>(constantC));
-		pt.z += static_cast<float>(get<2>(constantC));
+		pt.x += static_cast<float>(constantC.X);
+		pt.y += static_cast<float>(constantC.Y);
+		pt.z += static_cast<float>(constantC.Z);
 		return pt;
 	}
 

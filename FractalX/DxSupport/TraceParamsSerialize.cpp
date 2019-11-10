@@ -78,7 +78,7 @@ namespace DXF
 			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
 			ar << fractalParams.NormalizationRoot;
 			Serialize(ar, fractalParams.ConversionGroup);
-			Serialize(ar, fractalParams.ConstantC);
+			SerializeVertex(ar, fractalParams.ConstantC);
 		}
 		else
 		{
@@ -122,7 +122,7 @@ namespace DXF
 			if (version < 5)
 				return;
 
-			Serialize(ar, fractalParams.ConstantC);
+			SerializeVertex(ar, fractalParams.ConstantC);
 		}
 	}
 

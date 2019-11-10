@@ -21,7 +21,7 @@ CFractalParamsPage::CFractalParamsPage()
 	, m_normalizationType(BulbNormalizeTypeToInt(BulbNormalizeType::StandardNormalization))
 	, m_normalizationRoot(0.5)
 	, m_cartesianGroup(new CartesianConverterGroup)
-	, m_constantC(std::make_tuple(0.0,0.0,0.0))
+	, m_constantC(Vertex<double>(0.0,0.0,0.0))
 {}
 
 CFractalParamsPage::~CFractalParamsPage()
@@ -107,12 +107,12 @@ std::shared_ptr<CartesianConverterGroup> CFractalParamsPage::GetCartesianConvers
 	return m_cartesianGroup;
 }
 
-void CFractalParamsPage::SetConstantC(const std::tuple<double, double, double>& constantC)
+void CFractalParamsPage::SetConstantC(const Vertex<double>& constantC)
 {
 	m_constantC = constantC;
 }
 
-std::tuple<double, double, double> CFractalParamsPage::GetConstantC() const
+Vertex<double> CFractalParamsPage::GetConstantC() const
 {
 	return m_constantC;
 }
@@ -156,20 +156,14 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ROOT_EDIT, m_normalizationRoot);
 	DDV_MinMaxDouble(pDX, m_normalizationRoot, 0.001, 10);
 
-	double x = std::get<0>(m_constantC);
-	DDX_Text(pDX, IDC_C_X_EDIT, x);
-	DDV_MinMaxDouble(pDX, x, -100000.0, 100000.0);
-	std::get<0>(m_constantC) = x;
+	DDX_Text(pDX, IDC_C_X_EDIT, m_constantC.X);
+	DDV_MinMaxDouble(pDX, m_constantC.X, -100000.0, 100000.0);
 
-	double y = std::get<1>(m_constantC);
-	DDX_Text(pDX, IDC_C_Y_EDIT, y);
-	DDV_MinMaxDouble(pDX, y, -100000.0, 100000.0);
-	std::get<1>(m_constantC) = y;
+	DDX_Text(pDX, IDC_C_Y_EDIT, m_constantC.Y);
+	DDV_MinMaxDouble(pDX, m_constantC.Y, -100000.0, 100000.0);
 
-	double z = std::get<2>(m_constantC);
-	DDX_Text(pDX, IDC_C_Z_EDIT, z);
-	DDV_MinMaxDouble(pDX, z, -100000.0, 100000.0);
-	std::get<2>(m_constantC) = z;
+	DDX_Text(pDX, IDC_C_Z_EDIT, m_constantC.Z);
+	DDV_MinMaxDouble(pDX, m_constantC.Z, -100000.0, 100000.0);
 }
 
 BOOL CFractalParamsPage::OnInitDialog()
