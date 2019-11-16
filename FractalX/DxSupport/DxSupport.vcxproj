@@ -189,6 +189,7 @@
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="vertexFactory.h" />
+    <ClInclude Include="VertexSource.h" />
     <ClInclude Include="VertexStatistics.h" />
   </ItemGroup>
   <ItemGroup>
@@ -222,6 +223,7 @@
     <ClCompile Include="TrigOption.cpp" />
     <ClCompile Include="Vector3Double.cpp" />
     <ClCompile Include="vertexFactory.cpp" />
+    <ClCompile Include="VertexSource.cpp" />
     <ClCompile Include="VertexStatistics.cpp" />
   </ItemGroup>
   <ItemGroup>
