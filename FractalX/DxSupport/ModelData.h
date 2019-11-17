@@ -10,8 +10,10 @@ namespace DXF
 		int VertexIterations = 5;
 		SeedTriangles TriangleSeeds = SeedTriangles::Eight;
 		VertexSource SourceVertices = VertexSource::Spherical;
-		Vertex<float> Vertex1;
-		Vertex<float> Vertex2;
+		Vertex<float> VertexTL;	// top left
+		Vertex<float> VertexTR;	// top right
+		Vertex<float> VertexBL;	// bottom left
+		Vertex<float> VertexBR; // bottom right
 	};
 
 	void SerializeModelData(CArchive& ar, ModelData& modelData);

@@ -45,7 +45,7 @@ namespace DXF
 	template<typename T>
 	Vertex<T> NormalizeVector(const Vertex<T>& v)
 	{
-		T sum = v.X * v.X + v.Y * v.Y + V.Z * v.Z;
+		T sum = v.X * v.X + v.Y * v.Y + v.Z * v.Z;
 		T norm = sqrt(sum);
 
 		return Vertex<T>(v.X / norm, v.Y / norm, v.Z / norm);
