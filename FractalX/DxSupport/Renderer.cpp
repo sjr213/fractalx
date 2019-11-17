@@ -323,7 +323,7 @@ namespace DXF
 			SetLighting(*m_effect);
 		}
 
-		std::optional<std::tuple<float, float, float>> Map2Dto3D(int x, int y) override
+		std::optional<DXF::Vertex<float>> Map2Dto3D(int x, int y) override
 		{
 			if (!m_d3dDevice)
 				return std::nullopt;

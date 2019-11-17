@@ -36,7 +36,7 @@ namespace DXF::DxHelpers
 		return true;
 	}
 
-	std::optional<std::tuple<float, float, float>> Create3DTuple(double closestDistance, const XMVECTOR& pointATransform, const XMVECTOR& projectedVector)
+	std::optional<Vertex<float>> Create3DTuple(double closestDistance, const XMVECTOR& pointATransform, const XMVECTOR& projectedVector)
 	{
 		if (closestDistance == DBL_MAX)
 			return std::nullopt;
@@ -45,6 +45,6 @@ namespace DXF::DxHelpers
 		float y = static_cast<float>(XMVectorGetY(pointATransform) + closestDistance * XMVectorGetY(projectedVector));
 		float z = static_cast<float>(XMVectorGetZ(pointATransform) + closestDistance * XMVectorGetZ(projectedVector));
 
-		return std::make_tuple(x, y, z);
+		return Vertex<float>(x, y, z);
 	}
 }

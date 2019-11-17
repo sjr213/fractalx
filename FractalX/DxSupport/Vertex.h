@@ -7,6 +7,9 @@ namespace DXF
 	struct Vertex
 	{
 		Vertex()
+			: X(0)
+			, Y(0)
+			, Z(0)
 		{}
 
 		Vertex(T x, T y, T z)
@@ -46,5 +49,17 @@ namespace DXF
 		T norm = sqrt(sum);
 
 		return Vertex<T>(v.X / norm, v.Y / norm, v.Z / norm);
+	}
+
+	template<typename T>
+	bool operator==(const Vertex<T>& lf, const Vertex<T>& rt)
+	{
+		return lf.X == rt.X && lf.Y == rt.Y && lf.Z == rt.Z;
+	}
+
+	template<typename T>
+	bool operator!=(const Vertex<T>& lf, const Vertex<T>& rt)
+	{
+		return !(lf == rt);
 	}
 }

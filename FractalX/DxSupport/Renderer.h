@@ -68,7 +68,7 @@ namespace DXF
 
 		virtual void SetLights(DxLights& lights) = 0;
 
-		virtual std::optional<std::tuple<float, float, float>> Map2Dto3D(int x, int y) = 0;
+		virtual std::optional<DXF::Vertex<float>> Map2Dto3D(int x, int y) = 0;
 
 	protected:
 		Renderer() {}
