@@ -3,6 +3,7 @@
 #include "SphereApproximator.h"
 
 #include <algorithm>
+#include "ModelData.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -58,13 +59,13 @@ namespace DXF
 		return seedTriangles;
 	}
 
-	XMFLOAT3 CalculateMidPoint(const XMFLOAT3& first, const XMFLOAT3& second)
+	static XMFLOAT3 CalculateMidPoint(const XMFLOAT3& first, const XMFLOAT3& second)
 	{
 		return XMFLOAT3((first.x + second.x) / 2, (first.y + second.y) / 2, (first.z + second.z) / 2);
 	}
 
 	// try passing in the end of the old vertices to be more efficient
-	unsigned int GetVertexIndex(std::vector<XMFLOAT3>& vertices, XMFLOAT3& vertex)
+	static unsigned int GetVertexIndex(std::vector<XMFLOAT3>& vertices, XMFLOAT3& vertex)
 	{
 		constexpr float minDif = 2 * std::numeric_limits<float>::min();
 
@@ -86,7 +87,7 @@ namespace DXF
 		return static_cast<unsigned int>(iter - vertices.begin());
 	}
 
-	std::shared_ptr<TriangleData> ExpandTriangles(const TriangleData& data)
+	static std::shared_ptr<TriangleData> ExpandTriangles(const TriangleData& data)
 	{
 		std::shared_ptr<TriangleData> newData = std::make_shared<TriangleData>();
 		newData->Vertices = data.Vertices;
@@ -116,7 +117,12 @@ namespace DXF
 		return newData;
 	}
 
-	int GetProgressSize(int depth)
+	static XMFLOAT3 ConvertToXMFloat3(const Vertex<float>& v)
+	{
+		return XMFLOAT3(v.X, v.Y, v.Z);
+	}
+
+	static int GetProgressSize(int depth)
 	{
 		int size = depth + 1;
 		for (; depth > 0; --depth)
@@ -146,6 +152,41 @@ namespace DXF
 		{
 			data = ExpandTriangles(*data);
 			setProgress((3.0 + i) / total);
+		}
+
+		return data;
+	}
+
+	std::shared_ptr<TriangleData> GenerateTrianglesFromCrudeVertices(const ModelData& modelData, const std::function<void(double)>& setProgress)
+	{
+		int total = GetProgressSize(modelData.VertexIterations);
+		total += 1;	// 1 for the vertices and triangles
+
+		// vertices
+		std::vector<XMFLOAT3> vertices;
+		vertices.push_back(ConvertToXMFloat3(modelData.VertexTL));  // TL
+		vertices.push_back(ConvertToXMFloat3(modelData.VertexTR));  // TR
+		vertices.push_back(ConvertToXMFloat3(modelData.VertexBR));  // BR
+		vertices.push_back(ConvertToXMFloat3(modelData.VertexBL));  // BL
+
+		// triangles
+		std::vector<Triangle> triangles
+		{
+			Triangle(0,2,1),
+			Triangle(0,3,2)
+		};
+
+		setProgress(1.0 / total);
+
+		// expand
+		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
+		data->Vertices = vertices;
+		data->Triangles = triangles;
+
+		for (int i = 0; i < modelData.VertexIterations; ++i)
+		{
+			data = ExpandTriangles(*data);
+			setProgress((2.0 + i) / total);
 		}
 
 		return data;

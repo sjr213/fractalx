@@ -10,7 +10,7 @@ namespace DXF
 {
 	namespace TriangleLoader
 	{
-		CString GetTrianglePath()
+		static CString GetTrianglePath()
 		{
 			TCHAR szPath[_MAX_PATH];
 			DWORD len = ::GetModuleFileName(AfxGetApp()->m_hInstance, szPath, _MAX_PATH);
@@ -29,7 +29,7 @@ namespace DXF
 			return csPath;
 		}
 
-		CString GetFileName(const ModelData& modelData)
+		static CString GetFileName(const ModelData& modelData)
 		{
 			switch (modelData.VertexIterations)
 			{
@@ -86,7 +86,7 @@ namespace DXF
 			return CString();
 		}
 
-		std::shared_ptr<TriangleData> ReadTriangleFile(CString pathName)
+		static std::shared_ptr<TriangleData> ReadTriangleFile(CString pathName)
 		{
 			// Create a CFile and then a CArchive
 			CFile triangleFile;
@@ -109,7 +109,7 @@ namespace DXF
 			return triangles;
 		}
 	
-		std::shared_ptr<TriangleData> LoadTriangles(const ModelData& modelData)
+		static std::shared_ptr<TriangleData> LoadTriangles(const ModelData& modelData)
 		{
 			CString path = GetTrianglePath();
 			if (path.IsEmpty())
@@ -124,8 +124,7 @@ namespace DXF
 			return ReadTriangleFile(path);
 		}
 
-
-		std::shared_ptr<TriangleData> GetTriangles(const ModelData& modelData, const std::function<void(double)>& setProgress)
+		std::shared_ptr<TriangleData> GetSphericalTriangleData(const ModelData& modelData, const std::function<void(double)>& setProgress)
 		{
 			auto triangles = LoadTriangles(modelData);
 			if (triangles)
@@ -135,9 +134,21 @@ namespace DXF
 			}
 
 			std::shared_ptr<TriangleData> tData = GenerateCrudeTriangles(modelData.VertexIterations, modelData.TriangleSeeds, [&](double progress)
-			{
-				setProgress(progress);
-			});
+				{
+					setProgress(progress);
+				});
+
+			return tData;
+		}
+
+		std::shared_ptr<TriangleData> GetTriangles(const ModelData& modelData, const std::function<void(double)>& setProgress)
+		{
+			std::shared_ptr<TriangleData> tData;
+
+			if (modelData.SourceVertices == VertexSource::Spherical)
+				tData = GetSphericalTriangleData(modelData, setProgress);
+			else
+				tData = GenerateTrianglesFromCrudeVertices(modelData, setProgress);
 
 			NormalizeVectors(*tData);
 
