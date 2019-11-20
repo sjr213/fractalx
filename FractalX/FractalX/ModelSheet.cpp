@@ -43,6 +43,10 @@ void CModelSheet::SetModelData(const ModelData& data)
 
 	m_vertexPage.SetVertexIterations(m_data.VertexIterations);
 	m_vertexPage.SetSeedTriangles(m_data.TriangleSeeds);
+	m_vertexPage.SetVertexSource(m_data.SourceVertices);
+
+	VertexRect vRect{ m_data.VertexTL, m_data.VertexTR, m_data.VertexBL, m_data.VertexBR };
+	m_vertexPage.SetVertices(vRect);
 }
 
 ModelData CModelSheet::GetModelData() const
@@ -76,6 +80,12 @@ void CModelSheet::OnOk()
 {
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
 	m_data.TriangleSeeds = m_vertexPage.GetSeedTriangles();
+	m_data.SourceVertices = m_vertexPage.GetVertexSource();
+	auto vRect = m_vertexPage.GetVertices();
+	m_data.VertexTL = vRect.TL;
+	m_data.VertexTR = vRect.TR;
+	m_data.VertexBL = vRect.BL;
+	m_data.VertexBR = vRect.BR;
 
 	*m_traceParams = m_traceParamsPage.GetTraceParams();
 	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();
