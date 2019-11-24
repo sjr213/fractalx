@@ -146,7 +146,7 @@ namespace DXF
 		{
 			// TODO: Change to desired default window size (note minimum size is 320x200).
 			width = 800;
-			height = 600;
+			height = 800;
 		}
 
 		void SetModel(const DxVertexData& vertexData) override
