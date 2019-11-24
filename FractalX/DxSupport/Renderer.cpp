@@ -92,6 +92,8 @@ namespace DXF
 		DxEffectColors m_effectColors;
 		DxLights m_lights;
 
+		Vertex<float> m_worldScale = Vertex<float>(0.1f, 0.1f, 0.1f);
+
 	public:
 
 		RendererImp() :
@@ -352,6 +354,16 @@ namespace DXF
 				return std::nullopt;
 
 			return DxHelpers::Create3DTuple(closestDistance, pointATransform, projectedVector);
+		}
+
+		void SetWorldScale(const DXF::Vertex<float>& scale) override
+		{
+			m_worldScale = scale;
+		}
+
+		Vertex<float> GetWorldScale() const
+		{
+			return m_worldScale;
 		}
 
 	protected:
@@ -746,7 +758,7 @@ namespace DXF
 			}
 
 			m_world =
-				Matrix::CreateScale(0.1f, 0.1f, 0.1f) *
+				Matrix::CreateScale(m_worldScale.X, m_worldScale.Y, m_worldScale.Z) *
 				Matrix::CreateRotationY(XMConvertToRadians(m_rotationParams.AngleYDegrees)) *
 				Matrix::CreateRotationX(XMConvertToRadians(m_rotationParams.AngleXDegrees)) *
 				Matrix::CreateRotationZ(XMConvertToRadians(m_rotationParams.AngleZDegrees)) *

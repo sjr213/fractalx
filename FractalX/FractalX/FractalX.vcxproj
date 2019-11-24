@@ -236,6 +236,7 @@
     <ClInclude Include="VertexPage.h" />
     <ClInclude Include="ViewDlg.h" />
     <ClInclude Include="ViewTree.h" />
+    <ClInclude Include="WorldScaleDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CancelException.cpp" />
@@ -283,6 +284,7 @@
     <ClCompile Include="VertexPage.cpp" />
     <ClCompile Include="ViewDlg.cpp" />
     <ClCompile Include="ViewTree.cpp" />
+    <ClCompile Include="WorldScaleDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FractalX.reg" />

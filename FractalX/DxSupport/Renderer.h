@@ -70,6 +70,10 @@ namespace DXF
 
 		virtual std::optional<DXF::Vertex<float>> Map2Dto3D(int x, int y) = 0;
 
+		virtual void SetWorldScale(const DXF::Vertex<float>& scale) = 0;
+
+		virtual Vertex<float> GetWorldScale() const = 0;
+
 	protected:
 		Renderer() {}
 	};
