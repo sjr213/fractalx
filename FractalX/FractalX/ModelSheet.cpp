@@ -76,6 +76,16 @@ std::shared_ptr<DXF::TraceParams> CModelSheet::GetTraceParams() const
 	return m_traceParams;
 }
 
+void CModelSheet::SetEnableAutoZoom(bool bEnable)
+{
+	m_vertexPage.SetEnableAutoZoom(bEnable);
+}
+
+bool CModelSheet::GetAutoZoom() const
+{
+	return m_autoZoom;
+}
+
 void CModelSheet::OnOk()
 {
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
@@ -86,6 +96,8 @@ void CModelSheet::OnOk()
 	m_data.VertexTR = vRect.TR;
 	m_data.VertexBL = vRect.BL;
 	m_data.VertexBR = vRect.BR;
+
+	m_autoZoom = m_vertexPage.GetAutoZoom();
 
 	*m_traceParams = m_traceParamsPage.GetTraceParams();
 	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();

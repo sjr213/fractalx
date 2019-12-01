@@ -43,6 +43,8 @@ namespace DXF
 		// Properties
 		virtual void GetDefaultSize(int& width, int& height) const = 0;
 
+		virtual void GetWindowSize(int& width, int& height) const = 0;
+
 		virtual void SetTextureColors(std::vector<uint32_t> colors) = 0;
 
 		virtual void SetPerspective(const DxPerspective& perspective) = 0;
