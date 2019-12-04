@@ -76,11 +76,6 @@ std::shared_ptr<DXF::TraceParams> CModelSheet::GetTraceParams() const
 	return m_traceParams;
 }
 
-void CModelSheet::SetEnableAutoZoom(bool bEnable)
-{
-	m_vertexPage.SetEnableAutoZoom(bEnable);
-}
-
 bool CModelSheet::GetAutoZoom() const
 {
 	return m_autoZoom;

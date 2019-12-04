@@ -24,8 +24,6 @@ public:
 
 	std::shared_ptr<DXF::TraceParams> GetTraceParams() const;
 
-	void SetEnableAutoZoom(bool bEnable);
-
 	bool GetAutoZoom() const;
 
 	void OnOk();

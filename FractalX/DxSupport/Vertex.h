@@ -62,4 +62,13 @@ namespace DXF
 	{
 		return !(lf == rt);
 	}
+
+	template<typename T>
+	bool AreVerticesSimilar(const Vertex<T>& lf, const Vertex<T>& rt, T maxDifference)
+	{
+		return fabs(lf.X - rt.X) < maxDifference
+			&& fabs(lf.Y - rt.Y) < maxDifference
+			&& fabs(lf.Z - rt.Z) < maxDifference;
+	}
+
 }
