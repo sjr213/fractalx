@@ -120,6 +120,9 @@
     <ClInclude Include="VertexSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DefaultFields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -201,6 +204,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VertexSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultFields.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -161,6 +161,7 @@
     <ClInclude Include="CartesianConversionType.h" />
     <ClInclude Include="CartesianConverterFactory.h" />
     <ClInclude Include="CartesianConverterGroup.h" />
+    <ClInclude Include="DefaultFields.h" />
     <ClInclude Include="DoubleRayTracer.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="CartesianConversionType.cpp" />
     <ClCompile Include="CartesianConverterFactory.cpp" />
     <ClCompile Include="CartesianConverterGroup.cpp" />
+    <ClCompile Include="DefaultFields.cpp" />
     <ClCompile Include="DoubleRayTracer.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />

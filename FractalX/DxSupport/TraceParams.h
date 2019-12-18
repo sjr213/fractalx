@@ -10,8 +10,6 @@
 
 namespace DXF
 {
-
-
 	struct StretchDistanceParams
 	{
 		bool StretchDistance = false;
