@@ -26,6 +26,8 @@ public:
 
 	bool GetAutoZoom() const;
 
+	bool GetAutoTranslate() const;
+
 	void OnOk();
 
 protected:
@@ -46,4 +48,6 @@ protected:
 	std::shared_ptr<DXF::TraceParams> m_traceParams;
 
 	bool m_autoZoom = false;
+
+	bool m_autoTranslate = false;
 };

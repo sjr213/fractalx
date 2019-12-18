@@ -81,6 +81,11 @@ bool CModelSheet::GetAutoZoom() const
 	return m_autoZoom;
 }
 
+bool CModelSheet::GetAutoTranslate() const 
+{
+	return m_autoTranslate;
+}
+
 void CModelSheet::OnOk()
 {
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
@@ -93,6 +98,7 @@ void CModelSheet::OnOk()
 	m_data.VertexBR = vRect.BR;
 
 	m_autoZoom = m_vertexPage.GetAutoZoom();
+	m_autoTranslate = m_vertexPage.GetAutoTranslate();
 
 	*m_traceParams = m_traceParamsPage.GetTraceParams();
 	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();
