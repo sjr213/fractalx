@@ -26,6 +26,15 @@ namespace
 	constexpr int Z_CCW = 31;
 	constexpr int Z_Plus = 32;
 	constexpr int Z_CW = 33;
+
+	void LimitAngleToWithIn360(float& angle)
+	{
+		while (angle > 360.0f)
+			angle -= 360.0f;
+
+		while (angle < 0.0f)
+			angle += 360.0f;
+	}
 }
 
 class CPositionAngleDlgImp : public CPositionAngleDlg
@@ -222,6 +231,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleXDegrees += m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleXDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
@@ -233,6 +243,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleXDegrees -= m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleXDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
@@ -244,6 +255,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleYDegrees += m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleYDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
@@ -255,6 +267,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleYDegrees -= m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleYDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
@@ -266,6 +279,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleZDegrees += m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleZDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
@@ -277,6 +291,7 @@ protected:
 			if (m_rotationParams.Action == RotationAction::Fixed)
 			{
 				m_rotationParams.AngleZDegrees -= m_angle;
+				LimitAngleToWithIn360(m_rotationParams.AngleZDegrees);
 				m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 			}
 			break;
