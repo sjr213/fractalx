@@ -55,9 +55,9 @@ namespace DXF
 			z1.y = 2.0 * z.x * z.y + m_traceParams.Fractal.ConstantC.Y;
 			z1.z = 2.0 * z.x * z.z + m_traceParams.Fractal.ConstantC.Z;
 
-			dz1.x = 2.0 * z.x * dz.x;	// not sure if this = 2*z*z1
-			dz1.y = 2.0 * z.y * dz.y;
-			dz1.z = 2.0 * z.z * dz.z;
+			dz1.x = 2.0 * z.x * dz.x - z.y * dz.y - z.z * dz.z;
+			dz1.y = z.y * dz.x + z.x + dz.y;
+			dz1.z = z.x * dz.z + z.z * dz.x;
 		}
 
 		double EstimateDistance(Vector3Double& pos)
