@@ -96,8 +96,11 @@ namespace DXF
 		//auto lastVertex = data.Vertices.end();
 
 		// for each old triangle generate 4 new ones by creating 3 new vertices
-		for (const Triangle& oldTriangle : data.Triangles)
+		size_t nTriangles = data.Triangles.size();
+		for (size_t iTriangle = 0; iTriangle < nTriangles; ++iTriangle)
 		{
+			const Triangle& oldTriangle = data.Triangles.at(iTriangle);
+
 			// for each new vertex we need to determine if it already exist or if we should add it
 			XMFLOAT3 newV1 = CalculateMidPoint(data.Vertices.at(oldTriangle.one), data.Vertices.at(oldTriangle.two));
 			unsigned int newIndex1 = GetVertexIndex(newData->Vertices, newV1);
