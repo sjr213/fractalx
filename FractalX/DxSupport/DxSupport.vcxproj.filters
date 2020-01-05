@@ -123,6 +123,12 @@
     <ClInclude Include="DefaultFields.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InglesRayTracer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InglesRayTracer2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -207,6 +213,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DefaultFields.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InglesRayTracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InglesRayTracer2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

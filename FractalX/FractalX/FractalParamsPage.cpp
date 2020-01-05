@@ -205,6 +205,8 @@ void CFractalParamsPage::InitializeFractalTypeCombo()
 
 	pCombo->InsertString(0, FractalTypeString(FractalType::StandardBulb));
 	pCombo->InsertString(1, FractalTypeString(FractalType::DoubleBulb));
+	pCombo->InsertString(2, FractalTypeString(FractalType::InglesFractal));
+	pCombo->InsertString(3, FractalTypeString(FractalType::InglesFractal2));
 
 	pCombo->SetCurSel(m_modelType);
 }

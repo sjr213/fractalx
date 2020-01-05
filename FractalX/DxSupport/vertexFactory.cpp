@@ -6,6 +6,8 @@
 #include "BasicRayTracer.h"
 #include <DirectXColors.h>
 #include "DoubleRayTracer.h"
+#include "InglesRayTracer.h"
+#include "InglesRayTracer2.h"
 #include <SimpleMath.h>
 #include "SphereApproximator.h"
 #include "TraceParams.h"
@@ -22,6 +24,12 @@ namespace DXF
 		{
 			if (traceParams.Fractal.FractalModelType == FractalType::DoubleBulb)
 				return CreateDoubleRayTracer(traceParams);
+
+			if (traceParams.Fractal.FractalModelType == FractalType::InglesFractal)
+				return CreateInglesRayTracer(traceParams);
+
+			if (traceParams.Fractal.FractalModelType == FractalType::InglesFractal2)
+				return CreateInglesRayTracer2(traceParams);
 
 			return CreateBasicRayTracer(traceParams);
 		}

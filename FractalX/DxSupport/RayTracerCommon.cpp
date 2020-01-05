@@ -21,6 +21,12 @@ namespace DXF
 		normalC += planeNormal;
 	}
 
+	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction)
+	{
+		auto pt = distance * direction + origin;
+		return pt;
+	}
+
 	XMFLOAT3 MakeStartingPoint(float distance, const XMFLOAT3& origin, const XMFLOAT3& direction, const Vertex<double>& constantC)
 	{
 		auto pt = distance * direction + origin;

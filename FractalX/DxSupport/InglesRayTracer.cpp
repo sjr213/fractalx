@@ -1,8 +1,7 @@
 #include "stdafx.h"
-#include "DoubleRayTracer.h"
+#include "InglesRayTracer.h"
 
 #include <algorithm>
-#include "CartesianConverterFactory.h"
 #include <limits>
 #include "RayTracerCommon.h"
 #include <SimpleMath.h>
@@ -28,11 +27,10 @@ namespace DXF
 		}
 	}
 
-	class DoubleRayTracer : public IRayTracer
+	class InglesRayTracer : public IRayTracer
 	{
 	private:
 		TraceParams m_traceParams;
-		std::function<void(Vector3Double&, double, double, double)> m_cartesianConverter;
 
 	protected:
 
@@ -49,31 +47,60 @@ namespace DXF
 			double zr = pow(r, m_traceParams.Fractal.Power);
 			theta = theta * m_traceParams.Fractal.Power;
 			phi = phi * m_traceParams.Fractal.Power;
+		}
 
-			// convert back to Cartesian coordinates
-			m_cartesianConverter(z, zr, theta, phi);
+		void CalculateNextCycle(const Vector3Double& z, const Vector3Double& dz, Vector3Double& z1, Vector3Double& dz1)
+		{
+			z1.x = z.x * z.x - z.y * z.y - z.z * z.z + m_traceParams.Fractal.ConstantC.X;
+			z1.y = 2.0 * z.x * z.y + m_traceParams.Fractal.ConstantC.Y;
+			z1.z = 2.0 * z.x * z.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dz1.x = 2.0 * z.x * dz.x;	// not sure if this = 2*z*z1
+			dz1.y = 2.0 * z.y * dz.y;
+			dz1.z = 2.0 * z.z * dz.z;
 		}
 
 		double EstimateDistance(Vector3Double& pos)
 		{
 			Vector3Double z = pos;
+			Vector3Double dz(1.0, 1.0, 1.0);
 			double dr = 1.0;
 			double r = 0.0;
+			Vector3Double z1;
+			Vector3Double dz1;
+
+			if (m_traceParams.Fractal.NormalizationType == BulbNormalizeType::AltRoots)
+			{
+				r = z.Length(m_traceParams.Fractal.NormalizationRoot);
+			}
+			else
+			{
+				r = z.Length();
+			}
 
 			for (int i = 0; i < m_traceParams.Bulb.Iterations; ++i)
 			{
-				if (m_traceParams.Fractal.NormalizationType == BulbNormalizeType::AltRoots)
-					r = z.Length(m_traceParams.Fractal.NormalizationRoot);
-				else
-					r = z.Length();
-
 				if (r > m_traceParams.Fractal.Bailout)
 					break;
 
-				CalculateNextCycle(z, r, dr);
+				CalculateNextCycle(z, dz, z1, dz1);
 
-				if (IsNan(z))
+				if (IsNan(z1))
 					break;
+
+				if (m_traceParams.Fractal.NormalizationType == BulbNormalizeType::AltRoots)
+				{
+					r = z1.Length(m_traceParams.Fractal.NormalizationRoot);
+					dr = dz1.Length(m_traceParams.Fractal.NormalizationRoot);
+				}
+				else
+				{
+					r = z1.Length();
+					dr = dz1.Length();
+				}
+
+				z = z1;
+				dz = dz1;
 
 				z += pos;
 			}
@@ -166,7 +193,7 @@ namespace DXF
 			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
 			{
 				const XMFLOAT3& v = data.Vertices.at(nVertex);
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				Vector3Double dV = v;
 				Vector3Double direction = -1.0 * dV;
@@ -202,13 +229,11 @@ namespace DXF
 
 	public:
 
-		DoubleRayTracer(const TraceParams& traceParams,
-			const std::function<void(Vector3Double&, const double&, const double&, const double&)>& cartesianConverter)
+		InglesRayTracer(const TraceParams& traceParams)
 			: m_traceParams(traceParams)
-			, m_cartesianConverter(cartesianConverter)
 		{}
 
-		virtual ~DoubleRayTracer()
+		virtual ~InglesRayTracer()
 		{}
 
 		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
@@ -223,32 +248,32 @@ namespace DXF
 
 			if (m_traceParams.Bulb.Fractional)
 				marcher = [this](const Vector3Double& start, const Vector3Double& direction, Vector3Double& p)
-				{
-					Vector3Double startD(start);
-					Vector3Double directionD(direction);
-					Vector3Double pD(p);
-					double distance = RayMarchFractional(startD, directionD, pD);
-					p = pD.ToVector3();
+			{
+				Vector3Double startD(start);
+				Vector3Double directionD(direction);
+				Vector3Double pD(p);
+				double distance = RayMarchFractional(startD, directionD, pD);
+				p = pD.ToVector3();
 
-					return distance;
-				};
+				return distance;
+			};
 			else
 				marcher = [this](const Vector3Double& start, const Vector3Double& direction, Vector3Double& p)
-				{
-					Vector3Double startD(start);
-					Vector3Double directionD(direction);
-					Vector3Double pD(p);
-					double distance = RayMarch(startD, directionD, pD);
-					p = pD.ToVector3();
+			{
+				Vector3Double startD(start);
+				Vector3Double directionD(direction);
+				Vector3Double pD(p);
+				double distance = RayMarch(startD, directionD, pD);
+				p = pD.ToVector3();
 
-					return distance;
-				};
+				return distance;
+			};
 
 			XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
 
 			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				Vector3Double direction = -1.0 * Vector3Double(v);
 				Vector3Double p;
@@ -302,7 +327,7 @@ namespace DXF
 
 			for (const XMFLOAT3& v : data.Vertices)
 			{
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
 
 				Vector3Double direction = -1.0f * Vector3Double(v);
 				Vector3Double p;
@@ -331,9 +356,8 @@ namespace DXF
 
 	};
 
-	std::unique_ptr<IRayTracer> CreateDoubleRayTracer(const TraceParams& traceParams)
+	std::unique_ptr<IRayTracer> CreateInglesRayTracer(const TraceParams& traceParams)
 	{
-		auto converter = CreateConverter(traceParams.Fractal.ConversionGroup);
-		return std::make_unique<DoubleRayTracer>(traceParams, converter);
+		return std::make_unique<InglesRayTracer>(traceParams);
 	}
 }
