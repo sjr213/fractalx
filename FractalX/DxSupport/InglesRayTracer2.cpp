@@ -78,7 +78,8 @@ namespace DXF
 				r = z.Length();
 			}
 
-			for (int i = 0; i < m_traceParams.Bulb.Iterations; ++i)
+			int i = 0;
+			for (; i < m_traceParams.Bulb.Iterations; ++i)
 			{
 				if (r > m_traceParams.Fractal.Bailout)
 					break;
@@ -108,7 +109,9 @@ namespace DXF
 			if (r == 0.0 || dr == 0.0)
 				return 0.0;
 
-			return 0.5 * log(r) * r / dr;
+			//return 0.5 * log(r) * r / dr;
+			// see https://www.shadertoy.com/view/MsfGRr
+			return 0.25 * sqrt(r / dr) * exp2(-1 * i) * log(r);
 		}
 
 
