@@ -42,8 +42,9 @@ BEGIN_MESSAGE_MAP(CPositionRangePage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_ORIGIN_Z_EDIT, &CPositionRangePage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_MIN_DISTANCE_EDIT, &CPositionRangePage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_MAX_DISTANCE_EDIT, &CPositionRangePage::OnKillfocusEdit)
-	ON_BN_CLICKED(IDC_STRETCH_DISTANCE_CHECK, &CPositionRangePage::OnStretchClicked)
-	ON_BN_CLICKED(IDC_ESTIMATE_MIN_MAX_DISTANCE_CHECK, &CPositionRangePage::OnStretchClicked)
+	ON_BN_CLICKED(IDC_STRETCH_DISTANCE_CHECK, &CPositionRangePage::OnStretchDistanceClicked)
+	ON_BN_CLICKED(IDC_ESTIMATE_MIN_MAX_DISTANCE_CHECK, &CPositionRangePage::OnStretchDistanceClicked)
+	ON_BN_CLICKED(IDC_STRETCH_CHECK, &CPositionRangePage::OnStretchClicked)
 END_MESSAGE_MAP()
 
 void CPositionRangePage::DoDataExchange(CDataExchange* pDX)
@@ -59,9 +60,9 @@ void CPositionRangePage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ORIGIN_Z_EDIT, m_origin.z);
 	DDV_MinMaxFloat(pDX, m_origin.z, -5.0f, 5.0f);
 
-	BOOL stretch = m_stretchParams.StretchDistance;
-	DDX_Check(pDX, IDC_STRETCH_DISTANCE_CHECK, stretch);
-	m_stretchParams.StretchDistance = stretch ? true : false;
+	BOOL stretchDistance = m_stretchParams.StretchDistance;
+	DDX_Check(pDX, IDC_STRETCH_DISTANCE_CHECK, stretchDistance);
+	m_stretchParams.StretchDistance = stretchDistance ? true : false;
 
 	BOOL estimate = m_stretchParams.EstimateMinMax;
 	DDX_Check(pDX, IDC_ESTIMATE_MIN_MAX_DISTANCE_CHECK, estimate);
@@ -72,6 +73,10 @@ void CPositionRangePage::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Text(pDX, IDC_MAX_DISTANCE_EDIT, m_stretchParams.MaxDistance);
 	DDV_MinMaxDouble(pDX, m_stretchParams.MaxDistance, m_stretchParams.MinDistance, 1000.0);
+
+	BOOL stretch = m_stretchParams.Stretch;
+	DDX_Check(pDX, IDC_STRETCH_CHECK, stretch);
+	m_stretchParams.Stretch = stretch ? true : false;
 }
 
 BOOL CPositionRangePage::OnSetActive()
@@ -95,16 +100,35 @@ void CPositionRangePage::OnKillfocusEdit()
 	UpdateData(TRUE);
 }
 
+void CPositionRangePage::OnStretchDistanceClicked()
+{
+	UpdateData(TRUE);
+
+	if (m_stretchParams.Stretch && m_stretchParams.StretchDistance)
+	{
+		m_stretchParams.Stretch = false;
+		UpdateData(FALSE);
+	}
+	
+	EnableStretchCtrls();
+}
+
 void CPositionRangePage::OnStretchClicked()
 {
 	UpdateData(TRUE);
-	
+
+	if (m_stretchParams.Stretch && m_stretchParams.StretchDistance)
+	{
+		m_stretchParams.StretchDistance = false;
+		UpdateData(FALSE);
+	}
+
 	EnableStretchCtrls();
 }
 
 void CPositionRangePage::EnableStretchCtrls()
 {
-	bool enableAuto = m_stretchParams.StretchDistance;
+	bool enableAuto = m_stretchParams.StretchDistance || m_stretchParams.Stretch;
 	bool enableMinMax = enableAuto && ! m_stretchParams.EstimateMinMax;
 
 	CWnd *pAuto = GetDlgItem(IDC_ESTIMATE_MIN_MAX_DISTANCE_CHECK);

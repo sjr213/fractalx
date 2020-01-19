@@ -16,6 +16,7 @@ namespace DXF
 		bool EstimateMinMax = false;
 		double MinDistance = 0.0;
 		double MaxDistance = 0.03;
+		bool Stretch = false;
 	};
 
 	struct FractalParams

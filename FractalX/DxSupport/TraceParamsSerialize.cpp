@@ -43,25 +43,29 @@ namespace DXF
 
 	void Serialize(CArchive& ar, StretchDistanceParams& stretchParams)
 	{
-		const int StretchVersion = 1;
+		const int StretchVersion = 2;
 
 		if (ar.IsStoring())
 		{
 			ar << StretchVersion;
-			ar << stretchParams.StretchDistance << stretchParams.EstimateMinMax << 
+			ar << stretchParams.StretchDistance << stretchParams.EstimateMinMax <<
 				stretchParams.MinDistance << stretchParams.MaxDistance;
+			ar << stretchParams.Stretch;
 		}
 		else
 		{
 			int version = 0;
 			ar >> version;
 
-			assert(version == StretchVersion);
-			if (version != StretchVersion)
+			assert(version >= 1);
+			if (version < 1)
 				return;
 
 			ar >> stretchParams.StretchDistance >> stretchParams.EstimateMinMax >>
 				stretchParams.MinDistance >> stretchParams.MaxDistance;
+
+			if (version > 1)
+				ar >> stretchParams.Stretch;
 		}
 	}
 

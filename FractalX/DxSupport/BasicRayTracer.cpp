@@ -227,6 +227,37 @@ namespace DXF
 			return stretchParams;
 		}
 
+		StretchDistanceParams EstimateStepStretchRange(const std::function<double(const XMFLOAT3 & start, const XMFLOAT3 & direction, XMFLOAT3 & p)>& Marcher, 
+			const TriangleData& data, const std::function<void(double)>& setProgress)
+		{
+			double minDistance = std::numeric_limits<double>::max();
+			double maxDistance = 0.0;
+
+			size_t nVertices = data.Vertices.size();
+
+			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
+			{
+				const XMFLOAT3& v = data.Vertices.at(nVertex);
+				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
+
+				XMFLOAT3 direction = -1.0f * v;
+				XMFLOAT3 p;
+				double distance = Marcher(pt, direction, p);
+
+				minDistance = std::min(minDistance, distance);
+				maxDistance = std::max(maxDistance, distance);
+
+				if (nVertex % 30)
+					setProgress(static_cast<double>(nVertex) / nVertices);
+			}
+
+			StretchDistanceParams stretchParams = m_traceParams.Stretch;
+			stretchParams.MinDistance = minDistance;
+			stretchParams.MaxDistance = maxDistance;
+
+			return stretchParams;
+		}
+
 		double CalculateStretchDistance(const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p, const StretchDistanceParams& stretchParams)
 		{
 			double distance = RayMarchDistance(start, direction, p);
@@ -240,18 +271,21 @@ namespace DXF
 			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
 		}
 
-	public:
+		double CalculateStepStretchDistance(const std::function<double(const XMFLOAT3 & start, const XMFLOAT3 & direction, XMFLOAT3 & p)>& Marcher, 
+			const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p, const StretchDistanceParams& stretchParams)
+		{
+			double distance = Marcher(start, direction, p);
 
-		BasicRayTracer(const TraceParams& traceParams,
-			const std::function<void(XMFLOAT3&, const double&, const double&, const double&)>& cartesianConverter)
-			: m_traceParams(traceParams)
-			, m_cartesianConverter(cartesianConverter)
-		{}
+			if (distance < stretchParams.MinDistance)
+				return 0.0;
 
-		virtual ~BasicRayTracer()
-		{}
+			if (distance > stretchParams.MaxDistance)
+				return 1.0;
 
-		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
+			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
+		}
+
+		std::shared_ptr<DxVertexData> RayTraceNormal(const TriangleData& data, const std::function<void(double)>& setProgress)
 		{
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
 			vData->StretchParams = m_traceParams.Stretch;
@@ -299,6 +333,92 @@ namespace DXF
 			setProgress(1.0);
 
 			return vData;
+		}
+
+		std::shared_ptr<DxVertexData> RayTraceStepStretch(const TriangleData& data, const std::function<void(double)>& setProgress)
+		{
+			std::function<double(const XMFLOAT3&, const XMFLOAT3&, XMFLOAT3&)> marcher =
+				[this](const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
+			{
+				return RayMarch(start, direction, p);
+			};
+			if (m_traceParams.Bulb.Fractional)
+				marcher = [this](const XMFLOAT3& start, const XMFLOAT3& direction, XMFLOAT3& p)
+			{
+				return RayMarchFractional(start, direction, p);
+			};
+
+			// new part for estimating distance
+			auto setLocalProgress = setProgress;
+
+			if (m_traceParams.Stretch.EstimateMinMax)
+			{
+				setLocalProgress = [&](double progress)
+				{
+					setProgress(0.25 + 3.0 * progress / 4.0);
+				};
+
+				m_traceParams.Stretch = EstimateStepStretchRange(marcher, data, [&](double progress)
+					{
+						setProgress(progress / 4.0);
+					});
+			}
+
+			// new part 2
+			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
+			vData->StretchParams = m_traceParams.Stretch;
+
+			double total = data.Vertices.size() + 2.0;
+			int progress = 1;
+
+			XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
+
+			for (const XMFLOAT3& v : data.Vertices)
+			{
+				XMFLOAT3 pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v, m_traceParams.Fractal.ConstantC);
+
+				XMFLOAT3 direction = -1.0f * v;
+				XMFLOAT3 p;
+				double distance = CalculateStepStretchDistance(marcher, pt, direction, p, m_traceParams.Stretch);
+
+				vData->Vertices.emplace_back(p, nullNormal, Vector2(static_cast<float>(distance), 0.0f));
+
+				++progress;
+				if (progress % 20 == 0)
+					setLocalProgress(progress / total);
+			}
+
+			for (const Triangle& t : data.Triangles)
+			{
+				vData->Indices.push_back(t.one);
+				vData->Indices.push_back(t.two);
+				vData->Indices.push_back(t.three);
+			}
+
+			CalculateNormals(*vData);
+
+			setProgress(1.0);
+
+			return vData;
+		}
+
+	public:
+
+		BasicRayTracer(const TraceParams& traceParams,
+			const std::function<void(XMFLOAT3&, const double&, const double&, const double&)>& cartesianConverter)
+			: m_traceParams(traceParams)
+			, m_cartesianConverter(cartesianConverter)
+		{}
+
+		virtual ~BasicRayTracer()
+		{}
+
+		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
+		{
+			if (m_traceParams.Stretch.Stretch)
+				return RayTraceStepStretch(data, setProgress);
+
+			return RayTraceNormal(data, setProgress);
 		}
 
 		std::shared_ptr<DxVertexData> RayTraceStretch(const TriangleData& data, const std::function<void(double)>& setProgress) override

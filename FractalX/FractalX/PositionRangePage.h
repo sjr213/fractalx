@@ -32,6 +32,8 @@ protected:
 
 	void OnKillfocusEdit();
 
+	void OnStretchDistanceClicked();
+
 	void OnStretchClicked();
 
 	void EnableStretchCtrls();
