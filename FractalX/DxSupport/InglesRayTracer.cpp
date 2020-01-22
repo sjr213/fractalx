@@ -227,16 +227,7 @@ namespace DXF
 			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
 		}
 
-	public:
-
-		InglesRayTracer(const TraceParams& traceParams)
-			: m_traceParams(traceParams)
-		{}
-
-		virtual ~InglesRayTracer()
-		{}
-
-		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
+		std::shared_ptr<DxVertexData> RayTraceNormal(const TriangleData& data, const std::function<void(double)>& setProgress)
 		{
 			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
 			vData->StretchParams = m_traceParams.Stretch;
@@ -298,6 +289,149 @@ namespace DXF
 			setProgress(1.0);
 
 			return vData;
+		}
+
+		StretchDistanceParams EstimateStepStretchRange(const std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)>& Marcher,
+			const TriangleData& data, const std::function<void(double)>& setProgress)
+		{
+			double minDistance = std::numeric_limits<double>::max();
+			double maxDistance = 0.0;
+
+			size_t nVertices = data.Vertices.size();
+
+			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
+			{
+				const XMFLOAT3& v = data.Vertices.at(nVertex);
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+
+				Vector3Double direction = -1.0f * Vector3Double(v);
+				Vector3Double p;
+				double distance = Marcher(pt, direction, p);
+
+				minDistance = std::min(minDistance, distance);
+				maxDistance = std::max(maxDistance, distance);
+
+				if (nVertex % 30)
+					setProgress(static_cast<double>(nVertex) / nVertices);
+			}
+
+			StretchDistanceParams stretchParams = m_traceParams.Stretch;
+			stretchParams.MinDistance = minDistance;
+			stretchParams.MaxDistance = maxDistance;
+
+			return stretchParams;
+		}
+
+		double CalculateStepStretchDistance(const std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)>& Marcher,
+			const Vector3Double& start, const Vector3Double& direction, Vector3Double& p, const StretchDistanceParams& stretchParams)
+		{
+			double distance = Marcher(start, direction, p);
+
+			if (distance < stretchParams.MinDistance)
+				return 0.0;
+
+			if (distance > stretchParams.MaxDistance)
+				return 1.0;
+
+			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
+		}
+
+		std::shared_ptr<DxVertexData> RayTraceStepStretch(const TriangleData& data, const std::function<void(double)>& setProgress)
+		{
+			std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)> marcher = nullptr;
+
+			if (m_traceParams.Bulb.Fractional)
+				marcher = [this](const Vector3Double& start, const Vector3Double& direction, Vector3Double& p)
+			{
+				Vector3Double startD(start);
+				Vector3Double directionD(direction);
+				Vector3Double pD(p);
+				double distance = RayMarchFractional(startD, directionD, pD);
+				p = pD.ToVector3();
+
+				return distance;
+			};
+			else
+				marcher = [this](const Vector3Double& start, const Vector3Double& direction, Vector3Double& p)
+			{
+				Vector3Double startD(start);
+				Vector3Double directionD(direction);
+				Vector3Double pD(p);
+				double distance = RayMarch(startD, directionD, pD);
+				p = pD.ToVector3();
+
+				return distance;
+			};
+
+			// new part for estimating distance
+			auto setLocalProgress = setProgress;
+
+			if (m_traceParams.Stretch.EstimateMinMax)
+			{
+				setLocalProgress = [&](double progress)
+				{
+					setProgress(0.25 + 3.0 * progress / 4.0);
+				};
+
+				m_traceParams.Stretch = EstimateStepStretchRange(marcher, data, [&](double progress)
+					{
+						setProgress(progress / 4.0);
+					});
+			}
+
+			// new part 2
+			std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
+			vData->StretchParams = m_traceParams.Stretch;
+
+			double total = data.Vertices.size() + 2.0;
+			int progress = 1;
+
+			XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
+
+			for (const XMFLOAT3& v : data.Vertices)
+			{
+				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
+
+				Vector3Double direction = -1.0f * Vector3Double(v);
+				Vector3Double p;
+				double distance = CalculateStepStretchDistance(marcher, pt, direction, p, m_traceParams.Stretch);
+
+				vData->Vertices.emplace_back(p.ToVector3(), nullNormal, Vector2(static_cast<float>(distance), 0.0f));
+
+				++progress;
+				if (progress % 20 == 0)
+					setLocalProgress(progress / total);
+			}
+
+			for (const Triangle& t : data.Triangles)
+			{
+				vData->Indices.push_back(t.one);
+				vData->Indices.push_back(t.two);
+				vData->Indices.push_back(t.three);
+			}
+
+			CalculateNormals(*vData);
+
+			setProgress(1.0);
+
+			return vData;
+		}
+
+	public:
+
+		InglesRayTracer(const TraceParams& traceParams)
+			: m_traceParams(traceParams)
+		{}
+
+		virtual ~InglesRayTracer()
+		{}
+
+		std::shared_ptr<DxVertexData> RayTrace(const TriangleData& data, const std::function<void(double)>& setProgress) override
+		{
+			if (m_traceParams.Stretch.Stretch)
+				return RayTraceStepStretch(data, setProgress);
+
+			return RayTraceNormal(data, setProgress);
 		}
 
 		std::shared_ptr<DxVertexData> RayTraceStretch(const TriangleData& data, const std::function<void(double)>& setProgress) override
