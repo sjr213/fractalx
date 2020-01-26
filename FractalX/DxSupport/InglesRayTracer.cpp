@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <limits>
 #include "RayTracerCommon.h"
+#include "RayTracerDoubleCommon.h"
 #include <SimpleMath.h>
 #include "SphereApproximator.h"
 #include "TraceParams.h"
@@ -291,51 +292,6 @@ namespace DXF
 			return vData;
 		}
 
-		StretchDistanceParams EstimateStepStretchRange(const std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)>& Marcher,
-			const TriangleData& data, const std::function<void(double)>& setProgress)
-		{
-			double minDistance = std::numeric_limits<double>::max();
-			double maxDistance = 0.0;
-
-			size_t nVertices = data.Vertices.size();
-
-			for (size_t nVertex = 0; nVertex < nVertices; nVertex += 3)
-			{
-				const XMFLOAT3& v = data.Vertices.at(nVertex);
-				Vector3Double pt = MakeStartingPoint(m_traceParams.Bulb.Distance, m_traceParams.Bulb.Origin, v);
-
-				Vector3Double direction = -1.0f * Vector3Double(v);
-				Vector3Double p;
-				double distance = Marcher(pt, direction, p);
-
-				minDistance = std::min(minDistance, distance);
-				maxDistance = std::max(maxDistance, distance);
-
-				if (nVertex % 30)
-					setProgress(static_cast<double>(nVertex) / nVertices);
-			}
-
-			StretchDistanceParams stretchParams = m_traceParams.Stretch;
-			stretchParams.MinDistance = minDistance;
-			stretchParams.MaxDistance = maxDistance;
-
-			return stretchParams;
-		}
-
-		double CalculateStepStretchDistance(const std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)>& Marcher,
-			const Vector3Double& start, const Vector3Double& direction, Vector3Double& p, const StretchDistanceParams& stretchParams)
-		{
-			double distance = Marcher(start, direction, p);
-
-			if (distance < stretchParams.MinDistance)
-				return 0.0;
-
-			if (distance > stretchParams.MaxDistance)
-				return 1.0;
-
-			return (distance - stretchParams.MinDistance) / (stretchParams.MaxDistance - stretchParams.MinDistance);
-		}
-
 		std::shared_ptr<DxVertexData> RayTraceStepStretch(const TriangleData& data, const std::function<void(double)>& setProgress)
 		{
 			std::function<double(const Vector3Double&, const Vector3Double&, Vector3Double&)> marcher = nullptr;
@@ -376,7 +332,7 @@ namespace DXF
 				m_traceParams.Stretch = EstimateStepStretchRange(marcher, data, [&](double progress)
 					{
 						setProgress(progress / 4.0);
-					});
+					}, m_traceParams);
 			}
 
 			// new part 2
