@@ -1,5 +1,6 @@
 #pragma once
 #include <SimpleMath.h>
+#include "Vertex.h"
 
 namespace DXF
 {
@@ -49,6 +50,8 @@ namespace DXF
 		friend Vector3Double operator*(const Vector3Double& lf, double d);
 
 		friend Vector3Double operator*(double d, const Vector3Double& rt);
+
+		friend Vector3Double operator+(const Vector3Double& lf, const Vertex<double>& rt);
 	};
 
 }

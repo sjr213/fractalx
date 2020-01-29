@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Vector3Double.h"
 
+
 namespace DXF
 {
 	Vector3Double::Vector3Double()
@@ -143,5 +144,14 @@ namespace DXF
 		return temp;
 	}
 
+	Vector3Double operator+(const Vector3Double& lf, const Vertex<double>& rt)
+	{
+		Vector3Double temp = lf;
+		temp.x += rt.X;
+		temp.y += rt.Y;
+		temp.z += rt.Z;
+
+		return temp;
+	}
 
 }
