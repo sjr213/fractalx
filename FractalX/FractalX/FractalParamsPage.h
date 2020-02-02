@@ -64,6 +64,8 @@ protected:
 
 	void OnModelComboChanged();
 
+	void OnNormalizationComboChanged();
+
 	void OnComboChanged();
 
 	BOOL OnInitDialog() override;

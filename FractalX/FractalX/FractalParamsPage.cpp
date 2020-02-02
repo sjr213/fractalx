@@ -123,7 +123,7 @@ BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_POWER_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_CBN_SELCHANGE(IDC_MODEL_TYPE_COMBO, &CFractalParamsPage::OnModelComboChanged)
 	ON_CBN_SELCHANGE(IDC_CARTESIAN_COMBO, &CFractalParamsPage::OnComboChanged)
-	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnComboChanged)
+	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnNormalizationComboChanged)
 	ON_EN_KILLFOCUS(IDC_ROOT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_BN_CLICKED(IDC_CUSTOM_CONVERSION_BUT, &CFractalParamsPage::OnCustomBut)
 	ON_CBN_SELCHANGE(IDC_C_X_EDIT, &CFractalParamsPage::OnKillfocusEdit)
@@ -200,6 +200,11 @@ void CFractalParamsPage::EnableCtrls()
 	CWnd* pPowerEdit = GetDlgItem(IDC_POWER_EDIT);
 	if (pPowerEdit)
 		pPowerEdit->EnableWindow(stdBulb || doubleBulb);
+
+	bool enableNormRoot = BulbNormalizeTypeFromInt(m_normalizationType+1) == BulbNormalizeType::AltRoots;
+	CWnd* pAltRootEdit = GetDlgItem(IDC_ROOT_EDIT);
+	if (pAltRootEdit)
+		pAltRootEdit->EnableWindow(enableNormRoot);
 }
 
 void CFractalParamsPage::InitializeFractalTypeCombo()
@@ -264,6 +269,12 @@ void CFractalParamsPage::OnComboChanged()
 }
 
 void CFractalParamsPage::OnModelComboChanged()
+{
+	UpdateData(TRUE);
+	EnableCtrls();
+}
+
+void CFractalParamsPage::OnNormalizationComboChanged()
 {
 	UpdateData(TRUE);
 	EnableCtrls();
