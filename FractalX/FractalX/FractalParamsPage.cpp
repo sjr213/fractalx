@@ -187,6 +187,7 @@ BOOL CFractalParamsPage::OnSetActive()
 void CFractalParamsPage::EnableCtrls()
 {
 	bool stdBulb = FractalTypeFromInt(m_modelType+1) == FractalType::StandardBulb;
+	bool doubleBulb = FractalTypeFromInt(m_modelType + 1) == FractalType::DoubleBulb;
 
 	CWnd* pCartesianTypeCombo = GetDlgItem(IDC_CARTESIAN_COMBO);
 	if (pCartesianTypeCombo)
@@ -195,6 +196,10 @@ void CFractalParamsPage::EnableCtrls()
 	CWnd* pCustomeBut = GetDlgItem(IDC_CUSTOM_CONVERSION_BUT);
 	if (pCustomeBut)
 		pCustomeBut->EnableWindow(!stdBulb);
+
+	CWnd* pPowerEdit = GetDlgItem(IDC_POWER_EDIT);
+	if (pPowerEdit)
+		pPowerEdit->EnableWindow(stdBulb || doubleBulb);
 }
 
 void CFractalParamsPage::InitializeFractalTypeCombo()
