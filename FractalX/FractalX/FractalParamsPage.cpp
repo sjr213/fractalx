@@ -119,7 +119,7 @@ Vertex<double> CFractalParamsPage::GetConstantC() const
 
 BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_BAILOUT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
-	ON_EN_KILLFOCUS(IDC_CONSTANT_C_EDIT, &CFractalParamsPage::OnKillfocusEdit)
+	ON_EN_KILLFOCUS(IDC_DERIVATIVE_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_POWER_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_CBN_SELCHANGE(IDC_MODEL_TYPE_COMBO, &CFractalParamsPage::OnModelComboChanged)
 	ON_CBN_SELCHANGE(IDC_CARTESIAN_COMBO, &CFractalParamsPage::OnComboChanged)
@@ -138,7 +138,7 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BAILOUT_EDIT, m_bailout);
 	DDV_MinMaxDouble(pDX, m_bailout, 1, 10000);
 
-	DDX_Text(pDX, IDC_CONSTANT_C_EDIT, m_derivative);
+	DDX_Text(pDX, IDC_DERIVATIVE_EDIT, m_derivative);
 	DDV_MinMaxDouble(pDX, m_derivative, -10000, 10000);
 
 	DDX_Text(pDX, IDC_POWER_EDIT, m_power);
@@ -200,6 +200,10 @@ void CFractalParamsPage::EnableCtrls()
 	CWnd* pPowerEdit = GetDlgItem(IDC_POWER_EDIT);
 	if (pPowerEdit)
 		pPowerEdit->EnableWindow(stdBulb || doubleBulb);
+
+	CWnd* pDerivativeEdit = GetDlgItem(IDC_DERIVATIVE_EDIT);
+	if (pDerivativeEdit)
+		pDerivativeEdit->EnableWindow(stdBulb || doubleBulb);
 
 	bool enableNormRoot = BulbNormalizeTypeFromInt(m_normalizationType+1) == BulbNormalizeType::AltRoots;
 	CWnd* pAltRootEdit = GetDlgItem(IDC_ROOT_EDIT);
