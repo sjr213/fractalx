@@ -2,6 +2,7 @@
 #include "RayTracerDoubleCommon.h"
 
 #include <algorithm>
+#include "DefaultFields.h"
 #include <DirectXMath.h>
 #include "RayTracerCommon.h"
 #include "SphereApproximator.h"
@@ -62,8 +63,8 @@ namespace DXF
 		}
 
 		StretchDistanceParams stretchParams = traceParams.Stretch;
-		stretchParams.MinDistance = minDistance;
-		stretchParams.MaxDistance = maxDistance;
+		stretchParams.MinDistance = std::min(minDistance, GetMaxStretch());
+		stretchParams.MaxDistance = std::min(maxDistance, GetMaxStretch());
 
 		return stretchParams;
 	}

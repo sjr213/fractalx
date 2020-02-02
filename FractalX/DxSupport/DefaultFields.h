@@ -9,4 +9,6 @@ namespace DXF
 	Vertex<float> GetDefaultTarget();
 
 	Vertex<float> GetDefaultCamera();
+
+	double GetMaxStretch();
 }

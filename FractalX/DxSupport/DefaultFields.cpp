@@ -18,4 +18,9 @@ namespace DXF
 	{
 		return Vertex<float>(0.f, 0.f, 0.3f);
 	}
+
+	double GetMaxStretch()
+	{
+		return 1e7;
+	}
 }

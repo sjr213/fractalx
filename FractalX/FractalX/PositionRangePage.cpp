@@ -3,7 +3,9 @@
 #include "FractalX.h"
 #include "PositionRangePage.h"
 
+#include "DefaultFields.h"
 #include "ModelSheet.h"
+
 
 using namespace DXF;
 
@@ -69,10 +71,10 @@ void CPositionRangePage::DoDataExchange(CDataExchange* pDX)
 	m_stretchParams.EstimateMinMax = estimate ? true : false;
 
 	DDX_Text(pDX, IDC_MIN_DISTANCE_EDIT, m_stretchParams.MinDistance);
-	DDV_MinMaxDouble(pDX, m_stretchParams.MinDistance, 0.0, 1000.0);
+	DDV_MinMaxDouble(pDX, m_stretchParams.MinDistance, 0.0, GetMaxStretch());
 
 	DDX_Text(pDX, IDC_MAX_DISTANCE_EDIT, m_stretchParams.MaxDistance);
-	DDV_MinMaxDouble(pDX, m_stretchParams.MaxDistance, m_stretchParams.MinDistance, 1000.0);
+	DDV_MinMaxDouble(pDX, m_stretchParams.MaxDistance, m_stretchParams.MinDistance, GetMaxStretch());
 
 	BOOL stretch = m_stretchParams.Stretch;
 	DDX_Check(pDX, IDC_STRETCH_CHECK, stretch);

@@ -3,6 +3,7 @@
 #include "BasicRayTracer.h"
 
 #include <algorithm>
+#include "DefaultFields.h"
 #include <limits>
 #include "RayTracerCommon.h"
 #include <SimpleMath.h>
@@ -221,8 +222,8 @@ namespace DXF
 			}
 
 			StretchDistanceParams stretchParams = m_traceParams.Stretch;
-			stretchParams.MinDistance = minDistance;
-			stretchParams.MaxDistance = maxDistance;
+			stretchParams.MinDistance = std::min(minDistance, GetMaxStretch());
+			stretchParams.MaxDistance = std::min(maxDistance, GetMaxStretch());
 
 			return stretchParams;
 		}
@@ -252,8 +253,8 @@ namespace DXF
 			}
 
 			StretchDistanceParams stretchParams = m_traceParams.Stretch;
-			stretchParams.MinDistance = minDistance;
-			stretchParams.MaxDistance = maxDistance;
+			stretchParams.MinDistance = std::min(minDistance, GetMaxStretch());
+			stretchParams.MaxDistance = std::min(maxDistance, GetMaxStretch());
 
 			return stretchParams;
 		}
