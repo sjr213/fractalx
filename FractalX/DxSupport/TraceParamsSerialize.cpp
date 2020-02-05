@@ -134,13 +134,15 @@ namespace DXF
 	{
 		const int BulbParamVersion = 1;
 
+		float normalDeltaObsolete = 0.0;
+
 		if (ar.IsStoring())
 		{
 			ar << BulbParamVersion;
 			Serialize(ar, bulbParams.Origin);
 
 			ar << bulbParams.Distance << bulbParams.MaxRaySteps << bulbParams.MinRayDistance;
-			ar << bulbParams.StepDivisor << bulbParams.Iterations << bulbParams.NormalDelta << bulbParams.Fractional;
+			ar << bulbParams.StepDivisor << bulbParams.Iterations << normalDeltaObsolete << bulbParams.Fractional;
 		}
 		else
 		{
@@ -154,7 +156,7 @@ namespace DXF
 			Serialize(ar, bulbParams.Origin);
 
 			ar >> bulbParams.Distance >> bulbParams.MaxRaySteps >> bulbParams.MinRayDistance;
-			ar >> bulbParams.StepDivisor >> bulbParams.Iterations >> bulbParams.NormalDelta >> bulbParams.Fractional;
+			ar >> bulbParams.StepDivisor >> bulbParams.Iterations >> normalDeltaObsolete >> bulbParams.Fractional;
 		}
 	}
 

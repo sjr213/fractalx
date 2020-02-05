@@ -30,7 +30,6 @@ BEGIN_MESSAGE_MAP(CTraceParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_MIN_RAY_DISTANCE_EDIT, &CTraceParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_STEP_DIVISOR_EDIT, &CTraceParamsPage::OnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_ITERATIONS_EDIT, &CTraceParamsPage::OnKillfocusEdit)
-	ON_EN_KILLFOCUS(IDC_NORMAL_DELTA_EDIT, &CTraceParamsPage::OnKillfocusEdit)
 END_MESSAGE_MAP()
 
 void CTraceParamsPage::DoDataExchange(CDataExchange* pDX)
@@ -48,9 +47,6 @@ void CTraceParamsPage::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Text(pDX, IDC_ITERATIONS_EDIT, m_traceParams.Bulb.Iterations);
 	DDV_MinMaxInt(pDX, m_traceParams.Bulb.Iterations, 2, 1000000);
-
-	DDX_Text(pDX, IDC_NORMAL_DELTA_EDIT, m_traceParams.Bulb.NormalDelta);
-	DDV_MinMaxFloat(pDX, m_traceParams.Bulb.NormalDelta, 1e-5f, 0.1f);
 
 	BOOL fractional = m_traceParams.Bulb.Fractional;
 	DDX_Check(pDX, IDC_FRACTIONAL_CHECK, fractional);

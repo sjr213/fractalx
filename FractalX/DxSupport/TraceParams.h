@@ -43,7 +43,7 @@ namespace DXF
 		double StepDivisor = 10.0;
 
 		int Iterations = 256;
-		float NormalDelta = 0.01f;
+//		float NormalDelta = 0.01f; not used
 
 		bool Fractional = false;
 	};
