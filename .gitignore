@@ -21,5 +21,6 @@ release/
 *.user
 *.db-shm
 *.db-wal
+/.vs
 
 

@@ -193,6 +193,7 @@
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="vertexFactory.h" />
+    <ClInclude Include="VertexSerialization.h" />
     <ClInclude Include="VertexSource.h" />
     <ClInclude Include="VertexStatistics.h" />
   </ItemGroup>

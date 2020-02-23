@@ -132,6 +132,9 @@
     <ClInclude Include="RayTracerDoubleCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VertexSerialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -1,5 +1,5 @@
 #pragma once
-#include <afx.h>
+//#include <afx.h>
 
 namespace DXF
 {
@@ -29,18 +29,6 @@ namespace DXF
 		T Z;
 	};
 
-	template<typename T>
-	void SerializeVertex(CArchive& ar, Vertex<T>& vertex)
-	{
-		if (ar.IsStoring())
-		{
-			ar << vertex.X << vertex.Y << vertex.Z;
-		}
-		else
-		{
-			ar >> vertex.X >> vertex.Y >> vertex.Z;
-		}
-	}
 
 	template<typename T>
 	Vertex<T> NormalizeVector(const Vertex<T>& v)

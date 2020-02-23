@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ModelData.h"
-
+#include "VertexSerialization.h"
 #include <assert.h>
 
 namespace DXF

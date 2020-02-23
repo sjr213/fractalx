@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "TraceParamsSerialize.h"
+
 #include "TraceParams.h"
 #include "DxSerialize.h"
+#include "VertexSerialization.h"
 
 namespace DXF
 {
