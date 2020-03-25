@@ -7,7 +7,8 @@ namespace DXF
 		StandardBulb = 1,
 		DoubleBulb = 2,
 		InglesFractal = 3,
-		InglesFractal2 = 4
+		InglesFractal2 = 4,
+		InglesFractal3 = 5
 	};
 
 	int FractalTypeToInt(FractalType fractalType);

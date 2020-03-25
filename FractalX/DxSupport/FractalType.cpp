@@ -17,6 +17,8 @@ namespace DXF
 			return 3;
 		case FractalType::InglesFractal2:
 			return 4;
+		case FractalType::InglesFractal3:
+			return 5;
 		default:
 			assert(false);
 			return 1;
@@ -35,6 +37,8 @@ namespace DXF
 			return FractalType::InglesFractal;
 		case 4:
 			return FractalType::InglesFractal2;
+		case 5:
+			return FractalType::InglesFractal3;
 		default:
 			assert(false);
 			return FractalType::StandardBulb;
@@ -53,6 +57,8 @@ namespace DXF
 			return _T("Ingles");
 		case FractalType::InglesFractal2:
 			return _T("Ingles2");
+		case FractalType::InglesFractal3:
+			return _T("Ingles3");
 		default:
 			assert(false);
 			return _T("Unknown");

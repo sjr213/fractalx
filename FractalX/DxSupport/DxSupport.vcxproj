@@ -172,6 +172,7 @@
     <ClInclude Include="FractalType.h" />
     <ClInclude Include="InglesRayTracer.h" />
     <ClInclude Include="InglesRayTracer2.h" />
+    <ClInclude Include="InglesRayTracer3.h" />
     <ClInclude Include="IRayTracer.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="MyDxHelpers.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="FractalType.cpp" />
     <ClCompile Include="InglesRayTracer.cpp" />
     <ClCompile Include="InglesRayTracer2.cpp" />
+    <ClCompile Include="InglesRayTracer3.cpp" />
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="MyDxHelpers.cpp" />
     <ClCompile Include="RayTracerCommon.cpp" />
