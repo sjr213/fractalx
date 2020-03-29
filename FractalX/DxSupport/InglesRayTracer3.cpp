@@ -84,9 +84,7 @@ namespace DXF
 			if (r == 0.0 || dr == 0.0)
 				return 0.0;
 
-			//return 0.5 * log(r) * r / dr;
-			// see https://www.shadertoy.com/view/MsfGRr
-			return 0.25 * sqrt(r / dr) * exp2(-1 * i) * log(r);
+			return log(r) * r / dr;
 		}
 
 	public:
