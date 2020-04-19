@@ -21,17 +21,40 @@ namespace DXF
 	{
 	private:
 		TraceParams m_traceParams;
+		std::function<void(const Vector3Double&, const Vector3Double&, Vector3Double&, Vector3Double&)> m_calculateNextCycle;
 
 	protected:
 
-		void CalculateNextCycle(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		void CalculateNextCycleSquared(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
 		{
 			Q1.x = Q.x * Q.x - Q.y * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.X;
 			Q1.y = 2.0 * Q.x * Q.y + m_traceParams.Fractal.ConstantC.Y;
 			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
 
 			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y - 2.0 * Q.z * dQ.z;
-			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x + dQ.y;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
+		}
+
+		void CalculateNextCycleCubed(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = 3.0 * Q.x * Q.x * Q.x - 3.0 * Q.x * Q.y * Q.y - 3.0 * Q.x * Q.z * Q.z + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 3.0 * Q.x * Q.x * Q.y - Q.y * Q.y * Q.y - Q.y * Q.z * Q.z + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 3.0 * Q.x * Q.x * Q.z - Q.y * Q.y * Q.z - Q.z * Q.z * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 3.0 * Q.x * Q.x * dQ.x -3.0 * Q.y * Q.y * dQ.x -3.0 * Q.z * Q.z * dQ.x - 6.0 * Q.x * Q.y * dQ.y - 6.0 * Q.x * Q.z * dQ.z;
+			dQ1.y = 6.0 * Q.x * Q.y * dQ.x + 3.0 * Q.x * Q.x * dQ.y - 3.0 * Q.y * Q.y * dQ.y - Q.z * Q.z * dQ.y - 2.0 * Q.y * Q.z * dQ.z;
+			dQ1.z = 6.0 * Q.x * Q.z * dQ.x - 2.0 * Q.y * Q.z * dQ.y + 6.0 * Q.x * Q.x * dQ.z - Q.y * Q.y * dQ.z - 3.0 * Q.z * Q.z * dQ.z;
+		}
+
+		void CalculateNextCycleSineX(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = sin(Q.x * Q.x) - Q.y * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = cos(Q.x * Q.x) * 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y - 2.0 * Q.z * dQ.z;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y;
 			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
 		}
 
@@ -59,7 +82,7 @@ namespace DXF
 				if (r > traceParams.Fractal.Bailout)
 					break;
 
-				CalculateNextCycle(z, dz, z1, dz1);
+				m_calculateNextCycle(z, dz, z1, dz1);
 
 				if (IsNan(z1))
 					break;
@@ -87,11 +110,38 @@ namespace DXF
 			return log(r) * r / dr;
 		}
 
+		void SetNextCycle()
+		{
+			if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Cubed)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleCubed(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_SinX)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleSineX(Q, dQ, Q1, dQ1);
+				};
+			}
+			else
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleSquared(Q, dQ, Q1, dQ1);
+				};
+			}
+		}
+
 	public:
 
 		InglesRayTracer3(const TraceParams& traceParams)
 			: m_traceParams(traceParams)
-		{}
+		{
+			SetNextCycle();
+		}
 
 		virtual ~InglesRayTracer3()
 		{}

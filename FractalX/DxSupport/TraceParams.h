@@ -5,8 +5,10 @@
 #include "BulbNormalizeType.h"
 #include "CartesianConverterGroup.h"
 #include "CartesianConversionType.h"
+#include "Ingles3EquantionType.h"
 #include "FractalType.h"
 #include "Vertex.h"
+
 
 namespace DXF
 {
@@ -30,6 +32,7 @@ namespace DXF
 		double NormalizationRoot = 0.5;
 		CartesianConverterGroup ConversionGroup;
 		Vertex<double> ConstantC = Vertex<double>(0.0,0.0,0.0);
+		Ingles3EquationType InglesEquation = Ingles3EquationType::I_Squared;
 	};
 
 	struct BulbParams

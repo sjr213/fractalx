@@ -138,6 +138,9 @@
     <ClInclude Include="InglesRayTracer3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Ingles3EquantionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InglesRayTracer3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingles3EquantionType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

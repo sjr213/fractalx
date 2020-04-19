@@ -73,7 +73,7 @@ namespace DXF
 
 	void Serialize(CArchive& ar, FractalParams& fractalParams)
 	{
-		const int FractalParamVersion = 5;
+		const int FractalParamVersion = 6;
 
 		if (ar.IsStoring())
 		{
@@ -85,6 +85,7 @@ namespace DXF
 			ar << fractalParams.NormalizationRoot;
 			Serialize(ar, fractalParams.ConversionGroup);
 			SerializeVertex(ar, fractalParams.ConstantC);
+			ar << Ingles3EquationTypeToInt(fractalParams.InglesEquation);
 		}
 		else
 		{
@@ -107,7 +108,7 @@ namespace DXF
 
 			fractalParams.FractalModelType = FractalTypeFromInt(type);
 
-			if (version < 3)
+			if (version < 3) 
 				return;
 
 			int cartesianType = 1;
@@ -120,15 +121,22 @@ namespace DXF
 
 			ar >> fractalParams.NormalizationRoot;
 
-			if (version < 4)
+			if (version < 4) 
 				return;
 
 			Serialize(ar, fractalParams.ConversionGroup);
 
-			if (version < 5)
+			if (version < 5) 
 				return;
 
 			SerializeVertex(ar, fractalParams.ConstantC);
+
+			if (version < 6) 
+				return;
+
+			int inglesType = 1;
+			ar >> inglesType;
+			fractalParams.InglesEquation = Ingles3EquationTypeFromInt(inglesType);
 		}
 	}
 

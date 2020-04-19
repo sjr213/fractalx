@@ -170,6 +170,7 @@
     <ClInclude Include="DxLight.h" />
     <ClInclude Include="DxSerialize.h" />
     <ClInclude Include="FractalType.h" />
+    <ClInclude Include="Ingles3EquantionType.h" />
     <ClInclude Include="InglesRayTracer.h" />
     <ClInclude Include="InglesRayTracer2.h" />
     <ClInclude Include="InglesRayTracer3.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="DxfColorFactory.cpp" />
     <ClCompile Include="DxSerialize.cpp" />
     <ClCompile Include="FractalType.cpp" />
+    <ClCompile Include="Ingles3EquantionType.cpp" />
     <ClCompile Include="InglesRayTracer.cpp" />
     <ClCompile Include="InglesRayTracer2.cpp" />
     <ClCompile Include="InglesRayTracer3.cpp" />
