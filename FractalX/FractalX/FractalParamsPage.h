@@ -49,6 +49,10 @@ public:
 
 	DXF::Vertex<double> GetConstantC() const;
 
+	void SetIngles3EquationType(DXF::Ingles3EquationType inglesType);
+
+	DXF::Ingles3EquationType GetIngles3EquationType() const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -59,6 +63,8 @@ protected:
 	void InitializeCartesianTypeCombo();
 
 	void InitializeNormalizationTypeCombo();
+
+	void InitializeIngles3EquationTypeCombo();
 
 	void EnableCtrls();
 
@@ -89,8 +95,10 @@ private:
 	double m_normalizationRoot;
 	std::shared_ptr<DXF::CartesianConverterGroup> m_cartesianGroup;
 	DXF::Vertex<double> m_constantC;
+	int m_ingle3EquationType;
 
 	CComboBox m_modelCombo;
 	CComboBox m_cartesianCombo;
 	CComboBox m_normalizationCombo;
+	CComboBox m_ingles3EquationCombo;
 };

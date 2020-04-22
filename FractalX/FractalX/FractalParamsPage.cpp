@@ -16,12 +16,13 @@ CFractalParamsPage::CFractalParamsPage()
 	, m_bailout(2.0)
 	, m_derivative(1.0)
 	, m_power(8.0)
-	, m_modelType(FractalTypeToInt(FractalType::StandardBulb))
-	, m_cartesianType(CartesianConversionTypeToInt(CartesianConversionType::StandardConversion))
-	, m_normalizationType(BulbNormalizeTypeToInt(BulbNormalizeType::StandardNormalization))
+	, m_modelType(FractalTypeToInt(FractalType::StandardBulb)-1)
+	, m_cartesianType(CartesianConversionTypeToInt(CartesianConversionType::StandardConversion)-1)
+	, m_normalizationType(BulbNormalizeTypeToInt(BulbNormalizeType::StandardNormalization)-1)
 	, m_normalizationRoot(0.5)
 	, m_cartesianGroup(new CartesianConverterGroup)
 	, m_constantC(Vertex<double>(0.0,0.0,0.0))
+	, m_ingle3EquationType(Ingles3EquationTypeToInt(Ingles3EquationType::I_Squared)-1)
 {}
 
 CFractalParamsPage::~CFractalParamsPage()
@@ -87,6 +88,16 @@ DXF::BulbNormalizeType CFractalParamsPage::GetNormalizationType() const
 	return BulbNormalizeTypeFromInt(m_normalizationType + 1);
 }
 
+void CFractalParamsPage::SetIngles3EquationType(DXF::Ingles3EquationType inglesType)
+{
+	m_ingle3EquationType = Ingles3EquationTypeToInt(inglesType) - 1;
+}
+
+DXF::Ingles3EquationType CFractalParamsPage::GetIngles3EquationType() const
+{
+	return Ingles3EquationTypeFromInt(m_ingle3EquationType + 1);
+}
+
 void CFractalParamsPage::SetNormalizationRoot(double root)
 {
 	m_normalizationRoot = root;
@@ -123,6 +134,7 @@ BEGIN_MESSAGE_MAP(CFractalParamsPage, CMFCPropertyPage)
 	ON_EN_KILLFOCUS(IDC_POWER_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_CBN_SELCHANGE(IDC_MODEL_TYPE_COMBO, &CFractalParamsPage::OnModelComboChanged)
 	ON_CBN_SELCHANGE(IDC_CARTESIAN_COMBO, &CFractalParamsPage::OnComboChanged)
+	ON_CBN_SELCHANGE(IDC_INGLES_EQUATION_TYPE_COMBO, &CFractalParamsPage::OnComboChanged)
 	ON_CBN_SELCHANGE(IDC_NORMALIZATION_COMBO, &CFractalParamsPage::OnNormalizationComboChanged)
 	ON_EN_KILLFOCUS(IDC_ROOT_EDIT, &CFractalParamsPage::OnKillfocusEdit)
 	ON_BN_CLICKED(IDC_CUSTOM_CONVERSION_BUT, &CFractalParamsPage::OnCustomBut)
@@ -153,6 +165,9 @@ void CFractalParamsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_NORMALIZATION_COMBO, m_normalizationCombo);
 	DDX_CBIndex(pDX, IDC_NORMALIZATION_COMBO, m_normalizationType);
 
+	DDX_Control(pDX, IDC_INGLES_EQUATION_TYPE_COMBO, m_ingles3EquationCombo);
+	DDX_CBIndex(pDX, IDC_INGLES_EQUATION_TYPE_COMBO, m_ingle3EquationType);
+
 	DDX_Text(pDX, IDC_ROOT_EDIT, m_normalizationRoot);
 	DDV_MinMaxDouble(pDX, m_normalizationRoot, 0.001, 10);
 
@@ -173,6 +188,7 @@ BOOL CFractalParamsPage::OnInitDialog()
 	InitializeFractalTypeCombo();
 	InitializeCartesianTypeCombo();
 	InitializeNormalizationTypeCombo();
+	InitializeIngles3EquationTypeCombo();
 
 	return TRUE;
 }
@@ -187,7 +203,8 @@ BOOL CFractalParamsPage::OnSetActive()
 void CFractalParamsPage::EnableCtrls()
 {
 	bool stdBulb = FractalTypeFromInt(m_modelType+1) == FractalType::StandardBulb;
-	bool doubleBulb = FractalTypeFromInt(m_modelType + 1) == FractalType::DoubleBulb;
+	bool doubleBulb = FractalTypeFromInt(m_modelType+1) == FractalType::DoubleBulb;
+	bool ingles3 = FractalTypeFromInt(m_modelType + 1) == FractalType::InglesFractal3;
 
 	CWnd* pCartesianTypeCombo = GetDlgItem(IDC_CARTESIAN_COMBO);
 	if (pCartesianTypeCombo)
@@ -209,6 +226,10 @@ void CFractalParamsPage::EnableCtrls()
 	CWnd* pAltRootEdit = GetDlgItem(IDC_ROOT_EDIT);
 	if (pAltRootEdit)
 		pAltRootEdit->EnableWindow(enableNormRoot);
+
+	CWnd* pIngles3Combo = GetDlgItem(IDC_INGLES_EQUATION_TYPE_COMBO);
+	if (pIngles3Combo)
+		pIngles3Combo->EnableWindow(ingles3);
 }
 
 void CFractalParamsPage::InitializeFractalTypeCombo()
@@ -252,6 +273,19 @@ void CFractalParamsPage::InitializeNormalizationTypeCombo()
 	pCombo->InsertString(1, BulbNormalizeTypeString(BulbNormalizeType::AltRoots));
 
 	pCombo->SetCurSel(m_normalizationType);
+}
+
+void CFractalParamsPage::InitializeIngles3EquationTypeCombo()
+{
+	auto pCombo = (CComboBox*)GetDlgItem(IDC_INGLES_EQUATION_TYPE_COMBO);
+	if (!pCombo)
+		return;
+
+	pCombo->InsertString(0, Ingles3EquationTypeString(Ingles3EquationType::I_Squared));
+	pCombo->InsertString(1, Ingles3EquationTypeString(Ingles3EquationType::I_Cubed));
+	pCombo->InsertString(2, Ingles3EquationTypeString(Ingles3EquationType::I_SinX));
+
+	pCombo->SetCurSel(m_ingle3EquationType);
 }
 
 void CFractalParamsPage::OnOK()
