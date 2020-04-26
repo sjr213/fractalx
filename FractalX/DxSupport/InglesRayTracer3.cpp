@@ -58,6 +58,28 @@ namespace DXF
 			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
 		}
 
+		void CalculateNextCycleAlt1(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = Q.x * Q.x - Q.y * Q.y - Q.z * Q.z + 2.0 * Q.y * Q.z + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y + 2.0 * Q.z * dQ.y - 2.0 * Q.z * dQ.z + 2.0 * Q.y * dQ.z;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
+		}
+
+		void CalculateNextCycleAlt2(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = Q.x * Q.x - Q.y * Q.y + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y - 2.0 * Q.z * dQ.z;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
+		}
+
 		double EstimateDistance(Vector3Double& pos, const TraceParams& traceParams)
 		{
 			Vector3Double z = pos;
@@ -124,6 +146,20 @@ namespace DXF
 				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
 				{
 					this->CalculateNextCycleSineX(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Alt1)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleAlt1(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Alt2)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleAlt2(Q, dQ, Q1, dQ1);
 				};
 			}
 			else

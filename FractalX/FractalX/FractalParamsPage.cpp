@@ -2,6 +2,7 @@
 #include "CartesianConversionDlg.h"
 #include "FractalX.h"
 #include "FractalParamsPage.h"
+#include "Ingles3EquantionType.h"
 #include "TraceParams.h"
 
 #include "ModelSheet.h"
@@ -284,6 +285,8 @@ void CFractalParamsPage::InitializeIngles3EquationTypeCombo()
 	pCombo->InsertString(0, Ingles3EquationTypeString(Ingles3EquationType::I_Squared));
 	pCombo->InsertString(1, Ingles3EquationTypeString(Ingles3EquationType::I_Cubed));
 	pCombo->InsertString(2, Ingles3EquationTypeString(Ingles3EquationType::I_SinX));
+	pCombo->InsertString(3, Ingles3EquationTypeString(Ingles3EquationType::I_Alt1));
+	pCombo->InsertString(4, Ingles3EquationTypeString(Ingles3EquationType::I_Alt2));
 
 	pCombo->SetCurSel(m_ingle3EquationType);
 }
