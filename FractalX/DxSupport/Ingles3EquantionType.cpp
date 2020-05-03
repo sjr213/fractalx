@@ -19,6 +19,12 @@ namespace DXF
 			return 4;
 		case Ingles3EquationType::I_Alt2:
 			return 5;
+		case Ingles3EquationType::I_Alt3:
+			return 6;
+		case Ingles3EquationType::I_Alt4:
+			return 7;
+		case Ingles3EquationType::I_Alt5:
+			return 8;
 		default:
 			assert(false);
 			return 1;
@@ -39,6 +45,12 @@ namespace DXF
 			return Ingles3EquationType::I_Alt1;
 		case 5:
 			return Ingles3EquationType::I_Alt2;
+		case 6:
+			return Ingles3EquationType::I_Alt3;
+		case 7:
+			return Ingles3EquationType::I_Alt4;
+		case 8:
+			return Ingles3EquationType::I_Alt5;
 		default:
 			assert(false);
 			return Ingles3EquationType::I_Squared;
@@ -59,6 +71,12 @@ namespace DXF
 			return _T("Ingles Alt 1");
 		case Ingles3EquationType::I_Alt2:
 			return _T("Ingles Alt 2");
+		case Ingles3EquationType::I_Alt3:
+			return _T("Ingles Alt 3");
+		case Ingles3EquationType::I_Alt4:
+			return _T("Ingles Alt 4");
+		case Ingles3EquationType::I_Alt5:
+			return _T("Ingles Alt 5");
 		default:
 			assert(false);
 			return _T("Unknown");

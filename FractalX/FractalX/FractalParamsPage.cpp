@@ -287,6 +287,9 @@ void CFractalParamsPage::InitializeIngles3EquationTypeCombo()
 	pCombo->InsertString(2, Ingles3EquationTypeString(Ingles3EquationType::I_SinX));
 	pCombo->InsertString(3, Ingles3EquationTypeString(Ingles3EquationType::I_Alt1));
 	pCombo->InsertString(4, Ingles3EquationTypeString(Ingles3EquationType::I_Alt2));
+	pCombo->InsertString(5, Ingles3EquationTypeString(Ingles3EquationType::I_Alt3));
+	pCombo->InsertString(6, Ingles3EquationTypeString(Ingles3EquationType::I_Alt4));
+	pCombo->InsertString(7, Ingles3EquationTypeString(Ingles3EquationType::I_Alt5));
 
 	pCombo->SetCurSel(m_ingle3EquationType);
 }

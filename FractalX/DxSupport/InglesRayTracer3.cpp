@@ -80,6 +80,39 @@ namespace DXF
 			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
 		}
 
+		void CalculateNextCycleAlt3(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = Q.x * Q.x - Q.y * Q.y - 2.0 * Q.y * Q.z + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y - 2.0 * Q.z * dQ.y - 2.0 * Q.y * dQ.z;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y - 2.0 * Q.z * dQ.z;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
+		}
+
+		void CalculateNextCycleAlt4(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = Q.x * Q.x - Q.y * Q.y + 2.0 * Q.y * Q.z + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y + 2.0 * Q.z * dQ.y + 2.0 * Q.y * dQ.z;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y - 2.0 * Q.z * dQ.z;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.x * dQ.z;
+		}
+
+		void CalculateNextCycleAlt5(const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+		{
+			Q1.x = Q.x * Q.x - Q.y * Q.y + m_traceParams.Fractal.ConstantC.X;
+			Q1.y = 2.0 * Q.x * Q.y - Q.z * Q.z + m_traceParams.Fractal.ConstantC.Y;
+			Q1.z = 2.0 * Q.x * Q.z + 2.0 * Q.y * Q.z + m_traceParams.Fractal.ConstantC.Z;
+
+			dQ1.x = 2.0 * Q.x * dQ.x - 2.0 * Q.y * dQ.y;
+			dQ1.y = 2.0 * Q.y * dQ.x + 2.0 * Q.x * dQ.y - 2.0 * Q.z * dQ.z;
+			dQ1.z = 2.0 * Q.z * dQ.x + 2.0 * Q.z * dQ.y + 2.0 * Q.x * dQ.z + 2.0 * Q.y * dQ.z;
+		}
+
 		double EstimateDistance(Vector3Double& pos, const TraceParams& traceParams)
 		{
 			Vector3Double z = pos;
@@ -160,6 +193,27 @@ namespace DXF
 				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
 				{
 					this->CalculateNextCycleAlt2(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Alt3)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleAlt3(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Alt4)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleAlt4(Q, dQ, Q1, dQ1);
+				};
+			}
+			else if (m_traceParams.Fractal.InglesEquation == Ingles3EquationType::I_Alt5)
+			{
+				m_calculateNextCycle = [&](const Vector3Double& Q, const Vector3Double& dQ, Vector3Double& Q1, Vector3Double& dQ1)
+				{
+					this->CalculateNextCycleAlt5(Q, dQ, Q1, dQ1);
 				};
 			}
 			else
