@@ -87,6 +87,11 @@ bool CModelSheet::GetAutoTranslate() const
 	return m_autoTranslate;
 }
 
+bool CModelSheet::GetDefaultTargetAndWorkScale() const
+{
+	return m_defaultTargetAndWorldScale;
+}
+
 void CModelSheet::OnOk()
 {
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
@@ -100,6 +105,7 @@ void CModelSheet::OnOk()
 
 	m_autoZoom = m_vertexPage.GetAutoZoom();
 	m_autoTranslate = m_vertexPage.GetAutoTranslate();
+	m_defaultTargetAndWorldScale = m_vertexPage.GetDefaultTargetAndWorkScale();
 
 	*m_traceParams = m_traceParamsPage.GetTraceParams();
 	m_traceParams->Fractal.Bailout = m_fractalParamsPage.GetBailOut();

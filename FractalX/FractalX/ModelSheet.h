@@ -28,6 +28,8 @@ public:
 
 	bool GetAutoTranslate() const;
 
+	bool GetDefaultTargetAndWorkScale() const;
+
 	void OnOk();
 
 protected:
@@ -50,4 +52,6 @@ protected:
 	bool m_autoZoom = false;
 
 	bool m_autoTranslate = false;
+
+	bool m_defaultTargetAndWorldScale = false;
 };
