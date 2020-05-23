@@ -29,6 +29,7 @@ void CModelSheet::AddPages()
 	AddPage(&m_fractalParamsPage);
 	AddPage(&m_traceParamsPage);
 	AddPage(&m_positionRangePage);
+	AddPage(&m_backgroundPage);
 }
 
 CModelSheet::~CModelSheet()
@@ -70,6 +71,7 @@ void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceP
 	m_fractalParamsPage.SetIngles3EquationType(m_traceParams->Fractal.InglesEquation);
 	m_positionRangePage.SetOrigin(m_traceParams->Bulb.Origin);
 	m_positionRangePage.SetStretchParams(m_traceParams->Stretch);
+	m_backgroundPage.SetFilename(m_traceParams->Background.ImageFilename);
 }
 
 std::shared_ptr<DXF::TraceParams> CModelSheet::GetTraceParams() const
@@ -120,4 +122,5 @@ void CModelSheet::OnOk()
 	m_traceParams->Fractal.InglesEquation = m_fractalParamsPage.GetIngles3EquationType();
 	m_traceParams->Bulb.Origin = m_positionRangePage.GetOrigin();
 	m_traceParams->Stretch = m_positionRangePage.GetStretchParams();
+	m_traceParams->Background.ImageFilename = m_backgroundPage.GetFilename();
 }

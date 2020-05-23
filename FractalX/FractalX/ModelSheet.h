@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BackgroundPage.h"
 #include "ModelData.h"
 #include "TraceParams.h"
 #include "FractalParamsPage.h"
@@ -44,6 +45,8 @@ protected:
 	CTraceParamsPage m_traceParamsPage;
 
 	CPositionRangePage m_positionRangePage;
+
+	CBackgroundPage m_backgroundPage;
 
 	DXF::ModelData m_data;
 

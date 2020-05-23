@@ -27,4 +27,13 @@ namespace UiUtilities
 		if (pBut)
 			pBut->SetCheck(check);
 	}
+
+	bool FileExists(CString fileName)
+	{
+		auto attr = GetFileAttributes(fileName); 
+		if (INVALID_FILE_ATTRIBUTES == attr && GetLastError() == ERROR_FILE_NOT_FOUND)
+			return false;
+
+		return true;
+	}
 }

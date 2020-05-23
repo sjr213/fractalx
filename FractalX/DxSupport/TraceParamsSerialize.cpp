@@ -170,9 +170,36 @@ namespace DXF
 		}
 	}
 
+	void Serialize(CArchive& ar, BackgroundImageParams& bkgrdParams)
+	{
+		const int BackgroundParamVersion = 1;
+
+		if (ar.IsStoring())
+		{
+			ar << BackgroundParamVersion;
+
+			CString tempFilename = bkgrdParams.ImageFilename.c_str();
+			ar << tempFilename;
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == BackgroundParamVersion);
+			if (version != BackgroundParamVersion)
+				return;
+
+			CString tempFilename;
+			ar >> tempFilename;
+			bkgrdParams.ImageFilename = tempFilename.GetString();
+		}
+	}
+
 	void Serialize(CArchive& ar, TraceParams& traceParams)
 	{
-		const int TraceParamVersion = 1;
+		const int TraceParamVersion = 2;
+		int currentVersion = TraceParamVersion;
 
 		if (ar.IsStoring())
 		{
@@ -180,17 +207,19 @@ namespace DXF
 		}
 		else
 		{
-			int version = 0;
-			ar >> version;
+			ar >> currentVersion;
 
-			assert(version == TraceParamVersion);
-			if (version != TraceParamVersion)
+			assert(currentVersion > 0);
+			if (currentVersion < 1)
 				return;
 		}
 
 		Serialize(ar, traceParams.Fractal);
 		Serialize(ar, traceParams.Bulb);
 		Serialize(ar, traceParams.Stretch);
+
+		if(currentVersion > 1)
+			Serialize(ar, traceParams.Background);	// added at TraceParamVersion == 2;
 	}
 
 }

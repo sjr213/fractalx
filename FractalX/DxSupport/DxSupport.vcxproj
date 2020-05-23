@@ -156,6 +156,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BackgroundModelFactory.h" />
     <ClInclude Include="BasicRayTracer.h" />
     <ClInclude Include="BulbNormalizeType.h" />
     <ClInclude Include="CartesianConversionType.h" />
@@ -200,6 +201,7 @@
     <ClInclude Include="VertexStatistics.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BackgroundModelFactory.cpp" />
     <ClCompile Include="BasicRayTracer.cpp" />
     <ClCompile Include="BulbNormalizeType.cpp" />
     <ClCompile Include="CartesianConversionType.cpp" />

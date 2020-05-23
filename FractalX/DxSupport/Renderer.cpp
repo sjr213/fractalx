@@ -55,8 +55,11 @@ namespace DXF
 		Microsoft::WRL::ComPtr< ID3D11BlendState1> m_blendState;
 
 		std::vector<uint32_t> m_textureColors;
-		ComPtr<ID3D11Texture2D>	m_texture;			
+		ComPtr<ID3D11Texture2D>	m_texture;
 		ComPtr<ID3D11ShaderResourceView> m_textureView;
+
+//		ComPtr<ID3D11Texture2D>	m_texture2;
+//		ComPtr<ID3D11ShaderResourceView> m_textureView2;
 
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
@@ -68,15 +71,22 @@ namespace DXF
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
-		
 		DWORD m_nIndices;
 
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer2;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer2;
+		DWORD m_nIndices2;
+		
 		DirectX::SimpleMath::Matrix m_world;
 		DirectX::SimpleMath::Matrix m_view;
 		DirectX::SimpleMath::Matrix m_proj;
 
 		std::vector<DirectX::VertexPositionNormalTexture> m_vertices;
 		std::vector<unsigned int> m_indices;
+
+		std::vector<DirectX::VertexPositionNormalTexture> m_vertices2;
+		std::vector<unsigned int> m_indices2;
+		std::wstring m_textureFile;
 
 		RotationParams m_rotationParams;
 
@@ -102,6 +112,7 @@ namespace DXF
 			m_outputHeight(400),
 			m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 			m_nIndices(0),
+			m_nIndices2(0),
 			m_rotationParams(RotationAction::RotateY, 0.0, 0.0, 0.0),
 			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f))	// r,g.b,a
 		{}
@@ -117,14 +128,15 @@ namespace DXF
 			CreateResources();
 
 			CreateBuffers();
+			CreateBuffers2();
 		}
 
 		void Tick() override
 		{
 			m_timer.Tick([&]()
-			{
-				Update(m_timer);
-			});
+				{
+					Update(m_timer);
+				});
 
 			// Don't try to render anything before the first Update.
 			if (m_timer.GetFrameCount() == 0)
@@ -163,9 +175,21 @@ namespace DXF
 			m_indices = vertexData.Indices;
 		}
 
+		void SetModel2(const DxVertexData& vertexData2, const std::wstring& textureFile) override
+		{
+			m_vertices2 = vertexData2.Vertices;
+			m_indices2 = vertexData2.Indices;
+			m_textureFile = textureFile;
+		}
+
 		void ResetModel() override
 		{
 			CreateBuffers();
+		}
+
+		void ResetModel2() override
+		{
+			CreateBuffers2();
 		}
 
 		void SetRotationParams(const RotationParams& rp) override
@@ -310,7 +334,7 @@ namespace DXF
 		}
 
 		CSize GetScreenSize() const override
-		{		
+		{
 			return CSize(m_outputWidth, m_outputHeight);
 		}
 
@@ -343,7 +367,7 @@ namespace DXF
 				return std::nullopt;
 
 			XMVECTOR pointA(XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
-			XMVECTOR pointB(XMVectorSet(static_cast<float>(x), static_cast<float>(y), -1.0f, 0.0f));	
+			XMVECTOR pointB(XMVectorSet(static_cast<float>(x), static_cast<float>(y), -1.0f, 0.0f));
 
 			XMVECTOR pointATransform = XMVector3Unproject(pointA, viewport->TopLeftX, viewport->TopLeftY,
 				viewport->Width, viewport->Height, viewport->MinDepth, viewport->MaxDepth,
@@ -356,7 +380,7 @@ namespace DXF
 			XMVECTOR projectedVector = pointATransform - pointBTransform;
 
 			double closestDistance = DBL_MAX;
-			if (! DxHelpers::GetIntersection(m_vertices, m_indices, pointATransform, projectedVector, closestDistance))
+			if (!DxHelpers::GetIntersection(m_vertices, m_indices, pointATransform, projectedVector, closestDistance))
 				return std::nullopt;
 
 			return DxHelpers::Create3DTuple(closestDistance, pointATransform, projectedVector);
@@ -387,13 +411,13 @@ namespace DXF
 			{
 				// TODO: Modify for supported Direct3D feature levels
 				D3D_FEATURE_LEVEL_12_1,
-				D3D_FEATURE_LEVEL_12_0, 
+				D3D_FEATURE_LEVEL_12_0,
 				D3D_FEATURE_LEVEL_11_1,
 				D3D_FEATURE_LEVEL_11_0,
 			};
 
 			Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
-			DXF::ThrowIfFailed( CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgi_factory), "failed to create dxgi factory");
+			DXF::ThrowIfFailed(CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgi_factory), "failed to create dxgi factory");
 
 			DXF::ThrowIfFailed(dxgi_factory.As(&m_dxgi_factory), "failed to create dxgi factory1");
 
@@ -479,6 +503,9 @@ namespace DXF
 
 			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture,
 				m_textureView), "failed to create texture");
+
+//			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture2,
+//				m_textureView2), "failed to create texture");
 
 			m_effect->SetTexture(m_textureView.Get());
 
@@ -588,7 +615,7 @@ namespace DXF
 			// Allocate a 2-D surface as the depth/stencil buffer and
 			// create a DepthStencil view on this surface to use on bind.
 			CD3D11_TEXTURE2D_DESC depthStencilDesc(depthBufferFormat, backBufferWidth, backBufferHeight, 1, 1, D3D11_BIND_DEPTH_STENCIL);
-//			depthStencilDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
+			//			depthStencilDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
 			ComPtr<ID3D11Texture2D> depthStencil;
 			DXF::ThrowIfFailed(m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, depthStencil.GetAddressOf()),
@@ -642,15 +669,38 @@ namespace DXF
 				m_indexBuffer, m_nIndices);
 		}
 
+		HRESULT CreateBuffers2()
+		{
+			if (!m_d3dDevice)
+				return E_UNEXPECTED;
+
+			if (m_vertices2.empty())
+				return S_OK;
+
+			HRESULT hr = CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices2,
+				m_vertexBuffer2);
+
+			if (FAILED(hr))
+				return hr;
+
+			return CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices2,
+				m_indexBuffer2, m_nIndices2);
+		}
+
 		void OnDeviceLost()
 		{
 			m_indexBuffer.Reset();
+			m_indexBuffer2.Reset();
 			m_vertexBuffer.Reset();
+			m_vertexBuffer2.Reset();
 			m_states.reset();
 			m_effect.reset();
 
 			m_textureView.Reset();
 			m_texture.Reset();
+
+	//		m_textureView2.Reset();
+	//		m_texture2.Reset();
 
 			m_inputLayout.Reset();
 
@@ -661,6 +711,7 @@ namespace DXF
 			m_d3dContext.Reset();
 			m_d3dDevice.Reset();
 			m_nIndices = 0;
+			m_nIndices2 = 0;
 
 			CreateDevice();
 
@@ -693,13 +744,13 @@ namespace DXF
 		}
 
 		void SetLighting(BasicEffect& effect)
-		{	
+		{
 			effect.SetLightingEnabled(true);
 			effect.SetVertexColorEnabled(false);	// this has to be false
 			effect.SetPerPixelLighting(m_lights.PerPixelLighting);
 
 			if (m_lights.DefaultLights)
-			{	
+			{
 				effect.EnableDefaultLighting();
 			}
 			else
@@ -707,7 +758,7 @@ namespace DXF
 				effect.SetAmbientLightColor(m_effectColors.AmbientColor);
 				for (int i = 0; i < 3; ++i)
 					SetLight(effect, i, m_lights.Lights.at(i));
-			}		
+			}
 		}
 
 		// Updates the world.
@@ -725,7 +776,7 @@ namespace DXF
 
 		void SetWorld(float time)
 		{
-			float radians = time/2;
+			float radians = time / 2;
 			float degrees = XMConvertToDegrees(radians);
 			auto transMatrix = Matrix::CreateTranslation(m_target.X, m_target.Y, m_target.Z);
 
@@ -798,6 +849,15 @@ namespace DXF
 			ID3D11SamplerState* samplers[] = { m_states->AnisotropicClamp() };
 			m_d3dContext->PSSetSamplers(0, 1, samplers);
 
+			RenderPrimaryModel();
+
+			RenderSecondaryModel();
+
+			Present();
+		}
+
+		void RenderPrimaryModel()
+		{
 			UINT stride = sizeof(VertexPositionNormalTexture);
 			UINT offset = 0;
 			m_d3dContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
@@ -809,8 +869,25 @@ namespace DXF
 			m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
 			m_d3dContext->DrawIndexed(m_nIndices, 0, 0);
+		}
 
-			Present();
+		void RenderSecondaryModel()
+		{
+			if (!m_vertexBuffer2)
+				return;
+
+			UINT stride = sizeof(VertexPositionNormalTexture);
+			UINT offset = 0;
+
+			m_d3dContext->IASetVertexBuffers(0, 1, m_vertexBuffer2.GetAddressOf(), &stride, &offset);
+
+			m_d3dContext->IASetIndexBuffer(m_indexBuffer2.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+			m_d3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			m_d3dContext->IASetInputLayout(m_inputLayout.Get());
+
+			m_d3dContext->DrawIndexed(m_nIndices2, 0, 0);
 		}
 
 		void Clear()

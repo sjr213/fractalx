@@ -7,6 +7,7 @@
 #include <tuple>
 #include "Vertex.h"
 #include "VertexData.h"
+#include <string>
 
 class CDC;
 
@@ -23,7 +24,11 @@ namespace DXF
 
 		virtual void SetModel(const DxVertexData& vertexData) = 0;
 
+		virtual void SetModel2(const DxVertexData& vertexData2, const std::wstring& textureFile) = 0;
+
 		virtual void ResetModel() = 0;
+
+		virtual void ResetModel2() = 0;
 
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;

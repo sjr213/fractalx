@@ -46,9 +46,13 @@ namespace DXF
 		double StepDivisor = 10.0;
 
 		int Iterations = 256;
-//		float NormalDelta = 0.01f; not used
 
 		bool Fractional = false;
+	};
+
+	struct BackgroundImageParams
+	{
+		std::wstring ImageFilename;
 	};
 
 	struct TraceParams
@@ -58,6 +62,8 @@ namespace DXF
 		BulbParams Bulb;
 
 		StretchDistanceParams Stretch;
+
+		BackgroundImageParams Background;
 	};
 
 }

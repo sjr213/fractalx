@@ -193,6 +193,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BackgroundPage.h" />
     <ClInclude Include="CancelException.h" />
     <ClInclude Include="CartesianConversionDlg.h" />
     <ClInclude Include="ChildFrm.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="WorldScaleDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BackgroundPage.cpp" />
     <ClCompile Include="CancelException.cpp" />
     <ClCompile Include="CartesianConversionDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
