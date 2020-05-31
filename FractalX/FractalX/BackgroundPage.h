@@ -15,6 +15,10 @@ public:
 
 	std::wstring GetFilename() const;
 
+	void SetShowBackground(bool show);
+
+	bool GetShowBackground() const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -30,6 +34,11 @@ protected:
 
 	void OnBrowseBut();
 
+	void EnableCtrls();
+
+	afx_msg void OnShowClicked();
+
 private:
 	CString m_filename;
+	bool m_showBackground = false;
 };

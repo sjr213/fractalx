@@ -6,6 +6,7 @@
 #include "DialogUtils.h"
 #include <Gdiplus.h>
 #include "Resource.h"
+#include "UiUtilities.h"
 
 using namespace DlgUtils;
 using namespace DxColor;
@@ -51,34 +52,27 @@ protected:
 		return TRUE;
 	}
 
-	void EnableWnd(int id, bool enable)
-	{
-		CWnd* pWnd = GetDlgItem(id);
-		if (pWnd)
-			pWnd->EnableWindow(enable);
-	}
-
 	void EnableCtrls()
 	{
 		bool defaultLights = m_lights.DefaultLights;
 
 		bool enableLight1 = m_lights.Light1.Enable && !defaultLights;
-		EnableWnd(IDC_X1_EDIT, enableLight1);
-		EnableWnd(IDC_Y1_EDIT, enableLight1);
-		EnableWnd(IDC_Z1_EDIT, enableLight1);
-		EnableWnd(IDC_ENABLE1_CHECK, !defaultLights);
+		UiUtilities::SafeEnable(this, IDC_X1_EDIT, enableLight1);
+		UiUtilities::SafeEnable(this, IDC_Y1_EDIT, enableLight1);
+		UiUtilities::SafeEnable(this, IDC_Z1_EDIT, enableLight1);
+		UiUtilities::SafeEnable(this, IDC_ENABLE1_CHECK, !defaultLights);
 
 		bool enableLight2 = m_lights.Light2.Enable && !defaultLights;
-		EnableWnd(IDC_X2_EDIT, enableLight2);
-		EnableWnd(IDC_Y2_EDIT, enableLight2);
-		EnableWnd(IDC_Z2_EDIT, enableLight2);
-		EnableWnd(IDC_ENABLE2_CHECK, !defaultLights);
+		UiUtilities::SafeEnable(this, IDC_X2_EDIT, enableLight2);
+		UiUtilities::SafeEnable(this, IDC_Y2_EDIT, enableLight2);
+		UiUtilities::SafeEnable(this, IDC_Z2_EDIT, enableLight2);
+		UiUtilities::SafeEnable(this, IDC_ENABLE2_CHECK, !defaultLights);
 
 		bool enableLight3 = m_lights.Light3.Enable && !defaultLights;
-		EnableWnd(IDC_X3_EDIT, enableLight3);
-		EnableWnd(IDC_Y3_EDIT, enableLight3);
-		EnableWnd(IDC_Z3_EDIT, enableLight3);
-		EnableWnd(IDC_ENABLE3_CHECK, !defaultLights);
+		UiUtilities::SafeEnable(this, IDC_X3_EDIT, enableLight3);
+		UiUtilities::SafeEnable(this, IDC_Y3_EDIT, enableLight3);
+		UiUtilities::SafeEnable(this, IDC_Z3_EDIT, enableLight3);
+		UiUtilities::SafeEnable(this, IDC_ENABLE3_CHECK, !defaultLights);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override

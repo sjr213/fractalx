@@ -85,6 +85,7 @@ namespace DXF
 		std::vector<DirectX::VertexPositionNormalTexture> m_vertices;
 		std::vector<unsigned int> m_indices;
 
+		bool m_showSecondaryModel = false;
 		std::vector<DirectX::VertexPositionNormalTexture> m_vertices2;
 		std::vector<unsigned int> m_indices2;
 		std::wstring m_textureFile;
@@ -176,8 +177,9 @@ namespace DXF
 			m_indices = vertexData.Indices;
 		}
 
-		void SetModel2(const DxVertexData& vertexData2, const std::wstring& textureFile) override
+		void SetModel2(bool show, const DxVertexData& vertexData2, const std::wstring& textureFile) override
 		{
+			m_showSecondaryModel = show;
 			m_vertices2 = vertexData2.Vertices;
 			m_indices2 = vertexData2.Indices;
 			m_textureFile = textureFile;
@@ -241,7 +243,8 @@ namespace DXF
 			m_textureView2.Reset();
 			m_texture2.Reset();
 
-			PrepareBackgroundTexture();
+			if(m_showSecondaryModel)
+				PrepareBackgroundTexture();
 		}
 
 		DxPerspective GetPerspective() const override
@@ -550,7 +553,8 @@ namespace DXF
 
 			m_effect2->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
-			PrepareBackgroundTexture();
+			if(m_showSecondaryModel)
+				PrepareBackgroundTexture();
 		}
 
 		void PrepareBackgroundTexture()
@@ -729,6 +733,9 @@ namespace DXF
 
 		HRESULT CreateBuffers2()
 		{
+			if (!m_showSecondaryModel)
+				return S_OK;
+
 			if (!m_d3dDevice)
 				return E_UNEXPECTED;
 
@@ -898,10 +905,6 @@ namespace DXF
 			m_effect->SetProjection(m_proj);
 			m_effect->SetWorld(m_world);
 
-			m_effect2->SetView(m_view);
-			m_effect2->SetProjection(m_proj);
-			m_effect2->SetWorld(m_world);
-
 			float blendFactors[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 			m_d3dContext->OMSetBlendState(m_blendState.Get(), blendFactors, 0xFFFFFFFF);
 
@@ -914,9 +917,16 @@ namespace DXF
 
 			RenderPrimaryModel();
 
-			m_effect2->Apply(m_d3dContext.Get());
+			if (m_showSecondaryModel)
+			{
+				m_effect2->SetView(m_view);
+				m_effect2->SetProjection(m_proj);
+				m_effect2->SetWorld(m_world);
 
-			RenderSecondaryModel();
+				m_effect2->Apply(m_d3dContext.Get());
+
+				RenderSecondaryModel();
+			}
 
 			Present();
 		}

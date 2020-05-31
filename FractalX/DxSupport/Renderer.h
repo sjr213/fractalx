@@ -24,7 +24,7 @@ namespace DXF
 
 		virtual void SetModel(const DxVertexData& vertexData) = 0;
 
-		virtual void SetModel2(const DxVertexData& vertexData2, const std::wstring& textureFile) = 0;
+		virtual void SetModel2(bool show, const DxVertexData& vertexData2, const std::wstring& textureFile) = 0;
 
 		virtual void ResetModel() = 0;
 

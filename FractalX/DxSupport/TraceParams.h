@@ -53,6 +53,7 @@ namespace DXF
 	struct BackgroundImageParams
 	{
 		std::wstring ImageFilename;
+		bool ShowBackgroundModel = false;
 	};
 
 	struct TraceParams

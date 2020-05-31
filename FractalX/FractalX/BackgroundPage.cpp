@@ -11,6 +11,7 @@ IMPLEMENT_DYNAMIC(CBackgroundPage, CMFCPropertyPage)
 
 BEGIN_MESSAGE_MAP(CBackgroundPage, CMFCPropertyPage)
 	ON_BN_CLICKED(IDC_BROWSE_BUT, &CBackgroundPage::OnBrowseBut)
+	ON_BN_CLICKED(IDC_SHOW_BACKGROUND_CHECK, &CBackgroundPage::OnShowClicked)
 END_MESSAGE_MAP()
 
 CBackgroundPage::CBackgroundPage()
@@ -28,16 +29,33 @@ std::wstring CBackgroundPage::GetFilename() const
 	return str;
 }
 
+void CBackgroundPage::SetShowBackground(bool show)
+{
+	m_showBackground = show;
+}
+
+bool CBackgroundPage::GetShowBackground() const
+{
+	return m_showBackground;
+}
+
 void CBackgroundPage::DoDataExchange(CDataExchange* pDX)
 {
 	CMFCPropertyPage::DoDataExchange(pDX);
 
 	DDX_Text(pDX, IDC_IMAGE_FILE_EDIT, m_filename);
+
+	BOOL show = m_showBackground;
+	DDX_Check(pDX, IDC_SHOW_BACKGROUND_CHECK, show);
+	m_showBackground = show;
 }
 
 BOOL CBackgroundPage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
+
+	EnableCtrls();
+
 	return TRUE;
 }
 
@@ -73,11 +91,23 @@ void CBackgroundPage::OnBrowseBut()
 BOOL CBackgroundPage::OnKillActive()
 {
 	UpdateData(TRUE);
-	if (! m_filename.IsEmpty() && ! UiUtilities::FileExists(m_filename))
+	if (m_showBackground && ! m_filename.IsEmpty() && ! UiUtilities::FileExists(m_filename))
 	{
 		AfxMessageBox(_T("Current file is not valid!"));
 		return FALSE;
 	}
 
 	return CMFCPropertyPage::OnKillActive();
+}
+
+void CBackgroundPage::EnableCtrls()
+{
+	UiUtilities::SafeEnable(this, IDC_BROWSE_BUT, m_showBackground);
+	UiUtilities::SafeEnable(this, IDC_IMAGE_FILE_EDIT, m_showBackground);
+}
+
+void CBackgroundPage::OnShowClicked()
+{
+	UpdateData(TRUE);
+	EnableCtrls();
 }

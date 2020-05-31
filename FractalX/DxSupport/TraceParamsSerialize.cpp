@@ -172,7 +172,7 @@ namespace DXF
 
 	void Serialize(CArchive& ar, BackgroundImageParams& bkgrdParams)
 	{
-		const int BackgroundParamVersion = 1;
+		const int BackgroundParamVersion = 2;
 
 		if (ar.IsStoring())
 		{
@@ -180,6 +180,7 @@ namespace DXF
 
 			CString tempFilename = bkgrdParams.ImageFilename.c_str();
 			ar << tempFilename;
+			ar << bkgrdParams.ShowBackgroundModel;
 		}
 		else
 		{
@@ -187,12 +188,15 @@ namespace DXF
 			ar >> version;
 
 			assert(version == BackgroundParamVersion);
-			if (version != BackgroundParamVersion)
+			if (version < 1)
 				return;
 
 			CString tempFilename;
 			ar >> tempFilename;
 			bkgrdParams.ImageFilename = tempFilename.GetString();
+
+			if (version > 1)
+				ar >> bkgrdParams.ShowBackgroundModel;
 		}
 	}
 
