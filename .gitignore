@@ -24,3 +24,5 @@ release/
 /.vs
 
 
+*.testlog
+*.manifest

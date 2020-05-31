@@ -56,12 +56,10 @@ namespace DXF::BackgroundModelFactory
 		XMFLOAT3 nullNormal(0.0f, 0.0f, 0.0f);
 	//	XMFLOAT3 position(0.0f, 1.0f, 0.0f);
 
-		float texturePos = 0.2f;
-		for (const XMFLOAT3& v : triangleData->Vertices)
-		{
-			vData->Vertices.emplace_back(v, nullNormal, Vector2(texturePos, 0.0f));
-			texturePos += 0.2f;
-		}
+		vData->Vertices.emplace_back(triangleData->Vertices.at(0), nullNormal, Vector2(0.0f, 1.0f));
+		vData->Vertices.emplace_back(triangleData->Vertices.at(1), nullNormal, Vector2(0.0f, 0.0f));
+		vData->Vertices.emplace_back(triangleData->Vertices.at(2), nullNormal, Vector2(1.0f, 0.0f));
+		vData->Vertices.emplace_back(triangleData->Vertices.at(3), nullNormal, Vector2(1.0f, 1.0f));
 
 		for (const Triangle& t : triangleData->Triangles)
 		{

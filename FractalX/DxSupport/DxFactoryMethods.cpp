@@ -5,8 +5,10 @@
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include <dxgi1_2.h>
+#include <string>
 #include "VertexTypes.h"
 #include <winerror.h>
+
 
 using namespace DirectX;
 using namespace Microsoft::WRL;

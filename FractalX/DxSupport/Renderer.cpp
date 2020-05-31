@@ -8,6 +8,7 @@
 #include <d3d11_1.h>
 #include <DirectXColors.h>
 #include "DirectXHelpers.h"
+#include "DirectXPackedVector.h"
 #include "DxfColorFactory.h"
 #include "DxEffectColors.h"
 #include "DxException.h"
@@ -15,6 +16,7 @@
 #include "DxLight.h"
 #include <dxgi.h>
 #include <dxgi1_2.h>
+#include "DxWicTextureFactory.h"
 #include "Effects.h"
 #include "ModelData.h"
 #include "MyDxHelpers.h"
@@ -24,8 +26,6 @@
 #include "StepTimer.h"
 #include "vertexFactory.h"
 #include "VertexTypes.h"
-#include <DirectXPackedVector.h>
-#include "DxLight.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -58,8 +58,8 @@ namespace DXF
 		ComPtr<ID3D11Texture2D>	m_texture;
 		ComPtr<ID3D11ShaderResourceView> m_textureView;
 
-//		ComPtr<ID3D11Texture2D>	m_texture2;
-//		ComPtr<ID3D11ShaderResourceView> m_textureView2;
+		ComPtr<ID3D11Texture2D>	m_texture2;
+		ComPtr<ID3D11ShaderResourceView> m_textureView2;
 
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
@@ -73,6 +73,7 @@ namespace DXF
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 		DWORD m_nIndices;
 
+		std::unique_ptr<DirectX::BasicEffect> m_effect2;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer2;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer2;
 		DWORD m_nIndices2;
@@ -190,6 +191,7 @@ namespace DXF
 		void ResetModel2() override
 		{
 			CreateBuffers2();
+			SetTexture2();
 		}
 
 		void SetRotationParams(const RotationParams& rp) override
@@ -226,6 +228,20 @@ namespace DXF
 				m_textureView), "failed to create texture");
 
 			m_effect->SetTexture(m_textureView.Get());
+
+			if(! CreateSecondaryWicTexture())
+				SetTexture2();
+		}
+
+		void SetTexture2()
+		{
+			if (!m_d3dDevice)
+				return;
+
+			m_textureView2.Reset();
+			m_texture2.Reset();
+
+			PrepareBackgroundTexture();
 		}
 
 		DxPerspective GetPerspective() const override
@@ -347,12 +363,16 @@ namespace DXF
 		{
 			m_effectColors = effectColors;
 			SetEffectColors(*m_effect);
+
+			if (!CreateSecondaryWicTexture())
+				SetEffectColors(*m_effect2);
 		}
 
 		void SetLights(DxLights& lights) override
 		{
 			m_lights = lights;
 			SetLighting(*m_effect);
+			SetLighting(*m_effect2);
 		}
 
 		std::optional<DXF::Vertex<float>> Map2Dto3D(int x, int y) override
@@ -504,12 +524,50 @@ namespace DXF
 			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture,
 				m_textureView), "failed to create texture");
 
-//			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture2,
-//				m_textureView2), "failed to create texture");
-
 			m_effect->SetTexture(m_textureView.Get());
 
+			CreateBackgroundTexture();		
+
 			m_world = Matrix::Identity;
+		}
+
+		bool CreateSecondaryWicTexture()
+		{
+			return ! m_textureFile.empty();
+		}
+
+		void CreateBackgroundTexture()
+		{
+			m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+
+			m_effect2->SetTextureEnabled(true);
+
+			SetEffectColors(*m_effect2);
+			SetLighting(*m_effect2);
+
+			void const* shaderByteCode;
+			size_t byteCodeLength;
+
+			m_effect2->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+			PrepareBackgroundTexture();
+		}
+
+		void PrepareBackgroundTexture()
+		{
+			if (m_textureFile.empty())
+			{
+				if (m_textureColors.empty())
+					return;
+
+				DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture2,
+						m_textureView2), "failed to create texture2");
+			}
+			else
+				DXF::ThrowIfFailed(WicTextureFactory::CreateWicTexture2D(*m_d3dDevice.Get(), *m_d3dContext.Get(),
+					m_textureFile, m_texture2, m_textureView2), "failed to create wic texture2");
+
+			m_effect2->SetTexture(m_textureView2.Get());
 		}
 
 		void CreateProjectionMatrix()
@@ -698,9 +756,10 @@ namespace DXF
 
 			m_textureView.Reset();
 			m_texture.Reset();
+			m_effect2.reset();
 
-	//		m_textureView2.Reset();
-	//		m_texture2.Reset();
+			m_textureView2.Reset();
+			m_texture2.Reset();
 
 			m_inputLayout.Reset();
 
@@ -839,17 +898,23 @@ namespace DXF
 			m_effect->SetProjection(m_proj);
 			m_effect->SetWorld(m_world);
 
+			m_effect2->SetView(m_view);
+			m_effect2->SetProjection(m_proj);
+			m_effect2->SetWorld(m_world);
+
 			float blendFactors[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 			m_d3dContext->OMSetBlendState(m_blendState.Get(), blendFactors, 0xFFFFFFFF);
 
 			m_d3dContext->RSSetState(m_states->CullNone());
 
 			m_effect->Apply(m_d3dContext.Get());
-
+			
 			ID3D11SamplerState* samplers[] = { m_states->AnisotropicClamp() };
 			m_d3dContext->PSSetSamplers(0, 1, samplers);
 
 			RenderPrimaryModel();
+
+			m_effect2->Apply(m_d3dContext.Get());
 
 			RenderSecondaryModel();
 
