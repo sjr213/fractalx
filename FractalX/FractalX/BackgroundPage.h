@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "Vertex.h"
 
 class CBackgroundPage : public CMFCPropertyPage
 {
@@ -18,6 +19,10 @@ public:
 	void SetShowBackground(bool show);
 
 	bool GetShowBackground() const;
+
+	void SetModelVertices(const std::vector<DXF::Vertex<float>>& model);
+
+	std::vector<DXF::Vertex<float>> GetModelVertices() const;
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -38,7 +43,10 @@ protected:
 
 	afx_msg void OnShowClicked();
 
+	afx_msg void DefaultModelClicked();
+
 private:
 	CString m_filename;
 	bool m_showBackground = false;
+	std::vector<DXF::Vertex<float>> m_backgroundModel;
 };

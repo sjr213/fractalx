@@ -23,4 +23,15 @@ namespace DXF
 	{
 		return 1e7;
 	}
+
+	std::vector<Vertex<float>> GetDefaultBackgroundModel()
+	{
+		std::vector<Vertex<float>> model;
+		model.emplace_back(-4.0f, -2.0f, -4.0f);
+		model.emplace_back(-4.0f, -2.0f, 4.0f);
+		model.emplace_back(4.0f, -2.0f, 4.0f);
+		model.emplace_back(4.0f, -2.0f, -4.0f);
+
+		return model;
+	}
 }

@@ -11,4 +11,6 @@ namespace DXF
 	Vertex<float> GetDefaultCamera();
 
 	double GetMaxStretch();
+
+	std::vector<Vertex<float>> GetDefaultBackgroundModel();
 }

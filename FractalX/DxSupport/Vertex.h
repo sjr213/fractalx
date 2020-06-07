@@ -6,6 +6,10 @@ namespace DXF
 	template<typename T>
 	struct Vertex
 	{
+		T X;
+		T Y;
+		T Z;
+
 		Vertex()
 			: X(0)
 			, Y(0)
@@ -23,10 +27,6 @@ namespace DXF
 			, Y(v.Y)
 			, Z(v.Z)
 		{}
-
-		T X;
-		T Y;
-		T Z;
 	};
 
 

@@ -84,7 +84,7 @@ namespace DXF
 			ar << BulbNormalizeTypeToInt(fractalParams.NormalizationType);
 			ar << fractalParams.NormalizationRoot;
 			Serialize(ar, fractalParams.ConversionGroup);
-			SerializeVertex(ar, fractalParams.ConstantC);
+			Serialize(ar, fractalParams.ConstantC);
 			ar << Ingles3EquationTypeToInt(fractalParams.InglesEquation);
 		}
 		else
@@ -129,7 +129,7 @@ namespace DXF
 			if (version < 5) 
 				return;
 
-			SerializeVertex(ar, fractalParams.ConstantC);
+			Serialize(ar, fractalParams.ConstantC);
 
 			if (version < 6) 
 				return;
@@ -172,15 +172,15 @@ namespace DXF
 
 	void Serialize(CArchive& ar, BackgroundImageParams& bkgrdParams)
 	{
-		const int BackgroundParamVersion = 2;
+		const int BackgroundParamVersion = 1;
 
 		if (ar.IsStoring())
 		{
 			ar << BackgroundParamVersion;
-
 			CString tempFilename = bkgrdParams.ImageFilename.c_str();
 			ar << tempFilename;
 			ar << bkgrdParams.ShowBackgroundModel;
+			Serialize(ar, bkgrdParams.BackgroundModel);
 		}
 		else
 		{
@@ -194,9 +194,8 @@ namespace DXF
 			CString tempFilename;
 			ar >> tempFilename;
 			bkgrdParams.ImageFilename = tempFilename.GetString();
-
-			if (version > 1)
-				ar >> bkgrdParams.ShowBackgroundModel;
+			ar >> bkgrdParams.ShowBackgroundModel;
+			Serialize(ar, bkgrdParams.BackgroundModel);
 		}
 	}
 

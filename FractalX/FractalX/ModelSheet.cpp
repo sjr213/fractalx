@@ -73,6 +73,7 @@ void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceP
 	m_positionRangePage.SetStretchParams(m_traceParams->Stretch);
 	m_backgroundPage.SetFilename(m_traceParams->Background.ImageFilename);
 	m_backgroundPage.SetShowBackground(m_traceParams->Background.ShowBackgroundModel);
+	m_backgroundPage.SetModelVertices(m_traceParams->Background.BackgroundModel);
 }
 
 std::shared_ptr<DXF::TraceParams> CModelSheet::GetTraceParams() const
@@ -125,4 +126,5 @@ void CModelSheet::OnOk()
 	m_traceParams->Stretch = m_positionRangePage.GetStretchParams();
 	m_traceParams->Background.ImageFilename = m_backgroundPage.GetFilename();
 	m_traceParams->Background.ShowBackgroundModel = m_backgroundPage.GetShowBackground();
+	m_traceParams->Background.BackgroundModel = m_backgroundPage.GetModelVertices();
 }

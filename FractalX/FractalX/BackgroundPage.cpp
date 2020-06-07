@@ -12,10 +12,12 @@ IMPLEMENT_DYNAMIC(CBackgroundPage, CMFCPropertyPage)
 BEGIN_MESSAGE_MAP(CBackgroundPage, CMFCPropertyPage)
 	ON_BN_CLICKED(IDC_BROWSE_BUT, &CBackgroundPage::OnBrowseBut)
 	ON_BN_CLICKED(IDC_SHOW_BACKGROUND_CHECK, &CBackgroundPage::OnShowClicked)
+	ON_BN_CLICKED(IDC_DEFAULT_BUT, &CBackgroundPage::DefaultModelClicked)
 END_MESSAGE_MAP()
 
 CBackgroundPage::CBackgroundPage()
 	: CMFCPropertyPage(CBackgroundPage::IDD)
+	, m_backgroundModel(4)
 {}
 
 void CBackgroundPage::SetFilename(const std::wstring& filename)
@@ -39,6 +41,21 @@ bool CBackgroundPage::GetShowBackground() const
 	return m_showBackground;
 }
 
+void CBackgroundPage::SetModelVertices(const std::vector<DXF::Vertex<float>>& model)
+{
+	if (model.size() != 4)
+	{
+		assert(false);
+		return;
+	}
+	m_backgroundModel = model;
+}
+
+std::vector<DXF::Vertex<float>> CBackgroundPage::GetModelVertices() const
+{
+	return m_backgroundModel;
+}
+
 void CBackgroundPage::DoDataExchange(CDataExchange* pDX)
 {
 	CMFCPropertyPage::DoDataExchange(pDX);
@@ -48,6 +65,22 @@ void CBackgroundPage::DoDataExchange(CDataExchange* pDX)
 	BOOL show = m_showBackground;
 	DDX_Check(pDX, IDC_SHOW_BACKGROUND_CHECK, show);
 	m_showBackground = show;
+
+	DDX_Text(pDX, IDC_V1_X_EDIT, m_backgroundModel.at(0).X);
+	DDX_Text(pDX, IDC_V1_Y_EDIT, m_backgroundModel.at(0).Y);
+	DDX_Text(pDX, IDC_V1_Z_EDIT, m_backgroundModel.at(0).Z);
+
+	DDX_Text(pDX, IDC_V2_X_EDIT, m_backgroundModel.at(1).X);
+	DDX_Text(pDX, IDC_V2_Y_EDIT, m_backgroundModel.at(1).Y);
+	DDX_Text(pDX, IDC_V2_Z_EDIT, m_backgroundModel.at(1).Z);
+
+	DDX_Text(pDX, IDC_V3_X_EDIT, m_backgroundModel.at(2).X);
+	DDX_Text(pDX, IDC_V3_Y_EDIT, m_backgroundModel.at(2).Y);
+	DDX_Text(pDX, IDC_V3_Z_EDIT, m_backgroundModel.at(2).Z);
+
+	DDX_Text(pDX, IDC_V4_X_EDIT, m_backgroundModel.at(3).X);
+	DDX_Text(pDX, IDC_V4_Y_EDIT, m_backgroundModel.at(3).Y);
+	DDX_Text(pDX, IDC_V4_Z_EDIT, m_backgroundModel.at(3).Z);
 }
 
 BOOL CBackgroundPage::OnInitDialog()
@@ -110,4 +143,10 @@ void CBackgroundPage::OnShowClicked()
 {
 	UpdateData(TRUE);
 	EnableCtrls();
+}
+
+void CBackgroundPage::DefaultModelClicked()
+{
+	m_backgroundModel = GetDefaultBackgroundModel();
+	UpdateData(FALSE);
 }

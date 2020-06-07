@@ -16,10 +16,10 @@ namespace DXF
 			ar << modelData.VertexIterations;
 			ar << GetIndexForSeedTriangle(modelData.TriangleSeeds);
 			ar << VertexSourceToInt(modelData.SourceVertices);
-			SerializeVertex(ar, modelData.VertexTL);
-			SerializeVertex(ar, modelData.VertexTR);
-			SerializeVertex(ar, modelData.VertexBL);
-			SerializeVertex(ar, modelData.VertexBR);
+			Serialize(ar, modelData.VertexTL);
+			Serialize(ar, modelData.VertexTR);
+			Serialize(ar, modelData.VertexBL);
+			Serialize(ar, modelData.VertexBR);
 		}
 		else
 		{
@@ -42,10 +42,10 @@ namespace DXF
 			int nVertexSource = 0;
 			ar >> nVertexSource;
 			modelData.SourceVertices = VertexSourceFromInt(nVertexSource);
-			SerializeVertex(ar, modelData.VertexTL);
-			SerializeVertex(ar, modelData.VertexTR);
-			SerializeVertex(ar, modelData.VertexBL);
-			SerializeVertex(ar, modelData.VertexBR);
+			Serialize(ar, modelData.VertexTL);
+			Serialize(ar, modelData.VertexTR);
+			Serialize(ar, modelData.VertexBL);
+			Serialize(ar, modelData.VertexBR);
 		}
 	}
 }

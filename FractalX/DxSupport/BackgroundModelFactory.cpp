@@ -12,15 +12,29 @@ using namespace DirectX::SimpleMath;
 
 namespace DXF::BackgroundModelFactory
 {
-	std::vector<XMFLOAT3> CreateVertices()
+	XMFLOAT3 VertexToXmfloat3(const DXF::Vertex<float>& v)
 	{
-		std::vector<XMFLOAT3> seedVerices
+		return XMFLOAT3(v.X, v.Y, v.Z);
+	}
+
+	std::vector<XMFLOAT3> CreateVertices(const std::vector<DXF::Vertex<float>>& modelCoordinates)
+	{
+		assert(modelCoordinates.size() == 4);
+		std::vector<XMFLOAT3> seedVerices;
+		if (modelCoordinates.size() != 4)
 		{
-			XMFLOAT3(-2.0f, -2.0f, -2.0f),
-			XMFLOAT3(-2.0f, -2.0f, 2.0f),
-			XMFLOAT3(2.0f, -2.0f, 2.0f),
-			XMFLOAT3(2.0f, -2.0f, -2.0f)
-		};
+			seedVerices.push_back(XMFLOAT3(-2.0f, -2.0f, -2.0f));
+			seedVerices.push_back(XMFLOAT3(-2.0f, -2.0f, 2.0f));
+			seedVerices.push_back(XMFLOAT3(2.0f, -2.0f, 2.0f));
+			seedVerices.push_back(XMFLOAT3(2.0f, -2.0f, -2.0f));
+		}
+		else
+		{
+			seedVerices.push_back(VertexToXmfloat3(modelCoordinates.at(0)));
+			seedVerices.push_back(VertexToXmfloat3(modelCoordinates.at(1)));
+			seedVerices.push_back(VertexToXmfloat3(modelCoordinates.at(2)));
+			seedVerices.push_back(VertexToXmfloat3(modelCoordinates.at(3)));
+		}
 
 		return seedVerices;
 	}
@@ -36,20 +50,18 @@ namespace DXF::BackgroundModelFactory
 		return seedTriangles;
 	}
 
-	std::shared_ptr<TriangleData> GenerateCrudeTriangles()
+	std::shared_ptr<TriangleData> GenerateCrudeTriangles(const std::vector<DXF::Vertex<float>>& modelCoordinates)
 	{
 		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
-		data->Vertices = CreateVertices();
+		data->Vertices = CreateVertices(modelCoordinates);
 		data->Triangles = CreateTriangle();
-
-//		NormalizeVectors(*data);
 
 		return data;
 	}
 
-	std::shared_ptr<DxVertexData> CreateModel()
+	std::shared_ptr<DxVertexData> CreateModel(const std::vector<DXF::Vertex<float>>& modelCoordinates)
 	{
-		auto triangleData = GenerateCrudeTriangles();
+		auto triangleData = GenerateCrudeTriangles(modelCoordinates);
 
 		std::shared_ptr<DxVertexData> vData = std::make_shared<DxVertexData>();
 

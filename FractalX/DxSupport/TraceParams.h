@@ -5,8 +5,9 @@
 #include "BulbNormalizeType.h"
 #include "CartesianConverterGroup.h"
 #include "CartesianConversionType.h"
-#include "Ingles3EquantionType.h"
+#include "DefaultFields.h"
 #include "FractalType.h"
+#include "Ingles3EquantionType.h"
 #include "Vertex.h"
 
 
@@ -54,6 +55,7 @@ namespace DXF
 	{
 		std::wstring ImageFilename;
 		bool ShowBackgroundModel = false;
+		std::vector<Vertex<float>> BackgroundModel = GetDefaultBackgroundModel();
 	};
 
 	struct TraceParams
