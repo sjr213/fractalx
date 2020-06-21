@@ -147,6 +147,12 @@
     <ClInclude Include="DxWicTextureFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RotationSelectionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -252,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DxWicTextureFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RotationSelectionType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

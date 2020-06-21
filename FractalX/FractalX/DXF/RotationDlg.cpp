@@ -17,6 +17,7 @@ namespace DXF
 		, m_angleY(0.f)
 		, m_angleZ(0.f)
 		, m_speed(1)
+		, m_rotateBackgroundWithMain(false)
 	{
 	}
 
@@ -38,6 +39,10 @@ namespace DXF
 
 		DDX_Control(pDX, IDC_SPEED_COMBO, m_SpeedCombo);
 		DDX_CBIndex(pDX, IDC_SPEED_COMBO, m_speed);
+
+		BOOL mapToMain = m_rotateBackgroundWithMain;
+		DDX_Check(pDX, IDC_COPY_MAIN_TO_BKGND_CHECK, mapToMain);
+		m_rotateBackgroundWithMain = mapToMain;
 	}
 
 
@@ -80,21 +85,26 @@ namespace DXF
 		CDialogEx::OnOK();
 	}
 
-	RotationParams CRotationDlg::GetRotationParams()
+	RotationGroup CRotationDlg::GetRotationGroup()
 	{
 		RotationParams rp(RotationActionFromInt(m_action), -1.0f * m_angleX, -1.0f * m_angleY, -1.0f * m_angleZ);
 		rp.Speed = RotationSpeedFromInt(m_speed);
+		m_rotationGroup.RotationParamsMain;
+		if (m_rotateBackgroundWithMain)
+			m_rotationGroup.RotationType = RotationSelectionType::LockBackgroundOnModel;
 
-		return rp;
+		return m_rotationGroup;
 	}
 
-	void CRotationDlg::SetRotationParams(RotationParams rp)
+	void CRotationDlg::SetRotationGroup(RotationGroup rg)
 	{
-		m_action = RotationActionToInt(rp.Action);
-		m_angleX = -1.0f * rp.AngleXDegrees;
-		m_angleY = -1.0f * rp.AngleYDegrees;
-		m_angleZ = -1.0f * rp.AngleZDegrees;
-		m_speed = RotationSpeedToInt(rp.Speed);
+		m_rotationGroup = rg;
+		m_action = RotationActionToInt(rg.RotationParamsMain.Action);
+		m_angleX = -1.0f * rg.RotationParamsMain.AngleXDegrees;
+		m_angleY = -1.0f * rg.RotationParamsMain.AngleYDegrees;
+		m_angleZ = -1.0f * rg.RotationParamsMain.AngleZDegrees;
+		m_speed = RotationSpeedToInt(rg.RotationParamsMain.Speed);
+		m_rotateBackgroundWithMain = rg.RotationType == RotationSelectionType::LockBackgroundOnModel;
 	}
 
 	void CRotationDlg::OnKillfocusXAngleEdit()

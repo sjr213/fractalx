@@ -2,7 +2,7 @@
 
 #include "resource.h"       // main symbols
 #include <afxwin.h>
-#include "RotationParams.h"
+#include "RotationGroup.h"
 
 namespace DXF
 {
@@ -12,8 +12,8 @@ namespace DXF
 		CRotationDlg();
 		~CRotationDlg();
 
-		RotationParams GetRotationParams();
-		void SetRotationParams(RotationParams rp);
+		RotationGroup GetRotationGroup();
+		void SetRotationGroup(RotationGroup rg);
 
 		// Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -38,11 +38,13 @@ namespace DXF
 		afx_msg void OnKillfocusZAngleEdit();
 
 	private:
+		RotationGroup m_rotationGroup;
 		int m_action;
 		float m_angleX;
 		float m_angleY;
 		float m_angleZ;
 		int m_speed;
+		bool m_rotateBackgroundWithMain;
 
 		CComboBox m_SpeedCombo;
 	};

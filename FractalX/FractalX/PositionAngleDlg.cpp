@@ -6,7 +6,7 @@
 #include "FileSupport.h"
 #include "Messages.h"
 #include "Resource.h"
-#include "RotationParams.h"
+#include "RotationGroup.h"
 
 using namespace DXF;
 
@@ -41,39 +41,42 @@ class CPositionAngleDlgImp : public CPositionAngleDlg
 {
 private:
 	CClickMappedPictureCtrl m_coordCtrl;
-	RotationParams m_rotationParamsOriginal;
-	RotationParams m_rotationParams;
+	RotationGroup m_rotationGroupOriginal;
+	RotationGroup m_rotationGroup;
 	Vertex<float> m_targetOriginal;
 	Vertex<float> m_target;
 	CWnd* m_parent = nullptr;
 	float m_distance;
 	float m_angle;
+	int m_model = 0;
+	RotationParams m_rotationParams;
 
 public:
-	CPositionAngleDlgImp(const DXF::RotationParams& rotationParams,
+	CPositionAngleDlgImp(const DXF::RotationGroup& rotationGroup,
 		const Vertex<float>& target, CWnd* pParent)
 		: CPositionAngleDlg(IDD, pParent)
-		, m_rotationParamsOriginal(rotationParams)
-		, m_rotationParams(rotationParams)
+		, m_rotationGroupOriginal(rotationGroup)
+		, m_rotationGroup(rotationGroup)
 		, m_targetOriginal(target)
 		, m_target(target)
 		, m_parent(pParent)
 		, m_distance(0.02f)
 		, m_angle(10.0f)
+		, m_rotationParams(m_rotationGroup.RotationType == RotationSelectionType::Background ? m_rotationGroup.RotationParamsBackground : m_rotationGroup.RotationParamsMain)
 	{}
 
 	virtual ~CPositionAngleDlgImp()
 	{
 	}
 
-	void SetRotationParams(const RotationParams& rotationParams) override
+	void SetRotationGroup(const RotationGroup& rotationGroup) override
 	{
-		m_rotationParams = rotationParams;
+		m_rotationGroup = rotationGroup;
 	}
 
-	std::shared_ptr<DXF::RotationParams> GetRotationParams() const override
+	std::shared_ptr<DXF::RotationGroup> GetRotationGroup() const override
 	{
-		return std::make_shared<RotationParams>(m_rotationParams);
+		return std::make_shared<RotationGroup>(m_rotationGroup);
 	}
 
 	void SetTarget(const Vertex<float>& target) override
@@ -142,7 +145,10 @@ protected:
 	void DoDataExchange(CDataExchange* pDX) override
 	{
 		CPositionAngleDlg::DoDataExchange(pDX);
+
 		DDX_Control(pDX, IDC_COORD_PIC, m_coordCtrl);
+
+		DDX_Radio(pDX, IDC_MAIN_MODEL_RAD, m_model);
 
 		DDX_Text(pDX, IDC_DISTANCE_EDIT, m_distance);
 		DDV_MinMaxFloat(pDX, m_distance, 0.00001f, 10.0f);
@@ -173,6 +179,26 @@ protected:
 		DDX_Text(pDX, IDC_Z_ANGLE_EDIT, angleZ);
 		DDV_MinMaxFloat(pDX, angleZ, -360.0f, +360.0f);
 		m_rotationParams.AngleZDegrees = angleZ;
+
+		SaveModel();
+	}
+
+	void SaveModel()
+	{
+		auto currentModel = RotationSelectionTypeFromInt(m_model);
+		if (m_rotationGroup.RotationType == RotationSelectionType::Background)
+			m_rotationGroup.RotationParamsBackground = m_rotationParams;
+		else
+			m_rotationGroup.RotationParamsMain = m_rotationParams;
+
+		if (m_rotationGroup.RotationType != currentModel)
+		{
+			m_rotationGroup.RotationType = currentModel;
+			if (m_rotationGroup.RotationType == RotationSelectionType::Background)
+				m_rotationParams = m_rotationGroup.RotationParamsBackground;
+			else
+				m_rotationParams = m_rotationGroup.RotationParamsMain;
+		}	
 	}
 
 	afx_msg void OnOk()
@@ -194,7 +220,7 @@ protected:
 			return;
 		}
 
-		m_rotationParams = m_rotationParamsOriginal;
+		m_rotationGroup = m_rotationGroupOriginal;
 
 		m_target = m_targetOriginal;
 
@@ -317,13 +343,23 @@ protected:
 		UpdateData(TRUE);
 		m_parent->PostMessage(cMessage::tm_modelAngleChanged);
 	}
+
+	afx_msg void OnBnModelClicked()
+	{
+		UpdateData(TRUE);
+		UpdateData(FALSE);
+
+		m_parent->PostMessage(cMessage::tm_modelAngleChanged);
+	}
 	
 };
 
 BEGIN_MESSAGE_MAP(CPositionAngleDlgImp, CPositionAngleDlg)
 	ON_BN_CLICKED(IDOK, &CPositionAngleDlgImp::OnOk)
 	ON_BN_CLICKED(IDCANCEL, &CPositionAngleDlgImp::OnBnClickedCancel)
-//	ON_REGISTERED_MESSAGE(cMessage::tm_mouseCoords, &CPositionAngleDlgImp::OnMouseMoveMsg)
+	ON_BN_CLICKED(IDC_MAIN_MODEL_RAD, &CPositionAngleDlgImp::OnBnModelClicked)
+	ON_BN_CLICKED(IDC_BACKGROUND_MODEL_RAD, &CPositionAngleDlgImp::OnBnModelClicked)
+	ON_BN_CLICKED(IDC_COPY_MAIN_TO_BKGND_RAD, &CPositionAngleDlgImp::OnBnModelClicked)
 	ON_REGISTERED_MESSAGE(cMessage::tm_clickIDs, &CPositionAngleDlgImp::OnTargetClicked)
 	ON_EN_KILLFOCUS(IDC_DISTANCE_EDIT, &CPositionAngleDlgImp::OnKillFocus)
 	ON_EN_KILLFOCUS(IDC_ANGLE_EDIT, &CPositionAngleDlgImp::OnKillFocus)
@@ -335,8 +371,8 @@ BEGIN_MESSAGE_MAP(CPositionAngleDlgImp, CPositionAngleDlg)
 	ON_EN_KILLFOCUS(IDC_Z_ANGLE_EDIT, &CPositionAngleDlgImp::OnAngleChanged)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CPositionAngleDlg> CPositionAngleDlg::CreatePositionAngleDlg(const RotationParams& rotationParams,
+std::shared_ptr<CPositionAngleDlg> CPositionAngleDlg::CreatePositionAngleDlg(const RotationGroup& rotationGroup,
 	const Vertex<float>& target, CWnd* pParent)
 {
-	return std::make_shared <CPositionAngleDlgImp>(rotationParams, target, pParent);
+	return std::make_shared <CPositionAngleDlgImp>(rotationGroup, target, pParent);
 }

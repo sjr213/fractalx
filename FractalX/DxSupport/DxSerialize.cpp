@@ -4,6 +4,7 @@
 #include "SphereApproximator.h"
 #include "TraceParamsSerialize.h"
 #include "VertexData.h"
+#include "RotationGroup.h"
 #include "RotationParams.h"
 #include "Perspective.h"
 
@@ -178,6 +179,34 @@ namespace DXF
 		else
 		{
 			ar >> perspective.NearPlane >> perspective.FarPlane;
+		}
+	}
+
+	void Serialize(CArchive& ar, RotationGroup& rotationGroup)
+	{
+		int version = RotationGroup::RotationGroupVersion;
+
+		if (ar.IsStoring())
+		{
+			ar << version;
+			ar << RotationSelectionTypeToInt(rotationGroup.RotationType);
+			Serialize(ar, rotationGroup.RotationParamsMain);
+			Serialize(ar, rotationGroup.RotationParamsBackground);
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == RotationGroup::RotationGroupVersion);
+			if (version != RotationGroup::RotationGroupVersion)
+				return;
+
+			int type = 0;
+			ar >> type;
+			rotationGroup.RotationType = RotationSelectionTypeFromInt(type);
+			Serialize(ar, rotationGroup.RotationParamsMain);
+			Serialize(ar, rotationGroup.RotationParamsBackground);
 		}
 	}
 }

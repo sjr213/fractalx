@@ -14,7 +14,7 @@ class CDC;
 namespace DXF
 {
 	struct DxEffectColors;
-	struct RotationParams;
+	struct RotationGroup;
 	struct DxLights;
 
 	class Renderer
@@ -33,9 +33,9 @@ namespace DXF
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;
 
-		virtual void SetRotationParams(const RotationParams& rp) = 0;
+		virtual void SetRotationGroup(const RotationGroup& rg) = 0;
 
-		virtual RotationParams GetRotationParams() = 0;
+		virtual RotationGroup GetRotationGroup() = 0;
 
 		// Basic game loop
 		virtual void Tick() = 0;

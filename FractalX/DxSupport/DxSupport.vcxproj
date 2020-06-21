@@ -183,7 +183,9 @@
     <ClInclude Include="RayTracerCommon.h" />
     <ClInclude Include="RayTracerDoubleCommon.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RotationGroup.h" />
     <ClInclude Include="RotationParams.h" />
+    <ClInclude Include="RotationSelectionType.h" />
     <ClInclude Include="SeedTriangles.h" />
     <ClInclude Include="SphereApproximator.h" />
     <ClInclude Include="stdafx.h" />
@@ -226,6 +228,7 @@
     <ClCompile Include="RayTracerDoubleCommon.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RotationParams.cpp" />
+    <ClCompile Include="RotationSelectionType.cpp" />
     <ClCompile Include="SeedTriangles.cpp" />
     <ClCompile Include="SphereApproximator.cpp" />
     <ClCompile Include="stdafx.cpp">

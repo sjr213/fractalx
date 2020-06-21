@@ -11,6 +11,7 @@ namespace DXF
 	struct TriangleData;
 	struct RotationParams;
 	struct DxPerspective;
+	struct RotationGroup;
 
 	bool IsVersionSupported(int version, int minVersion, int maxVersion);
 
@@ -43,4 +44,6 @@ namespace DXF
 	void Serialize(CArchive& ar, std::tuple<double, double, double>& d3);
 
 	void Serialize(CArchive& ar, DxPerspective& perspective);
+
+	void Serialize(CArchive& ar, RotationGroup& rotationGroup);
 }
