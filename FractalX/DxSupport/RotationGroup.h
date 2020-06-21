@@ -9,7 +9,7 @@ namespace DXF
 	{
 		static const int RotationGroupVersion = 1;
 
-		RotationSelectionType RotationType;
+		RotationSelectionType RotationType = RotationSelectionType::MainModel;
 		RotationParams RotationParamsMain;
 		RotationParams RotationParamsBackground;		
 	};

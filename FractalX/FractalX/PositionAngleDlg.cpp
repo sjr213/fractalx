@@ -48,7 +48,7 @@ private:
 	CWnd* m_parent = nullptr;
 	float m_distance;
 	float m_angle;
-	int m_model = 0;
+	int m_model;
 	RotationParams m_rotationParams;
 
 public:
@@ -62,6 +62,7 @@ public:
 		, m_parent(pParent)
 		, m_distance(0.02f)
 		, m_angle(10.0f)
+		, m_model(RotationSelectionTypeToInt(m_rotationGroup.RotationType))
 		, m_rotationParams(m_rotationGroup.RotationType == RotationSelectionType::Background ? m_rotationGroup.RotationParamsBackground : m_rotationGroup.RotationParamsMain)
 	{}
 
@@ -136,6 +137,8 @@ protected:
 		CPositionAngleDlg::OnInitDialog();
 
 		PrepMappedBitmap();
+
+		m_model = RotationSelectionTypeToInt(m_rotationGroup.RotationType);
 
 		UpdateData(FALSE);
 
