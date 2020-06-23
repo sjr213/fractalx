@@ -89,7 +89,7 @@ namespace DXF
 	{
 		RotationParams rp(RotationActionFromInt(m_action), -1.0f * m_angleX, -1.0f * m_angleY, -1.0f * m_angleZ);
 		rp.Speed = RotationSpeedFromInt(m_speed);
-		m_rotationGroup.RotationParamsMain;
+		m_rotationGroup.RotationParamsMain = rp;
 		if (m_rotateBackgroundWithMain)
 			m_rotationGroup.RotationType = RotationSelectionType::LockBackgroundOnModel;
 
