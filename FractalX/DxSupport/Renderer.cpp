@@ -4,6 +4,7 @@
 
 #include <afxwin.h>
 #include <algorithm>
+#include "BackgroundVertexData.h"
 #include "CommonStates.h"
 #include <d3d11_1.h>
 #include <DirectXColors.h>
@@ -178,12 +179,12 @@ namespace DXF
 			m_indices = vertexData.Indices;
 		}
 
-		void SetModel2(bool show, const DxVertexData& vertexData2, const std::wstring& textureFile) override
+		void SetModel2(const DxBackgroundVertexData& bkgndVertexData) override
 		{
-			m_showSecondaryModel = show;
-			m_vertices2 = vertexData2.Vertices;
-			m_indices2 = vertexData2.Indices;
-			m_textureFile = textureFile;
+			m_showSecondaryModel = bkgndVertexData.Show;
+			m_vertices2 = bkgndVertexData.VertexData->Vertices;
+			m_indices2 = bkgndVertexData.VertexData->Indices;
+			m_textureFile = bkgndVertexData.Filename;
 		}
 
 		void ResetModel() override

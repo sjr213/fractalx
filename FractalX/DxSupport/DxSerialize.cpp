@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "DxSerialize.h"
 
+#include "BackgroundVertexData.h"
+#include "Perspective.h"
+#include "RotationGroup.h"
+#include "RotationParams.h"
 #include "SphereApproximator.h"
 #include "TraceParamsSerialize.h"
 #include "VertexData.h"
-#include "RotationGroup.h"
-#include "RotationParams.h"
-#include "Perspective.h"
 
 
 namespace DXF
@@ -16,12 +17,36 @@ namespace DXF
 		return (version >= minVersion && version <= maxVersion);
 	}
 
+	void Serialize(CArchive& ar, bool& val)
+	{
+		int num = val;
+		if (ar.IsStoring())
+			ar << num;
+		else
+		{
+			ar >> num;
+			val = static_cast<bool>(num);
+		}
+	}
+
 	void Serialize(CArchive& ar, size_t& n)
 	{
 		if (ar.IsStoring())
 			ar << n;
 		else
 			ar >> n;
+	}
+
+	void Serialize(CArchive& ar, std::wstring& str)
+	{
+		CString cstr = str.c_str();
+		if (ar.IsStoring())
+			ar << cstr;
+		else
+		{
+			ar >> cstr;
+			str = cstr.GetString();
+		}
 	}
 
 	void Serialize(CArchive& ar, unsigned int& n)
@@ -96,6 +121,35 @@ namespace DXF
 		Serialize(ar, vertexData.Vertices);
 		Serialize(ar, vertexData.Indices);
 		Serialize(ar, vertexData.StretchParams);
+	}
+
+	void Serialize(CArchive& ar, DxBackgroundVertexData& bkgndVertexData)
+	{
+		const int BkgndVertexVersion = 1;
+
+		if (!bkgndVertexData.VertexData)
+		{
+			assert(false);
+			return;
+		}
+
+		if (ar.IsStoring())
+		{
+			ar << BkgndVertexVersion;
+		}
+		else
+		{
+			int version = 0;
+			ar >> version;
+
+			assert(version == BkgndVertexVersion);
+			if (version != BkgndVertexVersion)
+				return;
+		}
+
+		Serialize(ar, bkgndVertexData.Show);
+		SerializeVertexData(ar, *bkgndVertexData.VertexData);
+		Serialize(ar, bkgndVertexData.Filename);
 	}
 
 	void Serialize(CArchive& ar, TriangleData& triangles)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace DirectX
 {
 	struct XMFLOAT3;
@@ -8,6 +10,7 @@ namespace DirectX
 namespace DXF
 {
 	struct DxVertexData;
+	struct DxBackgroundVertexData;
 	struct TriangleData;
 	struct RotationParams;
 	struct DxPerspective;
@@ -15,7 +18,11 @@ namespace DXF
 
 	bool IsVersionSupported(int version, int minVersion, int maxVersion);
 
+	void Serialize(CArchive& ar, bool& val);
+
 	void Serialize(CArchive& ar, size_t& n);
+
+	void Serialize(CArchive& ar, std::wstring& str);
 
 	void Serialize(CArchive& ar, unsigned int& n);
 
@@ -32,6 +39,8 @@ namespace DXF
 	}
 
 	void SerializeVertexData(CArchive& ar, DxVertexData& vextexData);
+
+	void Serialize(CArchive& ar, DxBackgroundVertexData& bkgndVertexData);
 
 	void Serialize(CArchive& ar, DirectX::XMFLOAT3& xf3);
 

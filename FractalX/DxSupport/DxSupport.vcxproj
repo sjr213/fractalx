@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundModelFactory.h" />
+    <ClInclude Include="BackgroundVertexData.h" />
     <ClInclude Include="BasicRayTracer.h" />
     <ClInclude Include="BulbNormalizeType.h" />
     <ClInclude Include="CartesianConversionType.h" />
