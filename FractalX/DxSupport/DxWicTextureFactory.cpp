@@ -531,5 +531,7 @@ namespace DXF::WicTextureFactory
 		hr = CreateTextureFromWIC(&device, &context, frame.Get(), texture.GetAddressOf(), textureView.GetAddressOf(), maxsize);
 		if (FAILED(hr))
 			return hr;
+
+		return S_OK;
 	}
 }
