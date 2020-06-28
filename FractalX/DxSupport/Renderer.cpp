@@ -7,6 +7,7 @@
 #include "BackgroundVertexData.h"
 #include "CommonStates.h"
 #include <d3d11_1.h>
+#include "DefaultFields.h"
 #include <DirectXColors.h>
 #include "DirectXHelpers.h"
 #include "DirectXPackedVector.h"
@@ -98,8 +99,9 @@ namespace DXF
 		float m_nearPlaneView = 0.1f;
 		float m_farPlaneView = 10.0f;
 
-		Vertex<float> m_camera = Vertex<float>(0.f, 0.f, 0.3f);
-		Vertex<float> m_target = Vertex<float>(0.0f, 0.0f, 0.0f);
+		Vertex<float> m_camera = GetDefaultCamera();
+		Vertex<float> m_target = GetDefaultTarget();
+		Vertex<float> m_targetBackground = GetDefaultTarget();
 
 		DirectX::SimpleMath::Color m_backgroundColor;
 
@@ -275,13 +277,14 @@ namespace DXF
 			CreateProjectionMatrix();
 		}
 
-		void SetView(const Vertex<float>& camera, const Vertex<float>& target) override
+		void SetView(const Vertex<float>& camera, const Vertex<float>& target, const Vertex<float>& targetBackgnd) override
 		{
 			if (!m_d3dDevice)
 				return;
 
 			m_camera = camera;
 			m_target = target;
+			m_targetBackground = targetBackgnd;
 
 			CreateViewMatrix();
 		}
@@ -292,8 +295,14 @@ namespace DXF
 				return;
 
 			m_target = target;
+		}
 
-			CreateViewMatrix();
+		void SetTargetBackground(const Vertex<float>& targetBackgnd) override
+		{
+			if (!m_d3dDevice)
+				return;
+
+			m_targetBackground = targetBackgnd;
 		}
 
 		Vertex<float> GetCamera() const override
@@ -305,6 +314,11 @@ namespace DXF
 		Vertex<float> GetTarget() const override
 		{
 			return m_target;
+		}
+
+		Vertex<float> GetTargetBackground() const override
+		{
+			return m_targetBackground;
 		}
 
 		bool IsReady() override
@@ -902,10 +916,11 @@ namespace DXF
 			if (m_rotationGroup.RotationType == RotationSelectionType::LockBackgroundOnModel)
 			{
 				m_world2 = m_world;
+				m_targetBackground = m_target;
 				return;
 			}
 				
-			auto transMatrix = Matrix::CreateTranslation(m_target.X, m_target.Y, m_target.Z);
+			auto transMatrix = Matrix::CreateTranslation(m_targetBackground.X, m_targetBackground.Y, m_targetBackground.Z);
 
 			m_world2 =
 				Matrix::CreateScale(m_worldScale.X, m_worldScale.Y, m_worldScale.Z) *

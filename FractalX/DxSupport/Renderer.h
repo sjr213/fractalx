@@ -57,12 +57,17 @@ namespace DXF
 
 		virtual DxPerspective GetPerspective() const = 0;
 
-		virtual void SetView(const Vertex<float>& camera, const Vertex<float>& target) = 0;
+		virtual void SetView(const Vertex<float>& camera, const Vertex<float>& target, const Vertex<float>& targetBackgnd) = 0;
 
 		virtual void SetTarget(const Vertex<float>& target) = 0;
 
+		virtual void SetTargetBackground(const Vertex<float>& targetBackgnd) = 0;
+
 		virtual Vertex<float> GetCamera() const = 0;
+
 		virtual Vertex<float> GetTarget() const = 0;
+
+		virtual Vertex<float> GetTargetBackground() const = 0;
 
 		virtual bool IsReady() = 0;
 

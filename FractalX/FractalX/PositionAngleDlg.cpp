@@ -44,31 +44,36 @@ private:
 	RotationGroup m_rotationGroupOriginal;
 	RotationGroup m_rotationGroup;
 	Vertex<float> m_targetOriginal;
+	Vertex<float> m_targetBackgroundOriginal;
 	Vertex<float> m_target;
+	Vertex<float> m_targetBackgnd;
 	CWnd* m_parent = nullptr;
 	float m_distance;
 	float m_angle;
 	int m_model;
 	RotationParams m_rotationParams;
+	Vertex<float> m_activeTarget;
 
 public:
 	CPositionAngleDlgImp(const DXF::RotationGroup& rotationGroup,
-		const Vertex<float>& target, CWnd* pParent)
+		const Vertex<float>& target, const DXF::Vertex<float>& targetBackgnd, CWnd* pParent)
 		: CPositionAngleDlg(IDD, pParent)
 		, m_rotationGroupOriginal(rotationGroup)
 		, m_rotationGroup(rotationGroup)
 		, m_targetOriginal(target)
+		, m_targetBackgroundOriginal(targetBackgnd)
 		, m_target(target)
+		, m_targetBackgnd(targetBackgnd)
 		, m_parent(pParent)
 		, m_distance(0.02f)
 		, m_angle(10.0f)
 		, m_model(RotationSelectionTypeToInt(m_rotationGroup.RotationType))
 		, m_rotationParams(m_rotationGroup.RotationType == RotationSelectionType::Background ? m_rotationGroup.RotationParamsBackground : m_rotationGroup.RotationParamsMain)
+		, m_activeTarget(m_rotationGroup.RotationType == RotationSelectionType::Background ? m_targetBackgnd : m_target)
 	{}
 
 	virtual ~CPositionAngleDlgImp()
-	{
-	}
+	{}
 
 	void SetRotationGroup(const RotationGroup& rotationGroup) override
 	{
@@ -88,6 +93,16 @@ public:
 	Vertex<float> GetTarget() const override
 	{
 		return m_target;
+	}
+
+	void SetTargetBackground(const DXF::Vertex<float>& targetBkgnd) override
+	{
+		m_targetBackgnd = targetBkgnd;
+	}
+
+	DXF::Vertex<float> GetTargetBackground() const override
+	{
+		return m_targetBackgnd;
 	}
 
 	// Dialog Data
@@ -159,14 +174,14 @@ protected:
 		DDX_Text(pDX, IDC_ANGLE_EDIT, m_angle);
 		DDV_MinMaxFloat(pDX, m_angle, 0.1f, 180.0f);
 
-		DDX_Text(pDX, IDC_POS_X_EDIT, m_target.X);
-		DDV_MinMaxFloat(pDX, m_target.X, -10.0f, +10.0f);
+		DDX_Text(pDX, IDC_POS_X_EDIT, m_activeTarget.X);
+		DDV_MinMaxFloat(pDX, m_activeTarget.X, -10.0f, +10.0f);
 
-		DDX_Text(pDX, IDC_POS_Y_EDIT, m_target.Y);
-		DDV_MinMaxFloat(pDX, m_target.Y, -10.0f, +10.0f);
+		DDX_Text(pDX, IDC_POS_Y_EDIT, m_activeTarget.Y);
+		DDV_MinMaxFloat(pDX, m_activeTarget.Y, -10.0f, +10.0f);
 
-		DDX_Text(pDX, IDC_POS_Z_EDIT, m_target.Z);
-		DDV_MinMaxFloat(pDX, m_target.Z, -10.0f, +10.0f);
+		DDX_Text(pDX, IDC_POS_Z_EDIT, m_activeTarget.Z);
+		DDV_MinMaxFloat(pDX, m_activeTarget.Z, -10.0f, +10.0f);
 
 		float angleX = m_rotationParams.AngleXDegrees;
 		DDX_Text(pDX, IDC_X_ANGLE_EDIT, angleX);
@@ -190,17 +205,29 @@ protected:
 	{
 		auto currentModel = RotationSelectionTypeFromInt(m_model);
 		if (m_rotationGroup.RotationType == RotationSelectionType::Background)
+		{
 			m_rotationGroup.RotationParamsBackground = m_rotationParams;
+			m_targetBackgnd = m_activeTarget;
+		}
 		else
+		{
 			m_rotationGroup.RotationParamsMain = m_rotationParams;
+			m_target = m_activeTarget;
+		}
 
 		if (m_rotationGroup.RotationType != currentModel)
 		{
 			m_rotationGroup.RotationType = currentModel;
 			if (m_rotationGroup.RotationType == RotationSelectionType::Background)
+			{
 				m_rotationParams = m_rotationGroup.RotationParamsBackground;
+				m_activeTarget = m_targetBackgnd;
+			}
 			else
+			{
 				m_rotationParams = m_rotationGroup.RotationParamsMain;
+				m_activeTarget = m_target;
+			}
 		}	
 	}
 
@@ -226,6 +253,8 @@ protected:
 		m_rotationGroup = m_rotationGroupOriginal;
 
 		m_target = m_targetOriginal;
+
+		m_targetBackgnd = m_targetBackgroundOriginal;
 
 		m_parent->PostMessage(cMessage::tm_killPositionAngleDlg, cMessage::DlgCancel, 0);
 	}
@@ -253,7 +282,7 @@ protected:
 		switch (static_cast<int>(wparam))
 		{
 		case X_Minus:
-			m_target.X = m_target.X - m_distance;
+			m_activeTarget.X = m_activeTarget.X - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CCW:
@@ -265,7 +294,7 @@ protected:
 			}
 			break;
 		case X_Plus:
-			m_target.X = m_target.X + m_distance;
+			m_activeTarget.X = m_activeTarget.X + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case X_CW:
@@ -277,7 +306,7 @@ protected:
 			}
 			break;
 		case Y_Minus:
-			m_target.Y = m_target.Y - m_distance;
+			m_activeTarget.Y = m_activeTarget.Y - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CCW:
@@ -289,7 +318,7 @@ protected:
 			}
 			break;
 		case Y_Plus:
-			m_target.Y = m_target.Y + m_distance;
+			m_activeTarget.Y = m_activeTarget.Y + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Y_CW:
@@ -301,7 +330,7 @@ protected:
 			}
 			break;
 		case Z_Minus:
-			m_target.Z = m_target.Z - m_distance;
+			m_activeTarget.Z = m_activeTarget.Z - m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CCW:
@@ -313,7 +342,7 @@ protected:
 			}
 			break;
 		case Z_Plus:
-			m_target.Z = m_target.Z + m_distance;
+			m_activeTarget.Z = m_activeTarget.Z + m_distance;
 			m_parent->PostMessage(cMessage::tm_modelPositionChanged);
 			break;
 		case Z_CW:
@@ -375,7 +404,7 @@ BEGIN_MESSAGE_MAP(CPositionAngleDlgImp, CPositionAngleDlg)
 END_MESSAGE_MAP()
 
 std::shared_ptr<CPositionAngleDlg> CPositionAngleDlg::CreatePositionAngleDlg(const RotationGroup& rotationGroup,
-	const Vertex<float>& target, CWnd* pParent)
+	const Vertex<float>& target, const DXF::Vertex<float>& targetBackgnd, CWnd* pParent)
 {
-	return std::make_shared <CPositionAngleDlgImp>(rotationGroup, target, pParent);
+	return std::make_shared <CPositionAngleDlgImp>(rotationGroup, target, targetBackgnd, pParent);
 }
