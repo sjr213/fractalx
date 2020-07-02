@@ -111,6 +111,8 @@ namespace DXF
 
 		Vertex<float> m_worldScale = Vertex<float>(0.1f, 0.1f, 0.1f);
 
+		bool m_ready = false;
+
 	public:
 
 		RendererImp() :
@@ -129,12 +131,21 @@ namespace DXF
 			m_outputWidth = std::max(width, 1);
 			m_outputHeight = std::max(height, 1);
 
-			CreateDevice();
-
-			CreateResources();
-
-			CreateBuffers();
-			CreateBuffers2();
+			try
+			{
+				CreateDevice();
+				CreateResources();
+				CreateBuffers();
+				CreateBuffers2();
+				m_ready = true;
+			}
+			catch (DxException& ex)
+			{
+				m_ready = false;
+				CString msg(_T("Initialization failed! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
 		}
 
 		void Tick() override
@@ -153,18 +164,28 @@ namespace DXF
 
 		void OnWindowSizeChanged(int width, int height) override
 		{
-			if (!m_d3dDevice)
+			if (!IsReady())
 				return;
 
 			m_outputWidth = std::max(width, 1);
 			m_outputHeight = std::max(height, 1);
 
-			CreateResources();
+			try
+			{
+				CreateResources();
+				m_ready = true;
+			}
+			catch (DxException & ex)
+			{
+				m_ready = false;
+				CString msg(_T("Resource initialization failed! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
 		}
 
 		void GetDefaultSize(int& width, int& height) const override
 		{
-			// TODO: Change to desired default window size (note minimum size is 320x200).
 			width = 800;
 			height = 800;
 		}
@@ -191,13 +212,40 @@ namespace DXF
 
 		void ResetModel() override
 		{
-			CreateBuffers();
+			if (!IsReady())
+				return;
+
+			try
+			{
+				CreateBuffers();
+			}
+			catch (DxException & ex)
+			{
+				m_ready = false;
+				CString msg(_T("Could not reset! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
 		}
 
 		void ResetModel2() override
 		{
-			CreateBuffers2();
-			SetTexture2();
+			if (!IsReady())
+				return;
+
+			try
+			{
+				CreateBuffers2();
+				SetTexture2();
+			}
+			catch (DxException & ex)
+			{
+				m_ready = false;
+				CString msg(_T("Could not reset! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
+
 		}
 
 		void SetRotationGroup(const RotationGroup& rg) override
@@ -213,13 +261,12 @@ namespace DXF
 		void RefreshRender(float time) override
 		{
 			SetWorlds(time);
-
 			Render();
 		}
 
 		void SetTextureColors(std::vector<uint32_t> colors) override
 		{
-			if (!m_d3dDevice)
+			if (!IsReady())
 				return;
 
 			if (colors.size() < 2)
@@ -230,18 +277,34 @@ namespace DXF
 			m_textureView.Reset();
 			m_texture.Reset();
 
-			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture,
-				m_textureView), "failed to create texture");
+			HRESULT hr = CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture, m_textureView);
+			if (FAILED(hr))
+			{
+				m_ready = false;
+				CString msg(_T("Failed to create texture!"));
+				AfxMessageBox(msg, MB_OK);
+				return;
+			}
 
 			m_effect->SetTexture(m_textureView.Get());
 
-			if(! CreateSecondaryWicTexture())
-				SetTexture2();
+			try
+			{
+				if (!CreateSecondaryWicTexture())
+					SetTexture2();
+			}
+			catch (DxException & ex)
+			{
+				m_ready = false;
+				CString msg(_T("Could not set colors! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
 		}
 
 		void SetTexture2()
 		{
-			if (!m_d3dDevice)
+			if (!IsReady())
 				return;
 
 			m_textureView2.Reset();
@@ -308,7 +371,6 @@ namespace DXF
 		Vertex<float> GetCamera() const override
 		{
 			return m_camera;
-
 		}
 
 		Vertex<float> GetTarget() const override
@@ -323,12 +385,12 @@ namespace DXF
 
 		bool IsReady() override
 		{
-			return (m_d3dDevice != nullptr);
+			return (m_ready && m_d3dDevice != nullptr);
 		}
 
 		bool DrawImage(CDC& dc, CSize targetSize) override
 		{
-			if (!m_d3dDevice)
+			if (! IsReady())
 				return nullptr;
 
 			ComPtr<IDXGISurface1> pSurface1;
@@ -437,7 +499,6 @@ namespace DXF
 
 	protected:
 
-		// These are the resources that depend on the device.
 		void CreateDevice()
 		{
 			UINT creationFlags = 0;
@@ -445,7 +506,6 @@ namespace DXF
 #ifdef _DEBUG
 			creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-
 			static const D3D_FEATURE_LEVEL featureLevels[] =
 			{
 				// TODO: Modify for supported Direct3D feature levels
@@ -459,7 +519,6 @@ namespace DXF
 			DXF::ThrowIfFailed(CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgi_factory), "failed to create dxgi factory");
 
 			DXF::ThrowIfFailed(dxgi_factory.As(&m_dxgi_factory), "failed to create dxgi factory1");
-
 
 			// Create the DX11 API device object, and get a corresponding context.
 			ComPtr<ID3D11Device> device;
@@ -486,7 +545,6 @@ namespace DXF
 				if (SUCCEEDED(hr))
 					break;
 			}
-
 
 #ifndef NDEBUG
 			ComPtr<ID3D11Debug> d3dDebug;
@@ -516,11 +574,8 @@ namespace DXF
 
 			CreateBlendState();
 
-			// TODO: Initialize device dependent objects here (independent of window size).
 			m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
-
 			m_effect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-
 			m_effect->SetTextureEnabled(true);
 
 			SetEffectColors(*m_effect);
@@ -730,46 +785,40 @@ namespace DXF
 				"Could not create blend state");
 		}
 
-		HRESULT CreateBuffers()
+		void CreateBuffers()
 		{
-			if (!m_d3dDevice)
-				return E_UNEXPECTED;
+			if (!IsReady())
+				return;
 
 			if (m_vertices.empty())
-				return S_OK;
+				return;
 
-			HRESULT hr = CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices,
-				m_vertexBuffer);
+			DXF::ThrowIfFailed(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices,
+				m_vertexBuffer), "Could not create immutable texture vertex buffer");
 
-			if (FAILED(hr))
-				return hr;
-
-			return CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices,
-				m_indexBuffer, m_nIndices);
+			DXF::ThrowIfFailed(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices,
+				m_indexBuffer, m_nIndices), "Could not create immutable index buffer");
 		}
 
-		HRESULT CreateBuffers2()
+		void CreateBuffers2()
 		{
 			if (!m_showSecondaryModel)
-				return S_OK;
+				return;
 
-			if (!m_d3dDevice)
-				return E_UNEXPECTED;
+			if (!IsReady())
+				return;
 
 			if (m_vertices2.empty())
-				return S_OK;
+				return;
 
-			HRESULT hr = CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices2,
-				m_vertexBuffer2);
+			DXF::ThrowIfFailed(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices2,
+				m_vertexBuffer2), "Could not create immutable texture vertex buffer 2");
 
-			if (FAILED(hr))
-				return hr;
-
-			return CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices2,
-				m_indexBuffer2, m_nIndices2);
+			DXF::ThrowIfFailed(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices2,
+				m_indexBuffer2, m_nIndices2), "Could not create immutable index buffer 2");
 		}
 
-		void OnDeviceLost()
+		void OnDeviceLost() override
 		{
 			m_indexBuffer.Reset();
 			m_indexBuffer2.Reset();
@@ -796,9 +845,22 @@ namespace DXF
 			m_nIndices = 0;
 			m_nIndices2 = 0;
 
-			CreateDevice();
+			try
+			{
+				CreateDevice();
+				CreateResources();
+				CreateBuffers();
+				CreateBuffers2();
+				m_ready = true;
+			}
+			catch(DxException& ex)
+			{ 
+				m_ready = false;
+				CString msg(_T("Initialization failed! : "));
+				msg += ex.what();
+				AfxMessageBox(msg, MB_OK);
+			}
 
-			CreateResources();
 		}
 
 		void SetEffectColors(BasicEffect& effect)
@@ -932,6 +994,9 @@ namespace DXF
 
 		void Render()
 		{
+			if (!IsReady())
+				return;
+
 			if (!m_d3dContext)
 				return;
 
@@ -1033,9 +1098,11 @@ namespace DXF
 			{
 				OnDeviceLost();
 			}
-			else
+			else if(FAILED(hr))
 			{
-				DXF::ThrowIfFailed(hr, "device lost during present");
+				m_ready = false;
+				CString msg(_T("Device lost during present"));
+				AfxMessageBox(msg, MB_OK);
 			}
 		}
 

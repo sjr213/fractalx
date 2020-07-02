@@ -34,6 +34,8 @@ namespace DXF
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;
 
+		virtual void OnDeviceLost() = 0;
+
 		virtual void SetRotationGroup(const RotationGroup& rg) = 0;
 
 		virtual RotationGroup GetRotationGroup() = 0;
