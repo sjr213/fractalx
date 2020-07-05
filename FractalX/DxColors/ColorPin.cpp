@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "ColorPin.h"
 #include "DxColorsSerialization.h"
+#include "..\DxCore\SerializationException.h"
 
 namespace DxColor
 {
@@ -13,9 +14,8 @@ namespace DxColor
 
 	static void SerializePin(CArchive& ar, ColorPin& pin, int version)
 	{
-		assert(version == CurrentPinVersion);
 		if (version != CurrentPinVersion)
-			return;
+			throw DxCore::CSerializationException("Pin version less than 1");
 
 		SerializeColorArgb(ar, pin.Color1);
 		SerializeColorArgb(ar, pin.Color2);
@@ -55,9 +55,8 @@ namespace DxColor
 			int version = 0;
 			ar >> version;
 
-			assert(version == CurrentPinVersion);
 			if (version != CurrentPinVersion)
-				return;
+				throw DxCore::CSerializationException("Pin palette version less than 1");
 
 			ar >> palette.Name;
 

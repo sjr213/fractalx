@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "ModelData.h"
-#include "VertexSerialization.h"
+
 #include <assert.h>
+#include "..\DxCore\SerializationException.h"
+#include "VertexSerialization.h"
 
 namespace DXF
 {
@@ -27,7 +29,7 @@ namespace DXF
 			ar >> version;
 
 			if (version < 1)
-				return;
+				throw DxCore::CSerializationException("ModelData version less than 1");
 
 			ar >> modelData.VertexIterations;
 

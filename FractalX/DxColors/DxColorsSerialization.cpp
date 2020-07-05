@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "ColorArgb.h"
 #include "ColorContrast.h"
+#include "../DxCore/SerializationException.h"
 #include "EffectColors.h"
 #include "Light.h"
 
@@ -90,9 +91,8 @@ namespace DxColor
 			int version = 0;
 			ar >> version;
 
-			assert(version == ContrastVersion);
 			if (version != ContrastVersion)
-				return;
+				throw DxCore::CSerializationException("Contrast version less than 1");
 
 			int mode = 1;
 			ar >> mode;
@@ -140,10 +140,7 @@ namespace DxColor
 			ar >> version;
 
 			if (version < LightsVersion)
-			{
-				assert(false);
-				return;
-			}
+				throw DxCore::CSerializationException("Lights version less than 1");
 
 			ar >> lights.DefaultLights;
 			ar >> lights.PerPixelLighting;

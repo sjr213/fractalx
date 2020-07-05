@@ -3,6 +3,7 @@
 
 #include "TraceParams.h"
 #include "DxSerialize.h"
+#include "..\DxCore\SerializationException.h"
 #include "VertexSerialization.h"
 
 namespace DXF
@@ -59,9 +60,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version >= 1);
 			if (version < 1)
-				return;
+				throw DxCore::CSerializationException("Stretch distance params version less than 1");
 
 			ar >> stretchParams.StretchDistance >> stretchParams.EstimateMinMax >>
 				stretchParams.MinDistance >> stretchParams.MaxDistance;
@@ -93,10 +93,7 @@ namespace DXF
 			ar >> version;
 
 			if (version < 1 || version > FractalParamVersion)
-			{
-				assert(false);
-				return;
-			}
+				throw DxCore::CSerializationException("Fractal params version less than 1");
 				
 			ar >> fractalParams.Derivative >> fractalParams.Power >> fractalParams.Bailout;
 	
@@ -159,9 +156,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version == BulbParamVersion);
 			if (version != BulbParamVersion)
-				return;
+				throw DxCore::CSerializationException("Bulb params version less than 1");
 
 			Serialize(ar, bulbParams.Origin);
 
@@ -212,9 +208,8 @@ namespace DXF
 		{
 			ar >> currentVersion;
 
-			assert(currentVersion > 0);
 			if (currentVersion < 1)
-				return;
+				throw DxCore::CSerializationException("Trace params version less than 1");
 		}
 
 		Serialize(ar, traceParams.Fractal);

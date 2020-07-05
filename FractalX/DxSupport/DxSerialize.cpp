@@ -2,13 +2,13 @@
 #include "DxSerialize.h"
 
 #include "BackgroundVertexData.h"
+#include "..\DxCore\SerializationException.h"
 #include "Perspective.h"
 #include "RotationGroup.h"
 #include "RotationParams.h"
 #include "SphereApproximator.h"
 #include "TraceParamsSerialize.h"
 #include "VertexData.h"
-
 
 namespace DXF
 {
@@ -115,7 +115,7 @@ namespace DXF
 
 			assert(version == VertexVersion);
 			if (version != VertexVersion)
-				return;
+				throw DxCore::CSerializationException("VertexData version not supported");
 		}
 
 		Serialize(ar, vertexData.Vertices);
@@ -128,10 +128,7 @@ namespace DXF
 		const int BkgndVertexVersion = 1;
 
 		if (!bkgndVertexData.VertexData)
-		{
-			assert(false);
-			return;
-		}
+			throw DxCore::CSerializationException("Background vertex missing");
 
 		if (ar.IsStoring())
 		{
@@ -142,9 +139,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version == BkgndVertexVersion);
 			if (version != BkgndVertexVersion)
-				return;
+				throw DxCore::CSerializationException("Background vertex version less than 1");
 		}
 
 		Serialize(ar, bkgndVertexData.Show);
@@ -165,9 +161,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version == TriangleVersion);
 			if (version != TriangleVersion)
-				return;
+				throw DxCore::CSerializationException("Triangle data version less than 1");
 		}
 
 		Serialize(ar, triangles.Triangles);
@@ -189,9 +184,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version == RotationParams::RotationVersion);
 			if (version != RotationParams::RotationVersion)
-				return;
+				throw DxCore::CSerializationException("Rotation param version less than 1");
 
 			int action = 0;
 			ar >> action;
@@ -252,9 +246,8 @@ namespace DXF
 			int version = 0;
 			ar >> version;
 
-			assert(version == RotationGroup::RotationGroupVersion);
 			if (version != RotationGroup::RotationGroupVersion)
-				return;
+				throw DxCore::CSerializationException("Rotation group version less than 1");
 
 			int type = 0;
 			ar >> type;
