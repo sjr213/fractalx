@@ -24,7 +24,7 @@ namespace DxColor
 		}
 	}
 
-	void SerializeColorArgb(CArchive& ar, ColorArgb& color)
+	void Serialize(CArchive& ar, ColorArgb& color)
 	{
 		if (ar.IsStoring())
 			ar << color.A << color.R << color.G << color.B;
@@ -41,7 +41,7 @@ namespace DxColor
 		}
 	}
 
-	void SerializeLight(CArchive& ar, Light& light)
+	void Serialize(CArchive& ar, Light& light)
 	{
 		const int LightVersion = 1;
 
@@ -49,8 +49,8 @@ namespace DxColor
 		{
 			ar << LightVersion;
 			ar << light.Enable;
-			SerializeColorArgb(ar, light.Diffuse);
-			SerializeColorArgb(ar, light.Spectacular);
+			Serialize(ar, light.Diffuse);
+			Serialize(ar, light.Spectacular);
 			SerializeTuple3(ar, light.Direction);
 		}
 		else
@@ -65,8 +65,8 @@ namespace DxColor
 			}
 
 			ar >> light.Enable;
-			SerializeColorArgb(ar, light.Diffuse);
-			SerializeColorArgb(ar, light.Spectacular);
+			Serialize(ar, light.Diffuse);
+			Serialize(ar, light.Spectacular);
 			SerializeTuple3(ar, light.Direction);
 		}
 	}
@@ -107,12 +107,12 @@ namespace DxColor
 		}
 	}
 
-	void SerializeEffectColors(CArchive& ar, EffectColors& colors)
+	void Serialize(CArchive& ar, EffectColors& colors)
 	{
-		SerializeColorArgb(ar, colors.Ambient);
-		SerializeColorArgb(ar, colors.Diffuse);
-		SerializeColorArgb(ar, colors.Specular);
-		SerializeColorArgb(ar, colors.Emissive);
+		Serialize(ar, colors.Ambient);
+		Serialize(ar, colors.Diffuse);
+		Serialize(ar, colors.Specular);
+		Serialize(ar, colors.Emissive);
 
 		if (ar.IsStoring())
 			ar << colors.SpecularPower;
@@ -120,7 +120,7 @@ namespace DxColor
 			ar >> colors.SpecularPower;
 	}
 
-	void SerializeLights(CArchive& ar, Lights& lights)
+	void Serialize(CArchive& ar, Lights& lights)
 	{
 		const int LightsVersion = 1;
 
@@ -130,9 +130,9 @@ namespace DxColor
 			ar << lights.DefaultLights;
 			ar << lights.PerPixelLighting;
 			ar << lights.Alpha;
-			SerializeLight(ar, lights.Light1);
-			SerializeLight(ar, lights.Light2);
-			SerializeLight(ar, lights.Light3);
+			Serialize(ar, lights.Light1);
+			Serialize(ar, lights.Light2);
+			Serialize(ar, lights.Light3);
 		}
 		else
 		{
@@ -145,9 +145,9 @@ namespace DxColor
 			ar >> lights.DefaultLights;
 			ar >> lights.PerPixelLighting;
 			ar >> lights.Alpha;
-			SerializeLight(ar, lights.Light1);
-			SerializeLight(ar, lights.Light2);
-			SerializeLight(ar, lights.Light3);
+			Serialize(ar, lights.Light1);
+			Serialize(ar, lights.Light2);
+			Serialize(ar, lights.Light3);
 		}
 	}
 }

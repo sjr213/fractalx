@@ -100,7 +100,7 @@ namespace DXF
 		}
 	}
 
-	void SerializeVertexData(CArchive& ar, DxVertexData& vertexData)
+	void Serialize(CArchive& ar, DxVertexData& vertexData)
 	{
 		const int VertexVersion = 1;
 
@@ -144,7 +144,7 @@ namespace DXF
 		}
 
 		Serialize(ar, bkgndVertexData.Show);
-		SerializeVertexData(ar, *bkgndVertexData.VertexData);
+		Serialize(ar, *bkgndVertexData.VertexData);
 		Serialize(ar, bkgndVertexData.Filename);
 	}
 

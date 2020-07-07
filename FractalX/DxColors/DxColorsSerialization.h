@@ -14,13 +14,13 @@ namespace DxColor
 
 	void SerializeTuple3(CArchive& ar, std::tuple<float, float, float>& f3);
 
-	void SerializeColorArgb(CArchive& ar, ColorArgb& color);
+	void Serialize(CArchive& ar, ColorArgb& color);
 
 	void Serialize(CArchive& ar, ColorContrast& contrast);
 
-	void SerializeEffectColors(CArchive& ar, EffectColors& colors);
+	void Serialize(CArchive& ar, EffectColors& colors);
 
-	void SerializeLight(CArchive& ar, Light& light);
+	void Serialize(CArchive& ar, Light& light);
 
-	void SerializeLights(CArchive& ar, Lights& lights);
+	void Serialize(CArchive& ar, Lights& lights);
 }

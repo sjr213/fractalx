@@ -16,5 +16,5 @@ namespace DXF
 		Vertex<float> VertexBR; // bottom right
 	};
 
-	void SerializeModelData(CArchive& ar, ModelData& modelData);
+	void Serialize(CArchive& ar, ModelData& modelData);
 }

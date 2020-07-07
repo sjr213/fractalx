@@ -38,7 +38,7 @@ namespace DXF
 			Serialize(ar, element);
 	}
 
-	void SerializeVertexData(CArchive& ar, DxVertexData& vextexData);
+	void Serialize(CArchive& ar, DxVertexData& vextexData);
 
 	void Serialize(CArchive& ar, DxBackgroundVertexData& bkgndVertexData);
 

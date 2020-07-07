@@ -17,8 +17,8 @@ namespace DxColor
 		if (version != CurrentPinVersion)
 			throw DxCore::CSerializationException("Pin version less than 1");
 
-		SerializeColorArgb(ar, pin.Color1);
-		SerializeColorArgb(ar, pin.Color2);
+		Serialize(ar, pin.Color1);
+		Serialize(ar, pin.Color2);
 
 		if (ar.IsStoring())
 		{
@@ -39,7 +39,7 @@ namespace DxColor
 		}
 	}
 
-	void SerializePalette(CArchive& ar, PinPalette& palette)
+	void Serialize(CArchive& ar, PinPalette& palette)
 	{
 		if (ar.IsStoring())
 		{

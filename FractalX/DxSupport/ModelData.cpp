@@ -8,7 +8,7 @@
 namespace DXF
 {
 	// version 2 - added VertexSource and Vertex1 and Vertex2
-	void SerializeModelData(CArchive& ar, ModelData& modelData)
+	void Serialize(CArchive& ar, ModelData& modelData)
 	{
 		const int ModelVersion = 2;
 

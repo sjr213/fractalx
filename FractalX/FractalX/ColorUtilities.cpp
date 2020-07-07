@@ -310,7 +310,7 @@ namespace fx::ColorUtilities
 		try
 		{
 			CArchive ar(&colorFile, CArchive::load);
-			DxColor::SerializePalette(ar, *palette);
+			DxColor::Serialize(ar, *palette);
 
 			// close up
 			ar.Close();

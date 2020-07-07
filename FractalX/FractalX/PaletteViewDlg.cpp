@@ -607,7 +607,7 @@ protected:
 
 		CArchive ar(&colorFile, CArchive::store);
 
-		SerializePalette(ar, paletteCopy);
+		DxColor::Serialize(ar, paletteCopy);
 
 		ar.Close();
 		colorFile.Close();
