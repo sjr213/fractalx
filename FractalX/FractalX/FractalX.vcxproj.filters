@@ -150,6 +150,15 @@
     <ClInclude Include="BackgroundPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConversionUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FractalX.cpp">
@@ -276,6 +285,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BackgroundPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConversionUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
