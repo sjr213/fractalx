@@ -68,7 +68,6 @@ namespace DXF
 
 		std::unique_ptr<DirectX::CommonStates> m_states;
 		std::unique_ptr<DirectX::BasicEffect> m_effect;
-		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalTexture>> m_batch;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
@@ -184,12 +183,6 @@ namespace DXF
 			}
 		}
 
-		void GetDefaultSize(int& width, int& height) const override
-		{
-			width = 800;
-			height = 800;
-		}
-
 		void GetWindowSize(int& width, int& height) const override
 		{
 			width = m_outputWidth;
@@ -200,6 +193,8 @@ namespace DXF
 		{
 			m_vertices = vertexData.Vertices;
 			m_indices = vertexData.Indices;
+
+			ResetModel();
 		}
 
 		void SetModel2(const DxBackgroundVertexData& bkgndVertexData) override
@@ -208,9 +203,11 @@ namespace DXF
 			m_vertices2 = bkgndVertexData.VertexData->Vertices;
 			m_indices2 = bkgndVertexData.VertexData->Indices;
 			m_textureFile = bkgndVertexData.Filename;
+
+			ResetModel2();
 		}
 
-		void ResetModel() override
+		void ResetModel()
 		{
 			if (!IsReady())
 				return;
@@ -228,7 +225,7 @@ namespace DXF
 			}
 		}
 
-		void ResetModel2() override
+		void ResetModel2()
 		{
 			if (!IsReady())
 				return;
@@ -273,7 +270,6 @@ namespace DXF
 				return;
 
 			m_textureColors = colors;
-
 			m_textureView.Reset();
 			m_texture.Reset();
 
@@ -411,20 +407,19 @@ namespace DXF
 
 			bitmapInfo.bmiHeader.biCompression = BI_RGB;
 
-			std::unique_ptr<BYTE[]> pDIBits(new BYTE[(bitmapInfo.bmiHeader.biWidth + 1) * bitmapInfo.bmiHeader.biHeight * sizeof(DWORD)]);
+			auto nBytes = static_cast<unsigned long long>(bitmapInfo.bmiHeader.biWidth + 1);
+			nBytes *= static_cast<unsigned long long>(bitmapInfo.bmiHeader.biHeight);
+			nBytes *= sizeof(DWORD);
+			std::unique_ptr<BYTE[]> pDIBits(new BYTE[nBytes]);
 			VERIFY(GetDIBits(hdc3D, hbm3D, 0, bitmapInfo.bmiHeader.biHeight, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
 
 			// Better quality stretching
 			int oldMode = SetStretchBltMode(dc, HALFTONE);
 
-			// This might be necessary if images don't look right
-			//SetBrushOrgEx(dc, 0, 0, NULL);
-
 			VERIFY(StretchDIBits(dc, 0, 0, targetSize.cx, targetSize.cy, 0, 0, bitmapInfo.bmiHeader.biWidth, bitmapInfo.bmiHeader.biHeight,
 				pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS, SRCCOPY) != GDI_ERROR);
 
 			pSurface1->ReleaseDC(nullptr);
-
 			SetStretchBltMode(dc, oldMode);
 
 			return true;
@@ -492,7 +487,7 @@ namespace DXF
 			m_worldScale = scale;
 		}
 
-		Vertex<float> GetWorldScale() const
+		Vertex<float> GetWorldScale() const override
 		{
 			return m_worldScale;
 		}
@@ -583,7 +578,6 @@ namespace DXF
 
 			void const* shaderByteCode;
 			size_t byteCodeLength;
-
 			m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
 			DXF::ThrowIfFailed(
@@ -614,7 +608,6 @@ namespace DXF
 		void CreateBackgroundTexture()
 		{
 			m_effect2 = std::make_unique<BasicEffect>(m_d3dDevice.Get());
-
 			m_effect2->SetTextureEnabled(true);
 
 			SetEffectColors(*m_effect2);
@@ -660,6 +653,68 @@ namespace DXF
 				Vector3::UnitY);
 		}
 
+		bool ResizeSwapChain(UINT backBufferWidth, UINT backBufferHeight, DXGI_FORMAT backBufferFormat, UINT swapChainFlags, UINT backBufferCount)
+		{
+			HRESULT hr = m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, swapChainFlags);
+
+			if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
+			{
+				// If the device was removed for any reason, a new device and swap chain will need to be created.
+				OnDeviceLost();
+
+				// Everything is set up now. Do not continue execution of this method. OnDeviceLost will reenter this method 
+				// and correctly set up the new device.
+				return false;
+			}
+			else
+			{
+				DXF::ThrowIfFailed(hr, "failed to resize swap chain buffer");
+				return true;
+			}
+		}
+
+		void CreateSwapChain(UINT backBufferWidth, UINT backBufferHeight, DXGI_FORMAT backBufferFormat, UINT swapChainFlags, UINT backBufferCount)
+		{
+			// First, retrieve the underlying DXGI Device from the D3D Device.
+			ComPtr<IDXGIDevice1> dxgiDevice;
+			DXF::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice), "device 1 not supported");
+
+			// Identify the physical adapter (GPU or card) this device is running on.
+			ComPtr<IDXGIAdapter> dxgiAdapter;
+			DXF::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()), "could not get adapter");
+
+			// And obtain the factory object that created it.
+			ComPtr<IDXGIFactory2> dxgiFactory;
+			DXF::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf())), "could not get factory 2 from adapter");
+
+			// Create a descriptor for the swap chain.
+			DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+			swapChainDesc.Width = backBufferWidth;
+			swapChainDesc.Height = backBufferHeight;
+			swapChainDesc.Format = backBufferFormat;
+			swapChainDesc.SampleDesc.Count = 1;
+			swapChainDesc.SampleDesc.Quality = 0;
+			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swapChainDesc.BufferCount = backBufferCount;
+			swapChainDesc.Flags = swapChainFlags;
+
+			DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
+			fsSwapChainDesc.Windowed = TRUE;
+
+			// Create a SwapChain from a Win32 window.
+			DXF::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
+				m_d3dDevice.Get(),
+				m_window,
+				&swapChainDesc,
+				&fsSwapChainDesc,
+				nullptr,
+				m_swapChain.ReleaseAndGetAddressOf()
+			), "failed to create swap chain");
+
+			// This template does not support exclusive full screen mode and prevents DXGI from responding to the ALT+ENTER shortcut.
+			DXF::ThrowIfFailed(dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER), "failed to associate window");
+		}
+
 		// Allocate all memory resources that change on a window SizeChanged event.
 		void CreateResources()
 		{
@@ -680,65 +735,13 @@ namespace DXF
 			// If the swap chain already exists, resize it, otherwise create one.
 			if (m_swapChain)
 			{
-				HRESULT hr = m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, swapChainFlags);
-
-				if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
-				{
-					// If the device was removed for any reason, a new device and swap chain will need to be created.
-					OnDeviceLost();
-
-					// Everything is set up now. Do not continue execution of this method. OnDeviceLost will reenter this method 
-					// and correctly set up the new device.
+				if(!ResizeSwapChain(backBufferWidth, backBufferHeight, backBufferFormat, swapChainFlags, backBufferCount))
 					return;
-				}
-				else
-				{
-					DXF::ThrowIfFailed(hr, "failed to resize swap chain buffer");
-				}
 			}
 			else
-			{
-				// First, retrieve the underlying DXGI Device from the D3D Device.
-				ComPtr<IDXGIDevice1> dxgiDevice;
-				DXF::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice), "device 1 not supported");
+				CreateSwapChain(backBufferWidth, backBufferHeight, backBufferFormat, swapChainFlags, backBufferCount);
 
-				// Identify the physical adapter (GPU or card) this device is running on.
-				ComPtr<IDXGIAdapter> dxgiAdapter;
-				DXF::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()), "could not get adapter");
-
-				// And obtain the factory object that created it.
-				ComPtr<IDXGIFactory2> dxgiFactory;
-				DXF::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf())), "could not get factory 2 from adapter");
-
-				// Create a descriptor for the swap chain.
-				DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-				swapChainDesc.Width = backBufferWidth;
-				swapChainDesc.Height = backBufferHeight;
-				swapChainDesc.Format = backBufferFormat;
-				swapChainDesc.SampleDesc.Count = 1;
-				swapChainDesc.SampleDesc.Quality = 0;
-				swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-				swapChainDesc.BufferCount = backBufferCount;
-				swapChainDesc.Flags = swapChainFlags;
-
-				DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
-				fsSwapChainDesc.Windowed = TRUE;
-
-				// Create a SwapChain from a Win32 window.
-				DXF::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
-					m_d3dDevice.Get(),
-					m_window,
-					&swapChainDesc,
-					&fsSwapChainDesc,
-					nullptr,
-					m_swapChain.ReleaseAndGetAddressOf()
-				), "failed to create swap chain");
-
-				// This template does not support exclusive full screen mode and prevents DXGI from responding to the ALT+ENTER shortcut.
-				DXF::ThrowIfFailed(dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER), "failed to associate window");
-			}
-
-			// Obtain the backbuffer for this window which will be the final 3D render target.
+			// Obtain the back buffer for this window which will be the final 3D render target.
 			ComPtr<ID3D11Texture2D> backBuffer;
 			DXF::ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())), "failed to get back buffer");
 
@@ -760,7 +763,6 @@ namespace DXF
 				m_depthStencilView.ReleaseAndGetAddressOf()), "failed to create stencil view");
 
 			CreateViewMatrix();
-
 			CreateProjectionMatrix();
 		}
 
@@ -860,7 +862,6 @@ namespace DXF
 				msg += ex.what();
 				AfxMessageBox(msg, MB_OK);
 			}
-
 		}
 
 		void SetEffectColors(BasicEffect& effect)
@@ -1029,9 +1030,7 @@ namespace DXF
 				m_effect2->SetView(m_view);
 				m_effect2->SetProjection(m_proj);
 				m_effect2->SetWorld(m_world2);
-
 				m_effect2->Apply(m_d3dContext.Get());
-
 				RenderSecondaryModel();
 			}
 
@@ -1043,13 +1042,9 @@ namespace DXF
 			UINT stride = sizeof(VertexPositionNormalTexture);
 			UINT offset = 0;
 			m_d3dContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
-
 			m_d3dContext->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 			m_d3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 			m_d3dContext->IASetInputLayout(m_inputLayout.Get());
-
 			m_d3dContext->DrawIndexed(m_nIndices, 0, 0);
 		}
 
@@ -1062,13 +1057,9 @@ namespace DXF
 			UINT offset = 0;
 
 			m_d3dContext->IASetVertexBuffers(0, 1, m_vertexBuffer2.GetAddressOf(), &stride, &offset);
-
 			m_d3dContext->IASetIndexBuffer(m_indexBuffer2.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 			m_d3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 			m_d3dContext->IASetInputLayout(m_inputLayout.Get());
-
 			m_d3dContext->DrawIndexed(m_nIndices2, 0, 0);
 		}
 
@@ -1105,25 +1096,11 @@ namespace DXF
 				AfxMessageBox(msg, MB_OK);
 			}
 		}
-
 	};
 
 	std::shared_ptr<Renderer> Renderer::CreateRenderer()
 	{
 		return std::make_shared<RendererImp>();
 	}
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
 

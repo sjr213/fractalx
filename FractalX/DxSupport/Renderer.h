@@ -23,22 +23,10 @@ namespace DXF
 	public:
 		static std::shared_ptr<Renderer> CreateRenderer();
 
-		virtual void SetModel(const DxVertexData& vertexData) = 0;
-
-		virtual void SetModel2(const DxBackgroundVertexData& bkgndVertexData) = 0;
-
-		virtual void ResetModel() = 0;
-
-		virtual void ResetModel2() = 0;
-
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;
 
 		virtual void OnDeviceLost() = 0;
-
-		virtual void SetRotationGroup(const RotationGroup& rg) = 0;
-
-		virtual RotationGroup GetRotationGroup() = 0;
 
 		// Basic game loop
 		virtual void Tick() = 0;
@@ -49,7 +37,14 @@ namespace DXF
 		virtual void OnWindowSizeChanged(int width, int height) = 0;
 
 		// Properties
-		virtual void GetDefaultSize(int& width, int& height) const = 0;
+
+		virtual void SetModel(const DxVertexData& vertexData) = 0;
+
+		virtual void SetModel2(const DxBackgroundVertexData& bkgndVertexData) = 0;
+
+		virtual void SetRotationGroup(const RotationGroup& rg) = 0;
+
+		virtual RotationGroup GetRotationGroup() = 0;
 
 		virtual void GetWindowSize(int& width, int& height) const = 0;
 
