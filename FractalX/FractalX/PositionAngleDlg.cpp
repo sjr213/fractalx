@@ -273,6 +273,8 @@ protected:
 	{
 		ASSERT(wparam > 0);
 
+		UpdateData(TRUE);
+
 		if (!m_parent)
 		{
 			ASSERT(false);
