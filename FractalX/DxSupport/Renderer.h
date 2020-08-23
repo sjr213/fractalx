@@ -84,6 +84,10 @@ namespace DXF
 
 		virtual Vertex<float> GetWorldScale() const = 0;
 
+		virtual void SetBackgroundScale(const DXF::Vertex<float>& scale) = 0;
+
+		virtual Vertex<float> GetBackgroundScale() const = 0;
+
 	protected:
 		Renderer() {}
 	};

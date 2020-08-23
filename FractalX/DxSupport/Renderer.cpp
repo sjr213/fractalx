@@ -108,7 +108,8 @@ namespace DXF
 		DxEffectColors m_effectColors;
 		DxLights m_lights;
 
-		Vertex<float> m_worldScale = Vertex<float>(0.1f, 0.1f, 0.1f);
+		Vertex<float> m_worldScale = GetDefaultWorldScale();
+		Vertex<float> m_backgroundScale = GetDefaultWorldScale();
 
 		bool m_ready = false;
 
@@ -490,6 +491,16 @@ namespace DXF
 		Vertex<float> GetWorldScale() const override
 		{
 			return m_worldScale;
+		}
+
+		void SetBackgroundScale(const DXF::Vertex<float>& scale) override
+		{
+			m_backgroundScale = scale;
+		}
+
+		Vertex<float> GetBackgroundScale() const override
+		{
+			return m_backgroundScale;
 		}
 
 	protected:
@@ -986,7 +997,7 @@ namespace DXF
 			auto transMatrix = Matrix::CreateTranslation(m_targetBackground.X, m_targetBackground.Y, m_targetBackground.Z);
 
 			m_world2 =
-				Matrix::CreateScale(m_worldScale.X, m_worldScale.Y, m_worldScale.Z) *
+				Matrix::CreateScale(m_backgroundScale.X, m_backgroundScale.Y, m_backgroundScale.Z) *
 				Matrix::CreateRotationY(XMConvertToRadians(m_rotationGroup.RotationParamsBackground.AngleYDegrees)) *
 				Matrix::CreateRotationX(XMConvertToRadians(m_rotationGroup.RotationParamsBackground.AngleXDegrees)) *
 				Matrix::CreateRotationZ(XMConvertToRadians(m_rotationGroup.RotationParamsBackground.AngleZDegrees)) *
