@@ -36,4 +36,18 @@ namespace UiUtilities
 
 		return true;
 	}
+
+	void SafeShow(CWnd* pWnd, UINT ctrl, int show)
+	{
+		{
+			if (!pWnd)
+			{
+				ASSERT(false);
+				return;
+			}
+			CWnd* pCtrl = pWnd->GetDlgItem(ctrl);
+			if (pCtrl)
+				pCtrl->ShowWindow(show);
+		}
+	}
 }
