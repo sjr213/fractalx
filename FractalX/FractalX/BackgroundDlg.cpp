@@ -49,7 +49,9 @@ public:
 	{
 		if (model.size() != 4)
 		{
+#ifdef DEBUG
 			assert(false);
+#endif
 			return;
 		}
 		m_backgroundModel = model;
