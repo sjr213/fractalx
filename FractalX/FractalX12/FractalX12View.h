@@ -4,15 +4,21 @@
 
 #pragma once
 
+class CFractalX12ViewImpl;
 
 class CFractalX12View : public CView
 {
+private:
+	std::unique_ptr<CFractalX12ViewImpl> m_impl;
+
 protected: // create from serialization only
-	CFractalX12View() noexcept;
+	CFractalX12View();
+
 	DECLARE_DYNCREATE(CFractalX12View)
 
 // Attributes
 public:
+	void OnInitialUpdate() override;
 	CFractalX12Doc* GetDocument() const;
 
 // Operations
@@ -36,7 +42,7 @@ protected:
 
 // Generated message map functions
 protected:
-	afx_msg void OnFilePrintPreview();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
