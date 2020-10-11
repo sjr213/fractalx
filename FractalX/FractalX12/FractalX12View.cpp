@@ -74,6 +74,26 @@ public:
 			pFrame->MoveWindow(windRect.left, windRect.top - 50, size.cx, size.cy);
 		}
 	}
+
+	void Draw()
+	{
+		m_renderer->Draw();
+	}
+
+	void MouseDown(WPARAM btnState, int x, int y)
+	{
+		m_renderer->MouseDown(btnState, x, y);
+	}
+
+	void MouseUp(WPARAM btnState, int x, int y)
+	{
+		m_renderer->MouseUp(btnState, x, y);
+	}
+
+	void MouseMove(WPARAM btnState, int x, int y)
+	{
+		m_renderer->MouseMove(btnState, x, y);
+	}
 };
 
 // CFractalX12View
@@ -83,7 +103,11 @@ IMPLEMENT_DYNCREATE(CFractalX12View, CView)
 BEGIN_MESSAGE_MAP(CFractalX12View, CView)
 	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 	ON_WM_RBUTTONUP()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // CFractalX12View construction/destruction
@@ -123,7 +147,7 @@ void CFractalX12View::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: add draw code for native data here
+	m_impl->Draw();
 }
 
 void CFractalX12View::OnSize(UINT nType, int cx, int cy)
@@ -133,12 +157,6 @@ void CFractalX12View::OnSize(UINT nType, int cx, int cy)
 	m_impl->ResizeRenderer(cx, cy);
 }
 
-void CFractalX12View::OnRButtonUp(UINT /* nFlags */, CPoint point)
-{
-	ClientToScreen(&point);
-	OnContextMenu(this, point);
-}
-
 void CFractalX12View::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS
@@ -146,6 +164,67 @@ void CFractalX12View::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 #endif
 }
 
+void CFractalX12View::OnMouseMove(UINT nFlags, CPoint point)
+{
+	WPARAM btnState = nFlags;
+
+	m_impl->MouseMove(btnState, point.x, point.y);
+
+	Invalidate(TRUE);
+
+	CView::OnMouseMove(nFlags, point);
+}
+
+void CFractalX12View::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	SetCapture();
+
+	WPARAM btnState = nFlags;
+	m_impl->MouseDown(btnState, point.x, point.y);
+
+	Invalidate(TRUE);
+
+	CView::OnLButtonDown(nFlags, point);
+}
+
+void CFractalX12View::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	WPARAM btnState = nFlags;
+	m_impl->MouseUp(btnState, point.x, point.y);
+
+	ReleaseCapture();
+
+	Invalidate(TRUE);
+
+	CView::OnLButtonUp(nFlags, point);
+}
+
+void CFractalX12View::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	SetCapture();
+
+	WPARAM btnState = nFlags;
+	m_impl->MouseDown(btnState, point.x, point.y);
+
+	Invalidate(TRUE);
+
+	CView::OnRButtonDown(nFlags, point);
+}
+
+void CFractalX12View::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	WPARAM btnState = nFlags;
+	m_impl->MouseUp(btnState, point.x, point.y);
+
+	ReleaseCapture();
+
+	Invalidate(TRUE);
+
+	ClientToScreen(&point);
+	OnContextMenu(this, point);
+
+	CView::OnRButtonUp(nFlags, point);
+}
 
 // CFractalX12View diagnostics
 

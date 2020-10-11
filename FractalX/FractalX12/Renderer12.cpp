@@ -1,15 +1,16 @@
 #include "pch.h"
 #include "Renderer12.h"
 
+#include "Core12.h"
+
 class Renderer12Impl : public Renderer12
 {
 private:
-	HWND m_window;
-	int m_outputWidth;
-	int m_outputHeight;
+	std::shared_ptr<Core12> m_core;
 
 public:
 	Renderer12Impl()
+		: m_core(std::make_shared<Core12>())
 	{}
 
 	virtual ~Renderer12Impl()
@@ -17,33 +18,42 @@ public:
 
 	void Initialize(HWND window, int width, int height) override
 	{
-		m_window = window;
-		m_outputWidth = max(width, 1);
-		m_outputHeight = max(height, 1);
-/*
-			try
-			{
-				CreateDevice();
-				CreateResources();
-				CreateBuffers();
-				CreateBuffers2();
-				m_ready = true;
-			}
-			catch (DxException& ex)
-			{
-				m_ready = false;
-				CString msg(_T("Initialization failed! : "));
-				msg += ex.what();
-				AfxMessageBox(msg, MB_OK);
-			}
-		}
-*/
+		m_core->Initialize(window, width, height);
 	}
 
 	void OnWindowSizeChanged(int width, int height) override
 	{
-		m_outputWidth = max(width, 1);
-		m_outputHeight = max(height, 1);
+		if(m_core->MainWnd() != nullptr)
+			m_core->Resize(width, height);
+	}
+
+	void Draw() override
+	{
+		if (m_core->MainWnd() != nullptr)
+		{
+			m_core->Update();
+			m_core->Draw();
+		}		
+	}
+
+	void MouseDown(WPARAM btnState, int x, int y) override
+	{
+		if (m_core->MainWnd() != nullptr)
+			m_core->OnMouseDown(btnState, x, y);
+	}
+
+	void MouseUp(WPARAM btnState, int x, int y) override
+	{
+		if (m_core->MainWnd() != nullptr)
+			m_core->OnMouseUp(btnState, x, y);
+	}
+
+	void MouseMove(WPARAM btnState, int x, int y) override
+	{
+		if (m_core->MainWnd() != nullptr)
+		{
+			m_core->OnMouseMove(btnState, x, y);
+		}
 	}
 };
 
