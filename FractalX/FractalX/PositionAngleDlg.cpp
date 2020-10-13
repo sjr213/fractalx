@@ -175,13 +175,13 @@ protected:
 		DDV_MinMaxFloat(pDX, m_angle, 0.1f, 180.0f);
 
 		DDX_Text(pDX, IDC_POS_X_EDIT, m_activeTarget.X);
-		DDV_MinMaxFloat(pDX, m_activeTarget.X, -10.0f, +10.0f);
+		DDV_MinMaxFloat(pDX, m_activeTarget.X, -100.0f, +100.0f);
 
 		DDX_Text(pDX, IDC_POS_Y_EDIT, m_activeTarget.Y);
-		DDV_MinMaxFloat(pDX, m_activeTarget.Y, -10.0f, +10.0f);
+		DDV_MinMaxFloat(pDX, m_activeTarget.Y, -100.0f, +100.0f);
 
 		DDX_Text(pDX, IDC_POS_Z_EDIT, m_activeTarget.Z);
-		DDV_MinMaxFloat(pDX, m_activeTarget.Z, -10.0f, +10.0f);
+		DDV_MinMaxFloat(pDX, m_activeTarget.Z, -100.0f, +100.0f);
 
 		float angleX = m_rotationParams.AngleXDegrees;
 		DDX_Text(pDX, IDC_X_ANGLE_EDIT, angleX);
