@@ -15,6 +15,6 @@ namespace DxCore
 		: std::exception(ex.what())
 	{}
 
-	CSerializationException::~CSerializationException() throw()
+	CSerializationException::~CSerializationException()
 	{}
 }

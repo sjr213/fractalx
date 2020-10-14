@@ -13,7 +13,7 @@ namespace DxCore
 
 		CSerializationException(const CSerializationException& ex) throw();
 
-		virtual ~CSerializationException() throw();
+		virtual ~CSerializationException();
 	};
 }
 
