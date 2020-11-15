@@ -32,12 +32,38 @@ namespace DXF
 		return seedVerices;
 	}
 
-	static std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds)
+	static unsigned int GetTriangleSize(SeedTriangles seeds, int depth)
 	{
-		std::vector<Triangle> seedTriangles
+		unsigned int seedSize = 0;
+		switch (seeds)
 		{
-			Triangle(0,1,2),
-		};
+		case SeedTriangles::One:
+			seedSize = 1;
+			break;
+		case SeedTriangles::Two:
+			seedSize = 2;
+			break;
+		case SeedTriangles::Four:
+			seedSize = 4;
+			break;
+		case SeedTriangles::Eight:
+			seedSize = 8;
+			break;
+		}
+
+		for (int i = 0; i < depth; ++i)
+			seedSize *= 4;
+
+		return seedSize;
+	}
+
+	static std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds, int depth)
+	{
+		std::vector<Triangle> seedTriangles;
+		auto nTriangles = GetTriangleSize(seeds, depth);
+		seedTriangles.reserve(nTriangles);
+
+		seedTriangles.push_back(Triangle(0, 1, 2));
 
 		if (seeds > SeedTriangles::One)
 			seedTriangles.push_back(Triangle(0, 2, 3));
@@ -144,7 +170,7 @@ namespace DXF
 		std::vector<XMFLOAT3> vertices = CreateSeedVertices(seeds);
 		setProgress(1.0 / total);
 
-		std::vector<Triangle> triangles = CreateSeedTriangle(seeds);
+		std::vector<Triangle> triangles = CreateSeedTriangle(seeds, depth);
 		setProgress(2.0 / total);
 
 		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
