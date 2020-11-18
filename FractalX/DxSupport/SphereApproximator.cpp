@@ -3,6 +3,7 @@
 #include "SphereApproximator.h"
 
 #include <algorithm>
+#include <map>
 #include "ModelData.h"
 
 using namespace DirectX;
@@ -10,156 +11,149 @@ using namespace DirectX::SimpleMath;
 
 namespace DXF
 {
-
-	static std::vector<XMFLOAT3> CreateSeedVertices(SeedTriangles seeds)
+	// For vertex map methods
+	namespace
 	{
-		std::vector<XMFLOAT3> seedVerices
+		struct cmp3D
 		{
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(1.0f, 0.0f, 0.0f),
-			XMFLOAT3(0.0f, 0.0f, -1.0f)
+			bool operator()(const XMFLOAT3& lf, const XMFLOAT3& rt) const
+			{
+				if (lf.x != rt.x)
+					return  lf.x < rt.x;
+				if (lf.y != rt.y)
+					return lf.y < rt.y;
+				return lf.z < rt.z;
+			}
 		};
 
-		if (seeds > SeedTriangles::One)
-			seedVerices.push_back(XMFLOAT3(-1.0f, 0.0f, 0.0f));
+		using VertexIndex = uint32_t;
+		using VertexMap = std::map<XMFLOAT3, VertexIndex, cmp3D>;
 
-		if (seeds > SeedTriangles::Two)
-			seedVerices.push_back(XMFLOAT3(0.0f, 0.0f, 1.0f));
-
-		if (seeds > SeedTriangles::Four)
-			seedVerices.push_back(XMFLOAT3(0.0f, -1.0f, 0.0f));
-
-		return seedVerices;
-	}
-
-	static unsigned int GetTriangleSize(SeedTriangles seeds, int depth)
-	{
-		unsigned int seedSize = 0;
-		switch (seeds)
+		VertexIndex GetVertexIndex(VertexMap& vertexMap, std::vector<DirectX::XMFLOAT3>& vertices, const XMFLOAT3& vertex)
 		{
-		case SeedTriangles::One:
-			seedSize = 1;
-			break;
-		case SeedTriangles::Two:
-			seedSize = 2;
-			break;
-		case SeedTriangles::Four:
-			seedSize = 4;
-			break;
-		case SeedTriangles::Eight:
-			seedSize = 8;
-			break;
-		}
+			constexpr float minDif = 2 * std::numeric_limits<float>::min();
 
-		for (int i = 0; i < depth; ++i)
-			seedSize *= 4;
+			auto iter = vertexMap.find(vertex);
 
-		return seedSize;
-	}
-
-	static std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds, int depth)
-	{
-		std::vector<Triangle> seedTriangles;
-		auto nTriangles = GetTriangleSize(seeds, depth);
-		seedTriangles.reserve(nTriangles);
-
-		seedTriangles.push_back(Triangle(0, 1, 2));
-
-		if (seeds > SeedTriangles::One)
-			seedTriangles.push_back(Triangle(0, 2, 3));
-
-		if (seeds > SeedTriangles::Two)
-		{
-			seedTriangles.push_back(Triangle(0, 3, 4));
-			seedTriangles.push_back(Triangle(0, 4, 1));
-		}
-
-		if (seeds > SeedTriangles::Four)
-		{
-			seedTriangles.push_back(Triangle(5, 2, 1));
-			seedTriangles.push_back(Triangle(5, 3, 2));
-			seedTriangles.push_back(Triangle(5, 4, 3));
-			seedTriangles.push_back(Triangle(5, 1, 4));		
-		}
-
-		return seedTriangles;
-	}
-
-	static XMFLOAT3 CalculateMidPoint(const XMFLOAT3& first, const XMFLOAT3& second)
-	{
-		return XMFLOAT3((first.x + second.x) / 2, (first.y + second.y) / 2, (first.z + second.z) / 2);
-	}
-
-	// try passing in the end of the old vertices to be more efficient
-	static unsigned int GetVertexIndex(std::vector<XMFLOAT3>& vertices, XMFLOAT3& vertex)
-	{
-		constexpr float minDif = 2 * std::numeric_limits<float>::min();
-
-		auto iter = find_if(vertices.begin(), vertices.end(),
-			[&](const XMFLOAT3& v)
+			if (iter == vertexMap.end())
 			{
-				return fabs(v.x - vertex.x) < minDif &&
-						fabs(v.y - vertex.y) < minDif &&
-						fabs(v.z - vertex.z) < minDif;
+				vertices.push_back(vertex);
+				VertexIndex newIndex = static_cast<VertexIndex>(vertices.size() - 1);
+				vertexMap[vertex] = newIndex;
+				return newIndex;
 			}
-		);
 
-		if (iter == vertices.end())
-		{
-			vertices.push_back(vertex);
-			return static_cast<unsigned int>(vertices.size() - 1);
+			return iter->second;
 		}
 
-		return static_cast<unsigned int>(iter - vertices.begin());
-	}
-
-	static std::shared_ptr<TriangleData> ExpandTriangles(const TriangleData& data)
-	{
-		std::shared_ptr<TriangleData> newData = std::make_shared<TriangleData>();
-		newData->Vertices = data.Vertices;
-
-		// not sure if this will work
-		//auto lastVertex = data.Vertices.end();
-
-		// for each old triangle generate 4 new ones by creating 3 new vertices
-		size_t nTriangles = data.Triangles.size();
-		for (size_t iTriangle = 0; iTriangle < nTriangles; ++iTriangle)
+		XMFLOAT3 CalculateMidPoint(const XMFLOAT3& first, const XMFLOAT3& second)
 		{
-			const Triangle& oldTriangle = data.Triangles.at(iTriangle);
-
-			// for each new vertex we need to determine if it already exist or if we should add it
-			XMFLOAT3 newV1 = CalculateMidPoint(data.Vertices.at(oldTriangle.one), data.Vertices.at(oldTriangle.two));
-			unsigned int newIndex1 = GetVertexIndex(newData->Vertices, newV1);
-
-			XMFLOAT3 newV2 = CalculateMidPoint(data.Vertices.at(oldTriangle.two), data.Vertices.at(oldTriangle.three));
-			unsigned int newIndex2 = GetVertexIndex(newData->Vertices, newV2);
-
-			XMFLOAT3 newV3 = CalculateMidPoint(data.Vertices.at(oldTriangle.three), data.Vertices.at(oldTriangle.one));
-			unsigned int newIndex3 = GetVertexIndex(newData->Vertices, newV3);
-
-			newData->Triangles.emplace_back(oldTriangle.one, newIndex1, newIndex3);
-			newData->Triangles.emplace_back(newIndex1, oldTriangle.two, newIndex2);
-			newData->Triangles.emplace_back(newIndex3, newIndex2, oldTriangle.three);
-			newData->Triangles.emplace_back(newIndex1, newIndex2, newIndex3);
+			return XMFLOAT3((first.x + second.x) / 2, (first.y + second.y) / 2, (first.z + second.z) / 2);
 		}
 
-		return newData;
-	}
-
-	static XMFLOAT3 ConvertToXMFloat3(const Vertex<float>& v)
-	{
-		return XMFLOAT3(v.X, v.Y, v.Z);
-	}
-
-	static int GetProgressSize(int depth)
-	{
-		int size = depth + 1;
-		for (; depth > 0; --depth)
+		void ExpandTriangles(VertexMap& vertexMap, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<Triangle>& triangles)
 		{
-			size += depth;
+			std::vector<Triangle> newTriangles;
+			newTriangles.reserve(4 * triangles.size());
+
+			// for each old triangle generate 4 new ones by creating 3 new vertices
+			size_t nTriangles = triangles.size();
+			for (size_t iTriangle = 0; iTriangle < nTriangles; ++iTriangle)
+			{
+				const Triangle& oldTriangle = triangles.at(iTriangle);
+
+				// for each new vertex we need to determine if it already exist or if we should add it
+				XMFLOAT3 newV1 = CalculateMidPoint(vertices.at(oldTriangle.one), vertices.at(oldTriangle.two));
+				auto newIndex1 = GetVertexIndex(vertexMap, vertices, newV1);
+
+				XMFLOAT3 newV2 = CalculateMidPoint(vertices.at(oldTriangle.two), vertices.at(oldTriangle.three));
+				auto newIndex2 = GetVertexIndex(vertexMap, vertices, newV2);
+
+				XMFLOAT3 newV3 = CalculateMidPoint(vertices.at(oldTriangle.three), vertices.at(oldTriangle.one));
+				auto newIndex3 = GetVertexIndex(vertexMap, vertices, newV3);
+
+				newTriangles.emplace_back(oldTriangle.one, newIndex1, newIndex3);
+				newTriangles.emplace_back(newIndex1, oldTriangle.two, newIndex2);
+				newTriangles.emplace_back(newIndex3, newIndex2, oldTriangle.three);
+				newTriangles.emplace_back(newIndex1, newIndex2, newIndex3);
+			}
+
+			triangles = newTriangles;
 		}
 
-		return size;
+		VertexMap MakeVertexMap(const std::vector<DirectX::XMFLOAT3>& vertices)
+		{
+			VertexMap vertexMap;
+			for (VertexIndex i = 0; i < vertices.size(); ++i)
+			{
+				vertexMap[vertices[i]] = i;
+			}
+
+			return vertexMap;
+		}
+
+		std::vector<XMFLOAT3> CreateSeedVertices(SeedTriangles seeds)
+		{
+			std::vector<XMFLOAT3> seedVerices
+			{
+				XMFLOAT3(0.0f, 1.0f, 0.0f),
+				XMFLOAT3(1.0f, 0.0f, 0.0f),
+				XMFLOAT3(0.0f, 0.0f, -1.0f)
+			};
+
+			if (seeds > SeedTriangles::One)
+				seedVerices.push_back(XMFLOAT3(-1.0f, 0.0f, 0.0f));
+
+			if (seeds > SeedTriangles::Two)
+				seedVerices.push_back(XMFLOAT3(0.0f, 0.0f, 1.0f));
+
+			if (seeds > SeedTriangles::Four)
+				seedVerices.push_back(XMFLOAT3(0.0f, -1.0f, 0.0f));
+
+			return seedVerices;
+		}
+
+		std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds, int depth)
+		{
+			std::vector<Triangle> seedTriangles;
+
+			seedTriangles.push_back(Triangle(0, 1, 2));
+
+			if (seeds > SeedTriangles::One)
+				seedTriangles.push_back(Triangle(0, 2, 3));
+
+			if (seeds > SeedTriangles::Two)
+			{
+				seedTriangles.push_back(Triangle(0, 3, 4));
+				seedTriangles.push_back(Triangle(0, 4, 1));
+			}
+
+			if (seeds > SeedTriangles::Four)
+			{
+				seedTriangles.push_back(Triangle(5, 2, 1));
+				seedTriangles.push_back(Triangle(5, 3, 2));
+				seedTriangles.push_back(Triangle(5, 4, 3));
+				seedTriangles.push_back(Triangle(5, 1, 4));
+			}
+
+			return seedTriangles;
+		}
+
+		XMFLOAT3 ConvertToXMFloat3(const Vertex<float>& v)
+		{
+			return XMFLOAT3(v.X, v.Y, v.Z);
+		}
+
+		int GetProgressSize(int depth)
+		{
+			int size = depth + 1;
+			for (; depth > 0; --depth)
+			{
+				size += depth;
+			}
+
+			return size;
+		}
 	}
 
 	std::shared_ptr<TriangleData> GenerateCrudeTriangles(int depth, SeedTriangles seeds, const std::function<void(double)>& setProgress)
@@ -173,15 +167,17 @@ namespace DXF
 		std::vector<Triangle> triangles = CreateSeedTriangle(seeds, depth);
 		setProgress(2.0 / total);
 
-		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
-		data->Vertices = vertices;
-		data->Triangles = triangles;
+		auto vertexMap = MakeVertexMap(vertices);
 
 		for (int i = 0; i < depth; ++i)
 		{
-			data = ExpandTriangles(*data);
+			ExpandTriangles(vertexMap, vertices, triangles);
 			setProgress((3.0 + i) / total);
 		}
+
+		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
+		data->Vertices = vertices;
+		data->Triangles = triangles;
 
 		return data;
 	}
@@ -207,16 +203,17 @@ namespace DXF
 
 		setProgress(1.0 / total);
 
-		// expand
-		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
-		data->Vertices = vertices;
-		data->Triangles = triangles;
+		auto vertexMap = MakeVertexMap(vertices);
 
 		for (int i = 0; i < modelData.VertexIterations; ++i)
 		{
-			data = ExpandTriangles(*data);
+			ExpandTriangles(vertexMap, vertices, triangles);
 			setProgress((2.0 + i) / total);
 		}
+
+		std::shared_ptr<TriangleData> data = std::make_shared<TriangleData>();
+		data->Vertices = vertices;
+		data->Triangles = triangles;
 
 		return data;
 	}
