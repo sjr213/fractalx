@@ -1,19 +1,19 @@
 #include "pch.h"
-#include "Renderer12.h"
+#include "Renderer12Box.h"
 
-#include "Core12.h"
+#include "Core12Box.h"
 
-class Renderer12Impl : public Renderer12
+class Renderer12BoxImpl : public Renderer12
 {
 private:
-	std::shared_ptr<Core12> m_core;
+	std::shared_ptr<Core12Box> m_core;
 
 public:
-	Renderer12Impl()
-		: m_core(std::make_shared<Core12>())
+	Renderer12BoxImpl()
+		: m_core(std::make_shared<Core12Box>())
 	{}
 
-	virtual ~Renderer12Impl()
+	virtual ~Renderer12BoxImpl()
 	{}
 
 	void Initialize(HWND window, int width, int height) override
@@ -23,7 +23,7 @@ public:
 
 	void OnWindowSizeChanged(int width, int height) override
 	{
-		if(m_core->MainWnd() != nullptr)
+		if (m_core->MainWnd() != nullptr)
 			m_core->Resize(width, height);
 	}
 
@@ -33,7 +33,7 @@ public:
 		{
 			m_core->Update();
 			m_core->Draw();
-		}		
+		}
 	}
 
 	void MouseDown(WPARAM btnState, int x, int y) override
@@ -57,7 +57,7 @@ public:
 	}
 };
 
-std::shared_ptr<Renderer12> Renderer12::CreateRenderer12()
+std::shared_ptr<Renderer12> CreateRenderer12Box()
 {
-	return std::make_shared<Renderer12Impl>();
+	return std::make_shared<Renderer12BoxImpl>();
 }

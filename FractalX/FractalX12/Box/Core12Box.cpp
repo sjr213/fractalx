@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Core12.h"
+#include "Core12Box.h"
 
 #include "MathHelper.h"
 #include "UploadBuffer.h"
@@ -8,17 +8,17 @@
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-Core12::Core12()
+Core12Box::Core12Box()
 	: Core12Base()
 	, m_lastMousePos()
 {
 }
 
-Core12::~Core12()
+Core12Box::~Core12Box()
 {
 }
 
-bool Core12::Initialize(HWND mainWnd, int width, int height)
+bool Core12Box::Initialize(HWND mainWnd, int width, int height)
 {
 	if (!Core12Base::Initialize(mainWnd, width, height))
 		return false;
@@ -44,7 +44,7 @@ bool Core12::Initialize(HWND mainWnd, int width, int height)
 	return true;
 }
 
-void Core12::Resize(int width, int height)
+void Core12Box::Resize(int width, int height)
 {
 	Core12Base::Resize(width, height);
 
@@ -53,7 +53,7 @@ void Core12::Resize(int width, int height)
 	XMStoreFloat4x4(&m_proj, P);
 }
 
-void Core12::Update()
+void Core12Box::Update()
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_radius * sinf(m_phi) * cosf(m_theta);
@@ -78,7 +78,7 @@ void Core12::Update()
 	m_objectCB->CopyData(0, objConstants);
 }
 
-void Core12::Draw()
+void Core12Box::Draw()
 {
 	// Reuse the memory associated with command recording.
 	// We can only reset when the associated command lists have finished execution on the GPU.
@@ -138,19 +138,19 @@ void Core12::Draw()
 	FlushCommandQueue();
 }
 
-void Core12::OnMouseDown(WPARAM btnState, int x, int y)
+void Core12Box::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	m_lastMousePos.x = x;
 	m_lastMousePos.y = y;
 }
 
-void Core12::OnMouseUp(WPARAM btnState, int x, int y)
+void Core12Box::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	// Probably don't need - will do externally
 //	ReleaseCapture();
 }
 
-void Core12::OnMouseMove(WPARAM btnState, int x, int y)
+void Core12Box::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if ((btnState & MK_LBUTTON) != 0)
 	{
@@ -182,7 +182,7 @@ void Core12::OnMouseMove(WPARAM btnState, int x, int y)
 	m_lastMousePos.y = y;
 }
 
-void Core12::BuildDescriptorHeaps()
+void Core12Box::BuildDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
 	cbvHeapDesc.NumDescriptors = 1;
@@ -193,7 +193,7 @@ void Core12::BuildDescriptorHeaps()
 		IID_PPV_ARGS(&m_cbvHeap)));
 }
 
-void Core12::BuildConstantBuffers()
+void Core12Box::BuildConstantBuffers()
 {
 	m_objectCB = std::make_unique<UploadBuffer<ObjectConstants>>(m_d3dDevice.Get(), 1, true);
 
@@ -213,7 +213,7 @@ void Core12::BuildConstantBuffers()
 		m_cbvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void Core12::BuildRootSignature()
+void Core12Box::BuildRootSignature()
 {
 	// Shader programs typically require resources as input (constant buffers,
 	// textures, samplers).  The root signature defines the resources the shader
@@ -252,7 +252,7 @@ void Core12::BuildRootSignature()
 		IID_PPV_ARGS(&m_rootSignature)));
 }
 
-void Core12::BuildShadersAndInputLayout()
+void Core12Box::BuildShadersAndInputLayout()
 {
 	HRESULT hr = S_OK;
 
@@ -266,7 +266,7 @@ void Core12::BuildShadersAndInputLayout()
 	};
 }
 
-void Core12::BuildBoxGeometry()
+void Core12Box::BuildBoxGeometry()
 {
 	std::array<Vertex, 8> vertices =
 	{
@@ -338,7 +338,7 @@ void Core12::BuildBoxGeometry()
 	m_boxGeo->DrawArgs["box"] = submesh;
 }
 
-void Core12::BuildPSO()
+void Core12Box::BuildPSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
 	ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));

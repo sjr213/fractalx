@@ -14,6 +14,7 @@
 #include "FractalX12View.h"
 
 #include "Renderer12.h"
+#include "Box/Renderer12Box.h"	// Specific for Box 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,7 +24,7 @@ class CFractalX12ViewImpl
 {
 private:
 	CFractalX12View* m_pThis;
-	std::shared_ptr<Renderer12> m_renderer = Renderer12::CreateRenderer12();
+	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12Box(); // Specific for Box 
 
 public:
 	CFractalX12ViewImpl(CFractalX12View* pThis)

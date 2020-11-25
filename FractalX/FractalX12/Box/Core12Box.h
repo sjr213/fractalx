@@ -16,13 +16,13 @@ struct ObjectConstants
 	DirectX::XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
 };
 
-class Core12 : public Core12Base
+class Core12Box : public Core12Base
 {
 public:
-	Core12();
-	Core12(const Core12& rhs) = delete;
-	Core12& operator=(const Core12& rhs) = delete;
-	~Core12();
+	Core12Box();
+	Core12Box(const Core12Box& rhs) = delete;
+	Core12Box& operator=(const Core12Box& rhs) = delete;
+	~Core12Box();
 
 	bool Initialize(HWND mainWnd, int width, int height) override;
 	void Resize(int width, int height) override;

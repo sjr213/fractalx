@@ -76,6 +76,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Common;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -85,6 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\Common;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -185,44 +187,45 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Box\Core12Box.h" />
+    <ClInclude Include="Box\Renderer12Box.h" />
     <ClInclude Include="ChildFrm.h" />
-    <ClInclude Include="Core12.h" />
-    <ClInclude Include="Core12Base.h" />
-    <ClInclude Include="d3dUtil.h" />
-    <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="Common\Core12Base.h" />
+    <ClInclude Include="Common\d3dUtil.h" />
+    <ClInclude Include="Common\d3dx12.h" />
+    <ClInclude Include="Common\DDSTextureLoader.h" />
+    <ClInclude Include="Common\MathHelper.h" />
+    <ClInclude Include="Common\Renderer12.h" />
+    <ClInclude Include="Common\UploadBuffer.h" />
+    <ClInclude Include="Common\ViewTree.h" />
     <ClInclude Include="FractalX12.h" />
     <ClInclude Include="FractalX12Doc.h" />
     <ClInclude Include="FractalX12View.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="MathHelper.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Renderer12.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UploadBuffer.h" />
-    <ClInclude Include="ViewTree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Box\Core12Box.cpp" />
+    <ClCompile Include="Box\Renderer12Box.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
-    <ClCompile Include="Core12.cpp" />
-    <ClCompile Include="Core12Base.cpp" />
-    <ClCompile Include="d3dUtil.cpp" />
-    <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="Common\Core12Base.cpp" />
+    <ClCompile Include="Common\d3dUtil.cpp" />
+    <ClCompile Include="Common\DDSTextureLoader.cpp" />
+    <ClCompile Include="Common\MathHelper.cpp" />
+    <ClCompile Include="Common\ViewTree.cpp" />
     <ClCompile Include="FractalX12.cpp" />
     <ClCompile Include="FractalX12Doc.cpp" />
     <ClCompile Include="FractalX12View.cpp" />
     <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Renderer12.cpp" />
-    <ClCompile Include="ViewTree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FractalX12.reg" />
