@@ -19,6 +19,12 @@
     <Filter Include="Box">
       <UniqueIdentifier>{b6bdf16f-c100-46e6-83ff-3370c888c633}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shapes">
+      <UniqueIdentifier>{412d0cfa-77eb-4e43-bc72-d7c10b9326eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LandAndWaves">
+      <UniqueIdentifier>{cdab6a4e-8bc4-478c-a195-fd2e2eb047d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FractalX12.h">
@@ -78,6 +84,33 @@
     <ClInclude Include="Common\UploadBuffer.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Shapes\Core12Shapes.h">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes\Renderer12Shapes.h">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes\FrameResource.h">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\GeometryGenerator.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="LandAndWaves\FrameResourceLandAndWaves.h">
+      <Filter>LandAndWaves</Filter>
+    </ClInclude>
+    <ClInclude Include="LandAndWaves\Core12LandAndWaves.h">
+      <Filter>LandAndWaves</Filter>
+    </ClInclude>
+    <ClInclude Include="LandAndWaves\Waves.h">
+      <Filter>LandAndWaves</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\GameTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="LandAndWaves\Renderer12LandAndWaves.h">
+      <Filter>LandAndWaves</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FractalX12.cpp">
@@ -118,6 +151,33 @@
     </ClCompile>
     <ClCompile Include="Common\ViewTree.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes\Core12Shapes.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes\Renderer12Shapes.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes\FrameResource.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\GeometryGenerator.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="LandAndWaves\FrameResourceLandAndWaves.cpp">
+      <Filter>LandAndWaves</Filter>
+    </ClCompile>
+    <ClCompile Include="LandAndWaves\Core12LandAndWaves.cpp">
+      <Filter>LandAndWaves</Filter>
+    </ClCompile>
+    <ClCompile Include="LandAndWaves\Waves.cpp">
+      <Filter>LandAndWaves</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\GameTimer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="LandAndWaves\Renderer12LandAndWaves.cpp">
+      <Filter>LandAndWaves</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,19 +1,19 @@
 #include "pch.h"
-#include "Renderer12Box.h"
+#include "Renderer12Shapes.h"
 
-#include "Core12Box.h"
+#include "Core12Shapes.h"
 
-class Renderer12BoxImpl : public Renderer12
+class Renderer12ShapesImpl : public Renderer12
 {
 private:
-	std::shared_ptr<Core12Box> m_core;
+	std::shared_ptr<Core12Shapes> m_core;
 
 public:
-	Renderer12BoxImpl()
-		: m_core(std::make_shared<Core12Box>())
+	Renderer12ShapesImpl()
+		: m_core(std::make_shared<Core12Shapes>())
 	{}
 
-	virtual ~Renderer12BoxImpl()
+	virtual ~Renderer12ShapesImpl()
 	{}
 
 	void Initialize(HWND window, int width, int height) override
@@ -60,7 +60,7 @@ public:
 	{}
 };
 
-std::shared_ptr<Renderer12> CreateRenderer12Box()
+std::shared_ptr<Renderer12> CreateRenderer12Shapes()
 {
-	return std::make_shared<Renderer12BoxImpl>();
+	return std::make_shared<Renderer12ShapesImpl>();
 }

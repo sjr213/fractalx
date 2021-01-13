@@ -1,19 +1,19 @@
 #include "pch.h"
-#include "Renderer12Box.h"
+#include "Renderer12LandAndWaves.h"
 
-#include "Core12Box.h"
+#include "Core12LandAndWaves.h"
 
-class Renderer12BoxImpl : public Renderer12
+class Renderer12LandAndWavesImpl : public Renderer12
 {
 private:
-	std::shared_ptr<Core12Box> m_core;
+	std::shared_ptr<Core12LandAndWaves> m_core;
 
 public:
-	Renderer12BoxImpl()
-		: m_core(std::make_shared<Core12Box>())
+	Renderer12LandAndWavesImpl()
+		: m_core(std::make_shared<Core12LandAndWaves>())
 	{}
 
-	virtual ~Renderer12BoxImpl()
+	virtual ~Renderer12LandAndWavesImpl()
 	{}
 
 	void Initialize(HWND window, int width, int height) override
@@ -56,11 +56,13 @@ public:
 		}
 	}
 
-	void OnTimer(bool /*start*/) override
-	{}
+	void OnTimer(bool start) override
+	{
+		m_core->OnTimer(start);
+	}
 };
 
-std::shared_ptr<Renderer12> CreateRenderer12Box()
+std::shared_ptr<Renderer12> CreateRenderer12LandAndWaves()
 {
-	return std::make_shared<Renderer12BoxImpl>();
+	return std::make_shared<Renderer12LandAndWavesImpl>();
 }

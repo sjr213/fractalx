@@ -18,6 +18,8 @@ public:
 
 	virtual void MouseMove(WPARAM btnState, int x, int y) = 0;
 
+	virtual void OnTimer(bool start) = 0;
+
 protected:
 	Renderer12() {}
 };

@@ -14,7 +14,9 @@
 #include "FractalX12View.h"
 
 #include "Renderer12.h"
-#include "Box/Renderer12Box.h"	// Specific for Box 
+//#include "Box/Renderer12Box.h"	// Specific for Box 
+#include "Shapes/Renderer12Shapes.h"
+//#include "LandAndWaves/Renderer12LandAndWaves.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -24,7 +26,8 @@ class CFractalX12ViewImpl
 {
 private:
 	CFractalX12View* m_pThis;
-	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12Box(); // Specific for Box 
+	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12Shapes(); 
+	UINT_PTR m_timerId = 0;
 
 public:
 	CFractalX12ViewImpl(CFractalX12View* pThis)
@@ -95,6 +98,27 @@ public:
 	{
 		m_renderer->MouseMove(btnState, x, y);
 	}
+
+	void OnTimer()
+	{
+		m_renderer->OnTimer(m_timerId != 0);
+	}
+
+	void StartStopTimer()
+	{
+		if (m_timerId == 0)
+		{
+			m_timerId = m_pThis->SetTimer(1, 50, nullptr);
+			m_renderer->OnTimer(m_timerId != 0);
+		}
+		else
+		{
+			if (m_pThis->KillTimer(m_timerId))
+				m_timerId = 0;
+
+			m_renderer->OnTimer(m_timerId != 0);
+		}
+	}
 };
 
 // CFractalX12View
@@ -109,6 +133,9 @@ BEGIN_MESSAGE_MAP(CFractalX12View, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_RBUTTONUP()
 	ON_WM_RBUTTONDOWN()
+	ON_WM_TIMER()	// ID_TIMER_START
+	ON_COMMAND(ID_TIMER_START, OnStartStopTimer)
+	ON_UPDATE_COMMAND_UI(ID_TIMER_START, OnUpdateStartStopTimer)
 END_MESSAGE_MAP()
 
 // CFractalX12View construction/destruction
@@ -225,6 +252,23 @@ void CFractalX12View::OnRButtonUp(UINT nFlags, CPoint point)
 	OnContextMenu(this, point);
 
 	CView::OnRButtonUp(nFlags, point);
+}
+
+void CFractalX12View::OnTimer(UINT_PTR nIDEvent)
+{
+	m_impl->OnTimer();
+
+	CView::OnTimer(nIDEvent);
+}
+
+void CFractalX12View::OnStartStopTimer()
+{
+	m_impl->StartStopTimer();
+}
+
+void CFractalX12View::OnUpdateStartStopTimer(CCmdUI* ccmdUI)
+{
+	ccmdUI->Enable(TRUE);
 }
 
 // CFractalX12View diagnostics

@@ -194,6 +194,8 @@
     <ClInclude Include="Common\d3dUtil.h" />
     <ClInclude Include="Common\d3dx12.h" />
     <ClInclude Include="Common\DDSTextureLoader.h" />
+    <ClInclude Include="Common\GameTimer.h" />
+    <ClInclude Include="Common\GeometryGenerator.h" />
     <ClInclude Include="Common\MathHelper.h" />
     <ClInclude Include="Common\Renderer12.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
@@ -202,9 +204,16 @@
     <ClInclude Include="FractalX12Doc.h" />
     <ClInclude Include="FractalX12View.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LandAndWaves\Core12LandAndWaves.h" />
+    <ClInclude Include="LandAndWaves\FrameResourceLandAndWaves.h" />
+    <ClInclude Include="LandAndWaves\Renderer12LandAndWaves.h" />
+    <ClInclude Include="LandAndWaves\Waves.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Shapes\Core12Shapes.h" />
+    <ClInclude Include="Shapes\FrameResource.h" />
+    <ClInclude Include="Shapes\Renderer12Shapes.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -214,11 +223,17 @@
     <ClCompile Include="Common\Core12Base.cpp" />
     <ClCompile Include="Common\d3dUtil.cpp" />
     <ClCompile Include="Common\DDSTextureLoader.cpp" />
+    <ClCompile Include="Common\GameTimer.cpp" />
+    <ClCompile Include="Common\GeometryGenerator.cpp" />
     <ClCompile Include="Common\MathHelper.cpp" />
     <ClCompile Include="Common\ViewTree.cpp" />
     <ClCompile Include="FractalX12.cpp" />
     <ClCompile Include="FractalX12Doc.cpp" />
     <ClCompile Include="FractalX12View.cpp" />
+    <ClCompile Include="LandAndWaves\Core12LandAndWaves.cpp" />
+    <ClCompile Include="LandAndWaves\FrameResourceLandAndWaves.cpp" />
+    <ClCompile Include="LandAndWaves\Renderer12LandAndWaves.cpp" />
+    <ClCompile Include="LandAndWaves\Waves.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -226,6 +241,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Shapes\Core12Shapes.cpp" />
+    <ClCompile Include="Shapes\FrameResource.cpp" />
+    <ClCompile Include="Shapes\Renderer12Shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FractalX12.reg" />
