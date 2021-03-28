@@ -16,12 +16,6 @@
     <Filter Include="Common">
       <UniqueIdentifier>{258f50e3-8e75-427e-bf31-c48a43fe7d39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Box">
-      <UniqueIdentifier>{b6bdf16f-c100-46e6-83ff-3370c888c633}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shapes">
-      <UniqueIdentifier>{412d0cfa-77eb-4e43-bc72-d7c10b9326eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LandAndWaves">
       <UniqueIdentifier>{cdab6a4e-8bc4-478c-a195-fd2e2eb047d7}</UniqueIdentifier>
     </Filter>
@@ -54,12 +48,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Box\Renderer12Box.h">
-      <Filter>Box</Filter>
-    </ClInclude>
-    <ClInclude Include="Box\Core12Box.h">
-      <Filter>Box</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Renderer12.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -83,15 +71,6 @@
     </ClInclude>
     <ClInclude Include="Common\UploadBuffer.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Shapes\Core12Shapes.h">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Shapes\Renderer12Shapes.h">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Shapes\FrameResource.h">
-      <Filter>Shapes</Filter>
     </ClInclude>
     <ClInclude Include="Common\GeometryGenerator.h">
       <Filter>Common</Filter>
@@ -131,12 +110,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Box\Renderer12Box.cpp">
-      <Filter>Box</Filter>
-    </ClCompile>
-    <ClCompile Include="Box\Core12Box.cpp">
-      <Filter>Box</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Core12Base.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -151,15 +124,6 @@
     </ClCompile>
     <ClCompile Include="Common\ViewTree.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Shapes\Core12Shapes.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Shapes\Renderer12Shapes.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Shapes\FrameResource.cpp">
-      <Filter>Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Common\GeometryGenerator.cpp">
       <Filter>Common</Filter>

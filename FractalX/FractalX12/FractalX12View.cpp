@@ -14,9 +14,8 @@
 #include "FractalX12View.h"
 
 #include "Renderer12.h"
-//#include "Box/Renderer12Box.h"	// Specific for Box 
-#include "Shapes/Renderer12Shapes.h"
-//#include "LandAndWaves/Renderer12LandAndWaves.h"
+
+#include "LandAndWaves/Renderer12LandAndWaves.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -26,7 +25,7 @@ class CFractalX12ViewImpl
 {
 private:
 	CFractalX12View* m_pThis;
-	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12Shapes(); 
+	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12LandAndWaves();
 	UINT_PTR m_timerId = 0;
 
 public:

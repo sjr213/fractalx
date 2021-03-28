@@ -187,8 +187,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Box\Core12Box.h" />
-    <ClInclude Include="Box\Renderer12Box.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="Common\Core12Base.h" />
     <ClInclude Include="Common\d3dUtil.h" />
@@ -211,14 +209,9 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Shapes\Core12Shapes.h" />
-    <ClInclude Include="Shapes\FrameResource.h" />
-    <ClInclude Include="Shapes\Renderer12Shapes.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Box\Core12Box.cpp" />
-    <ClCompile Include="Box\Renderer12Box.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="Common\Core12Base.cpp" />
     <ClCompile Include="Common\d3dUtil.cpp" />
@@ -241,9 +234,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Shapes\Core12Shapes.cpp" />
-    <ClCompile Include="Shapes\FrameResource.cpp" />
-    <ClCompile Include="Shapes\Renderer12Shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FractalX12.reg" />
