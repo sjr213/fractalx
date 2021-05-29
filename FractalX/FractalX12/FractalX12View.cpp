@@ -15,7 +15,8 @@
 
 #include "Renderer12.h"
 
-#include "LandAndWaves/Renderer12LandAndWaves.h"
+//#include "LandAndWaves/Renderer12LandAndWaves.h"
+#include "Stencil\Renderer12Stencil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,7 +26,7 @@ class CFractalX12ViewImpl
 {
 private:
 	CFractalX12View* m_pThis;
-	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12LandAndWaves();
+	std::shared_ptr<Renderer12> m_renderer = CreateRenderer12Stencil(); // CreateRenderer12LandAndWaves();
 	UINT_PTR m_timerId = 0;
 
 public:

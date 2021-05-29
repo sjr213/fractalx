@@ -16,8 +16,8 @@
     <Filter Include="Common">
       <UniqueIdentifier>{258f50e3-8e75-427e-bf31-c48a43fe7d39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LandAndWaves">
-      <UniqueIdentifier>{cdab6a4e-8bc4-478c-a195-fd2e2eb047d7}</UniqueIdentifier>
+    <Filter Include="Stencil">
+      <UniqueIdentifier>{5a887560-aee8-4022-8570-e18f6b236db3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,20 +75,17 @@
     <ClInclude Include="Common\GeometryGenerator.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="LandAndWaves\FrameResourceLandAndWaves.h">
-      <Filter>LandAndWaves</Filter>
-    </ClInclude>
-    <ClInclude Include="LandAndWaves\Core12LandAndWaves.h">
-      <Filter>LandAndWaves</Filter>
-    </ClInclude>
-    <ClInclude Include="LandAndWaves\Waves.h">
-      <Filter>LandAndWaves</Filter>
-    </ClInclude>
     <ClInclude Include="Common\GameTimer.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="LandAndWaves\Renderer12LandAndWaves.h">
-      <Filter>LandAndWaves</Filter>
+    <ClInclude Include="Stencil\Renderer12Stencil.h">
+      <Filter>Stencil</Filter>
+    </ClInclude>
+    <ClInclude Include="Stencil\Core12Stencil.h">
+      <Filter>Stencil</Filter>
+    </ClInclude>
+    <ClInclude Include="Stencil\FrameResourceStencil.h">
+      <Filter>Stencil</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,20 +125,17 @@
     <ClCompile Include="Common\GeometryGenerator.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="LandAndWaves\FrameResourceLandAndWaves.cpp">
-      <Filter>LandAndWaves</Filter>
-    </ClCompile>
-    <ClCompile Include="LandAndWaves\Core12LandAndWaves.cpp">
-      <Filter>LandAndWaves</Filter>
-    </ClCompile>
-    <ClCompile Include="LandAndWaves\Waves.cpp">
-      <Filter>LandAndWaves</Filter>
-    </ClCompile>
     <ClCompile Include="Common\GameTimer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="LandAndWaves\Renderer12LandAndWaves.cpp">
-      <Filter>LandAndWaves</Filter>
+    <ClCompile Include="Stencil\Renderer12Stencil.cpp">
+      <Filter>Stencil</Filter>
+    </ClCompile>
+    <ClCompile Include="Stencil\Core12Stencil.cpp">
+      <Filter>Stencil</Filter>
+    </ClCompile>
+    <ClCompile Include="Stencil\FrameResourceStencil.cpp">
+      <Filter>Stencil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

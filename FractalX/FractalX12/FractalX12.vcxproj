@@ -202,13 +202,12 @@
     <ClInclude Include="FractalX12Doc.h" />
     <ClInclude Include="FractalX12View.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="LandAndWaves\Core12LandAndWaves.h" />
-    <ClInclude Include="LandAndWaves\FrameResourceLandAndWaves.h" />
-    <ClInclude Include="LandAndWaves\Renderer12LandAndWaves.h" />
-    <ClInclude Include="LandAndWaves\Waves.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Stencil\Core12Stencil.h" />
+    <ClInclude Include="Stencil\FrameResourceStencil.h" />
+    <ClInclude Include="Stencil\Renderer12Stencil.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -223,10 +222,6 @@
     <ClCompile Include="FractalX12.cpp" />
     <ClCompile Include="FractalX12Doc.cpp" />
     <ClCompile Include="FractalX12View.cpp" />
-    <ClCompile Include="LandAndWaves\Core12LandAndWaves.cpp" />
-    <ClCompile Include="LandAndWaves\FrameResourceLandAndWaves.cpp" />
-    <ClCompile Include="LandAndWaves\Renderer12LandAndWaves.cpp" />
-    <ClCompile Include="LandAndWaves\Waves.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -234,6 +229,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Stencil\Core12Stencil.cpp" />
+    <ClCompile Include="Stencil\FrameResourceStencil.cpp" />
+    <ClCompile Include="Stencil\Renderer12Stencil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FractalX12.reg" />

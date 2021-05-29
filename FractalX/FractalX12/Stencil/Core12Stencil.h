@@ -1,16 +1,13 @@
 #pragma once
 
-// Copy and adapt from LandAndWavesApp.cpp
+// Copy and adapt from StencilDemoApp.cpp
 
 #include "Core12Base.h"
 #include <DirectXMath.h>
-#include "FrameResourceLandAndWaves.h"
+#include "FrameResourceStencil.h"
 #include "GameTimer.h"
 #include "MathHelper.h"
 #include "UploadBuffer.h"
-#include "Waves.h"
-
-
 
 // was gNumFrameResources
 const int g_NumFrameResources = 3;
@@ -52,16 +49,20 @@ struct RenderItem
 enum class RenderLayer : int
 {
 	Opaque = 0,
+	Mirrors,
+	Reflected,
+	Transparent,
+	Shadow,
 	Count
 };
 
-class Core12LandAndWaves : public Core12Base
+class Core12Stencil : public Core12Base
 {
 public:
-	Core12LandAndWaves();
-	Core12LandAndWaves(const Core12LandAndWaves& rhs) = delete;
-	Core12LandAndWaves& operator=(const Core12LandAndWaves& rhs) = delete;
-	~Core12LandAndWaves();
+	Core12Stencil();
+	Core12Stencil(const Core12Stencil& rhs) = delete;
+	Core12Stencil& operator=(const Core12Stencil& rhs) = delete;
+	~Core12Stencil();
 
 	bool Initialize(HWND mainWnd, int width, int height) override;
 
@@ -80,33 +81,37 @@ private:
 
 	void OnKeyboardInput(const GameTimer& gt);
 	void UpdateCamera();
+	void AnimateMaterials(const GameTimer& gt);
 	void UpdateObjectCBs();
 	void UpdateMaterialCBs(const GameTimer& gt);
-	void UpdateMainPassCB(const GameTimer& gt);						// <---- NEED TIME
-	void UpdateWaves(const GameTimer& gt);								// <---- NEED TIME
+	void UpdateMainPassCB(const GameTimer& gt);					
+	void UpdateReflectedPassCB(const GameTimer& gt);
 
+	void LoadTextures();
 	void BuildRootSignature();
+	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
-	void BuildLandGeometry();
-	void BuildWavesGeometryBuffers();
+	void BuildRoomGeometry();
+	void BuildSkullGeometry();
 	void BuildPSOs();
 	void BuildFrameResources();
 	void BuildMaterials();
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
 
-	float GetHillsHeight(float x, float z)const;
-	DirectX::XMFLOAT3 GetHillsNormal(float x, float z)const;
+	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 
 private:
 
-	std::vector<std::unique_ptr<FrameResourceLandAndWaves>> m_frameResources;
-	FrameResourceLandAndWaves* m_currFrameResource = nullptr;
+	std::vector<std::unique_ptr<FrameResourceStencil>> m_frameResources;
+	FrameResourceStencil* m_currFrameResource = nullptr;
 	int m_currFrameResourceIndex = 0;
 
 	UINT m_cbvSrvDescriptorSize = 0;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature = nullptr;
+
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_srvDescriptorHeap = nullptr;
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> m_geometries;
 	std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
@@ -116,7 +121,10 @@ private:
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 
-	RenderItem* m_wavesRitem = nullptr;
+	// Cache render items of interest.
+	RenderItem* m_skullRitem = nullptr;
+	RenderItem* m_reflectedSkullRitem = nullptr;
+	RenderItem* m_shadowedSkullRitem = nullptr;
 
 	// List of all the render items.
 	std::vector<std::unique_ptr<RenderItem>> m_allRitems;
@@ -124,22 +132,18 @@ private:
 	// Render items divided by PSO.
 	std::vector<RenderItem*> m_ritemLayer[(int)RenderLayer::Count];
 
-	std::unique_ptr<Waves> m_waves;
-
 	PassConstants m_mainPassCB;
+	PassConstants m_reflectedPassCB;
 
-	bool m_isWireframe = false;		// Might not need
+	DirectX::XMFLOAT3 m_skullTranslation = { 0.0f, 1.0f, -5.0f };
 
 	DirectX::XMFLOAT3 m_eyePos = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT4X4 m_view = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 m_proj = MathHelper::Identity4x4();
 
 	float m_theta = 1.5f * DirectX::XM_PI;
-	float m_phi = DirectX::XM_PIDIV2 - 0.1f;
-	float m_radius = 50.0f;
-
-	float m_sunTheta = 1.25f * DirectX::XM_PI;
-	float m_sunPhi = DirectX::XM_PIDIV4;
+	float m_phi = 0.42f * DirectX::XM_PI;
+	float m_radius = 12.0f;
 
 	POINT m_lastMousePos;
 	GameTimer m_timer;

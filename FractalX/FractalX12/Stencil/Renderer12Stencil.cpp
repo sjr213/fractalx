@@ -1,19 +1,19 @@
 #include "pch.h"
-#include "Renderer12LandAndWaves.h"
+#include "Renderer12Stencil.h"
 
-#include "Core12LandAndWaves.h"
+#include "Core12Stencil.h"
 
-class Renderer12LandAndWavesImpl : public Renderer12
+class Renderer12StencilImpl : public Renderer12
 {
 private:
-	std::shared_ptr<Core12LandAndWaves> m_core;
+	std::shared_ptr<Core12Stencil> m_core;
 
 public:
-	Renderer12LandAndWavesImpl()
-		: m_core(std::make_shared<Core12LandAndWaves>())
+	Renderer12StencilImpl()
+		: m_core(std::make_shared<Core12Stencil>())
 	{}
 
-	virtual ~Renderer12LandAndWavesImpl()
+	virtual ~Renderer12StencilImpl()
 	{}
 
 	void Initialize(HWND window, int width, int height) override
@@ -62,7 +62,7 @@ public:
 	}
 };
 
-std::shared_ptr<Renderer12> CreateRenderer12LandAndWaves()
+std::shared_ptr<Renderer12> CreateRenderer12Stencil()
 {
-	return std::make_shared<Renderer12LandAndWavesImpl>();
+	return std::make_shared<Renderer12StencilImpl>();
 }
