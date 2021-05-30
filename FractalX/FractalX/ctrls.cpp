@@ -37,7 +37,7 @@ void CColorEdit::SetBkColor(COLORREF color)
 	Invalidate();
 
 }
-HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor)
+HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
 	pDC->SetTextColor(m_TextColor);
 	pDC->SetBkColor(m_BkColor);

@@ -269,7 +269,7 @@ protected:
 		return dcimage;
 	}
 
-	void OnSelChangedTreeCtrl(NMHDR *pNMHDR, LRESULT *pResult)
+	void OnSelChangedTreeCtrl(NMHDR* /*pNMHDR*/, LRESULT *pResult)
 	{
 		HTREEITEM hSelected = m_TreeCtrl.GetSelectedItem();
 

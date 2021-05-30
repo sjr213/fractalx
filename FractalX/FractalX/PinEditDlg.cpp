@@ -1235,7 +1235,7 @@ void CPinEditDlg::OnBnClickedInsertBut2()
 // puts them in order of increasing color index
 // Using pointer would have been faster but we already started with
 // arrays of objects and speed not critical for a dozen or so objects
-void CPinEditDlg::SortPins(std::vector<DxColor::ColorPin>& pins)
+void CPinEditDlg::SortPins()
 {
 	std::sort(std::begin(m_pins), std::end(m_pins), 
 		[&](const ColorPin& lf, const ColorPin& rt)
@@ -1272,7 +1272,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit1()
 	}
 
 	m_pins.at(m_indexIndex).Index = CalcPinIndexValue(1);
-	SortPins(m_pins);
+	SortPins();
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -1309,7 +1309,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit2()
 	}
 
 	m_pins.at(m_indexIndex + 1).Index = CalcPinIndexValue(2);
-	SortPins(m_pins);
+	SortPins();
 
 	UpdatePinNumber();
 	UpdateCtrls();
@@ -1348,7 +1348,7 @@ void CPinEditDlg::OnEnKillfocusPinIndexEdit3()
 	}
 
 	m_pins.at(m_indexIndex + 2).Index = CalcPinIndexValue(3);
-	SortPins(m_pins);
+	SortPins();
 
 	UpdatePinNumber();
 	UpdateCtrls();

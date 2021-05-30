@@ -113,7 +113,7 @@ namespace DXF
 			return seedVerices;
 		}
 
-		std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds, int depth)
+		std::vector<Triangle> CreateSeedTriangle(SeedTriangles seeds)
 		{
 			std::vector<Triangle> seedTriangles;
 
@@ -164,7 +164,7 @@ namespace DXF
 		std::vector<XMFLOAT3> vertices = CreateSeedVertices(seeds);
 		setProgress(1.0 / total);
 
-		std::vector<Triangle> triangles = CreateSeedTriangle(seeds, depth);
+		std::vector<Triangle> triangles = CreateSeedTriangle(seeds);
 		setProgress(2.0 / total);
 
 		auto vertexMap = MakeVertexMap(vertices);

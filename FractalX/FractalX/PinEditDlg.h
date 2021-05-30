@@ -112,7 +112,7 @@ protected:
 	inline double curver(double k, double in);
 
 	// puts them in order of increasing color index
-	void SortPins(std::vector<DxColor::ColorPin>& pins);
+	void SortPins();
 
 	// return true if there is a pin with the same index
 	bool DoesPinAlreadyExist(int index);

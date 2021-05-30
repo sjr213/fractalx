@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ColorUtils.h"
 #include <gdiplus.h>
+#include "NarrowCast.h"
 #include <SimpleMath.h>
 
 namespace ColorUtils
@@ -30,10 +31,10 @@ namespace ColorUtils
 	{
 		// opposite (a << 24) | (r << 16) | (g << 8) | b;
 
-		int b = color & 0xff;
-		int g = (color >> 8) & 0xff;
-		int r = (color >> 16) & 0xff;
-		int a = (color >> 24) & 0xff;
+		BYTE b = DxCore::narrow_cast<BYTE>(color & 0xff);
+		BYTE g = DxCore::narrow_cast<BYTE>((color >> 8) & 0xff);
+		BYTE r = DxCore::narrow_cast<BYTE>((color >> 16) & 0xff);
+		BYTE a = DxCore::narrow_cast<BYTE>((color >> 24) & 0xff);
 
 		Gdiplus::Color gColor(a, r, g, b);
 		return gColor;

@@ -181,7 +181,6 @@ namespace DXF
 		}
 		else
 		{
-			int version = 0;
 			ar >> version;
 
 			if (version != RotationParams::RotationVersion)
@@ -243,7 +242,6 @@ namespace DXF
 		}
 		else
 		{
-			int version = 0;
 			ar >> version;
 
 			if (version != RotationGroup::RotationGroupVersion)

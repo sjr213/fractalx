@@ -121,7 +121,7 @@ protected:
 		assert(displaySize.cy > ColorLineHeight + TickRectHeight);
 #endif
 		InitializePaletteBuffer(displaySize, topLeft);
-		InitializeTickBuffer(displaySize, topLeft);
+		InitializeTickBuffer(displaySize);
 	}
 
 	void InitializePaletteBuffer(CSize displaySize, CPoint topLeft)
@@ -140,7 +140,7 @@ protected:
 		m_pinTracker = make_shared<CPinTracker>(paletteSize, NumberOfColors, 32, m_palette.Pins, m_topLeftPalette);
 	}
 
-	void InitializeTickBuffer(CSize displaySize, CPoint topLeft)
+	void InitializeTickBuffer(CSize displaySize)
 	{
 		CSize drawSize(NumberOfColors, TickRectHeight);
 		m_tickBuffer->SetDrawSize(drawSize);
@@ -345,7 +345,7 @@ protected:
 
 	void DrawTicksPrep()
 	{
-		auto pDC = m_tickBuffer->GetDisplayDC();
+//		auto pDC = m_tickBuffer->GetDisplayDC();
 	}
 
 	void OnPaint()
@@ -388,7 +388,7 @@ protected:
 		UpdateData(FALSE);
 	}
 
-	bool DeletePin(const CPoint& pt, const CPoint& pinPt)
+	bool DeletePin(const CPoint& pt, const CPoint& /*pinPt*/)
 	{
 		int y = pt.y - m_pinPt.y;
 
@@ -456,7 +456,7 @@ protected:
 		CPaletteViewDlg::OnMouseMove(nFlags, point);
 	}
 
-	void OnRButtonUp(UINT nFlags, CPoint point)
+	void OnRButtonUp(UINT /*nFlags*/, CPoint point)
 	{
 		CMenu pinMenu;
 		pinMenu.LoadMenu(IDR_PALETTE_VIEW_CONTEXT_MENU);
@@ -715,7 +715,6 @@ protected:
 
 	afx_msg void OnUpdateAddPin(CCmdUI* cmdUI)
 	{
-		bool spaceFree = m_pinTracker->GetIndex(m_pinPt) < 0;
 		cmdUI->Enable(CanAddPin());
 	}
 
