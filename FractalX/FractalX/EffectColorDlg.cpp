@@ -5,6 +5,7 @@
 #include "ColorUtils.h"
 #include "DialogUtils.h"
 #include <Gdiplus.h>
+#include "NarrowCast.h"
 #include "Resource.h"
 
 using namespace DlgUtils;
@@ -55,62 +56,62 @@ protected:
 		int ambientRed = m_colors.Ambient.R;
 		DDX_Text(pDX, IDC_AMBIENT_RED_EDIT, ambientRed);
 		DDV_MinMaxInt(pDX, ambientRed, 0, 255);
-		m_colors.Ambient.R = ambientRed;
+		m_colors.Ambient.R = DxCore::narrow_cast<bite>(ambientRed);
 
 		int ambientGreen = m_colors.Ambient.G;
 		DDX_Text(pDX, IDC_AMBIENT_GREEN_EDIT, ambientGreen);
 		DDV_MinMaxInt(pDX, ambientGreen, 0, 255);
-		m_colors.Ambient.G = ambientGreen;
+		m_colors.Ambient.G = DxCore::narrow_cast<bite>(ambientGreen);
 
 		int ambientBlue = m_colors.Ambient.B;
 		DDX_Text(pDX, IDC_AMBIENT_BLUE_EDIT, ambientBlue);
 		DDV_MinMaxInt(pDX, ambientBlue, 0, 255);
-		m_colors.Ambient.B = ambientBlue;
+		m_colors.Ambient.B = DxCore::narrow_cast<bite>(ambientBlue);
 
 		int diffuseRed = m_colors.Diffuse.R;
 		DDX_Text(pDX, IDC_DIFFUSE_RED_EDIT, diffuseRed);
 		DDV_MinMaxInt(pDX, diffuseRed, 0, 255);
-		m_colors.Diffuse.R = diffuseRed;
+		m_colors.Diffuse.R = DxCore::narrow_cast<bite>(diffuseRed);
 
 		int diffuseGreen = m_colors.Diffuse.G;
 		DDX_Text(pDX, IDC_DIFFUSE_GREEN_EDIT, diffuseGreen);
 		DDV_MinMaxInt(pDX, diffuseGreen, 0, 255);
-		m_colors.Diffuse.G = diffuseGreen;
+		m_colors.Diffuse.G = DxCore::narrow_cast<bite>(diffuseGreen);
 
 		int diffuseBlue = m_colors.Diffuse.B;
 		DDX_Text(pDX, IDC_DIFFUSE_BLUE_EDIT, diffuseBlue);
 		DDV_MinMaxInt(pDX, diffuseBlue, 0, 255);
-		m_colors.Diffuse.B = diffuseBlue;
+		m_colors.Diffuse.B = DxCore::narrow_cast<bite>(diffuseBlue);
 
 		int specularRed = m_colors.Specular.R;
 		DDX_Text(pDX, IDC_SPECULAR_RED_EDIT, specularRed);
 		DDV_MinMaxInt(pDX, specularRed, 0, 255);
-		m_colors.Specular.R = specularRed;
+		m_colors.Specular.R = DxCore::narrow_cast<bite>(specularRed);
 
 		int specularGreen = m_colors.Specular.G;
 		DDX_Text(pDX, IDC_SPECULAR_GREEN_EDIT, specularGreen);
 		DDV_MinMaxInt(pDX, specularGreen, 0, 255);
-		m_colors.Specular.G = specularGreen;
+		m_colors.Specular.G = DxCore::narrow_cast<bite>(specularGreen);
 
 		int specularBlue = m_colors.Specular.B;
 		DDX_Text(pDX, IDC_SPECULAR_BLUE_EDIT, specularBlue);
 		DDV_MinMaxInt(pDX, specularBlue, 0, 255);
-		m_colors.Specular.B = specularBlue;
+		m_colors.Specular.B = DxCore::narrow_cast<bite>(specularBlue);
 
 		int emissiveRed = m_colors.Emissive.R;
 		DDX_Text(pDX, IDC_EMISSIVE_RED_EDIT, emissiveRed);
 		DDV_MinMaxInt(pDX, emissiveRed, 0, 255);
-		m_colors.Emissive.R = emissiveRed;
+		m_colors.Emissive.R = DxCore::narrow_cast<bite>(emissiveRed);
 
 		int emissiveGreen = m_colors.Emissive.G;
 		DDX_Text(pDX, IDC_EMISSIVE_GREEN_EDIT, emissiveGreen);
 		DDV_MinMaxInt(pDX, emissiveGreen, 0, 255);
-		m_colors.Emissive.G = emissiveGreen;
+		m_colors.Emissive.G = DxCore::narrow_cast<bite>(emissiveGreen);
 
 		int emissiveBlue = m_colors.Emissive.B;
 		DDX_Text(pDX, IDC_EMISSIVE_BLUE_EDIT, emissiveBlue);
 		DDV_MinMaxInt(pDX, emissiveBlue, 0, 255);
-		m_colors.Emissive.B = emissiveBlue;
+		m_colors.Emissive.B = DxCore::narrow_cast<bite>(emissiveBlue);
 
 		float specularPower = m_colors.SpecularPower;
 		DDX_Text(pDX, IDC_SPECULAR_POWER_EDIT, specularPower);

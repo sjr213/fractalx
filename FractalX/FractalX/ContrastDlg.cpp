@@ -2,6 +2,7 @@
 #include "ContrastDlg.h"
 
 #include <iostream>
+#include "NarrowCast.h"
 #include <sstream>
 #include "Resource.h"
 
@@ -91,32 +92,32 @@ protected:
 			int minRed = m_contrast.MinContrast[0];
 			DDX_Text(pDX, IDC_EDIT1, minRed);
 			DDV_MinMaxInt(pDX, minRed, 0, 255);
-			m_contrast.MinContrast[0] = minRed;
+			m_contrast.MinContrast[0] = DxCore::narrow_cast<bite>(minRed);
 
 			int maxRed = m_contrast.MaxContrast[0];
 			DDX_Text(pDX, IDC_EDIT_MAX1, maxRed);
 			DDV_MinMaxInt(pDX, maxRed, 0, 255);
-			m_contrast.MaxContrast[0] = maxRed;
+			m_contrast.MaxContrast[0] = DxCore::narrow_cast<bite>(maxRed);
 
 			int minGreen = m_contrast.MinContrast[1];
 			DDX_Text(pDX, IDC_EDIT2, minGreen);
 			DDV_MinMaxInt(pDX, minGreen, 0, 255);
-			m_contrast.MinContrast[1] = minGreen;
+			m_contrast.MinContrast[1] = DxCore::narrow_cast<bite>(minGreen);
 
 			int maxGreen = m_contrast.MaxContrast[1];
 			DDX_Text(pDX, IDC_EDIT_MAX2, maxGreen);
 			DDV_MinMaxInt(pDX, maxGreen, 0, 255);
-			m_contrast.MaxContrast[1] = maxGreen;
+			m_contrast.MaxContrast[1] = DxCore::narrow_cast<bite>(maxGreen);
 
 			int minBlue = m_contrast.MinContrast[2];
 			DDX_Text(pDX, IDC_EDIT3, minBlue);
 			DDV_MinMaxInt(pDX, minBlue, 0, 255);
-			m_contrast.MinContrast[2] = minBlue;
+			m_contrast.MinContrast[2] = DxCore::narrow_cast<bite>(minBlue);
 
 			int maxBlue = m_contrast.MaxContrast[2];
 			DDX_Text(pDX, IDC_EDIT_MAX3, maxBlue);
 			DDV_MinMaxInt(pDX, maxBlue, 0, 255);
-			m_contrast.MaxContrast[2] = maxBlue;
+			m_contrast.MaxContrast[2] = DxCore::narrow_cast<bite>(maxBlue);
 		}
 		else if (m_contrast.Mode == ContrastType::HSL)
 		{
@@ -605,11 +606,11 @@ protected:
 
 		if (pSlider == &m_slider1)
 		{
-			m_contrast.MinContrast[0] = pos;
+			m_contrast.MinContrast[0] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MinContrast[0] > m_contrast.MaxContrast[0])
 			{
-				m_contrast.MaxContrast[0] = pos;
+				m_contrast.MaxContrast[0] = DxCore::narrow_cast<bite>(pos);
 				m_sliderMax1.SetPos(pos);
 			}
 			return;
@@ -617,11 +618,11 @@ protected:
 
 		if (pSlider == &m_sliderMax1)
 		{
-			m_contrast.MaxContrast[0] = pos;
+			m_contrast.MaxContrast[0] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MaxContrast[0] < m_contrast.MinContrast[0])
 			{
-				m_contrast.MinContrast[0] = pos;
+				m_contrast.MinContrast[0] = DxCore::narrow_cast<bite>(pos);
 				m_slider1.SetPos(pos);
 			}
 			return;
@@ -629,11 +630,11 @@ protected:
 
 		if (pSlider == &m_slider2)
 		{
-			m_contrast.MinContrast[1] = pos;
+			m_contrast.MinContrast[1] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MinContrast[1] > m_contrast.MaxContrast[1])
 			{
-				m_contrast.MaxContrast[1] = pos;
+				m_contrast.MaxContrast[1] = DxCore::narrow_cast<bite>(pos);
 				m_sliderMax2.SetPos(pos);
 			}
 			return;
@@ -641,11 +642,11 @@ protected:
 
 		if (pSlider == &m_sliderMax2)
 		{
-			m_contrast.MaxContrast[1] = pos;
+			m_contrast.MaxContrast[1] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MaxContrast[1] < m_contrast.MinContrast[1])
 			{
-				m_contrast.MinContrast[1] = pos;
+				m_contrast.MinContrast[1] = DxCore::narrow_cast<bite>(pos);
 				m_slider2.SetPos(pos);
 			}
 			return;
@@ -653,11 +654,11 @@ protected:
 
 		if (pSlider == &m_slider3)
 		{
-			m_contrast.MinContrast[2] = pos;
+			m_contrast.MinContrast[2] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MinContrast[2] > m_contrast.MaxContrast[2])
 			{
-				m_contrast.MaxContrast[2] = pos;
+				m_contrast.MaxContrast[2] = DxCore::narrow_cast<bite>(pos);
 				m_sliderMax3.SetPos(pos);
 			}
 			return;
@@ -665,11 +666,11 @@ protected:
 
 		if (pSlider == &m_sliderMax3)
 		{
-			m_contrast.MaxContrast[2] = pos;
+			m_contrast.MaxContrast[2] = DxCore::narrow_cast<bite>(pos);
 
 			if (m_contrast.MaxContrast[2] < m_contrast.MinContrast[2])
 			{
-				m_contrast.MinContrast[2] = pos;
+				m_contrast.MinContrast[2] = DxCore::narrow_cast<bite>(pos);
 				m_slider3.SetPos(pos);
 			}
 			return;
