@@ -22,7 +22,10 @@ namespace DlgUtils
 
 	void DrawColorSquare(Graphics& graphics, const Rect& rect, ColorArgb color)
 	{
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		HatchBrush backGroundBrush(HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
+#pragma warning(pop)
 
 		graphics.FillRectangle(&backGroundBrush, rect);
 

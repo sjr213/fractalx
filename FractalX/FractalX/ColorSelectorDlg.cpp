@@ -142,7 +142,10 @@ protected:
 
 		Gdiplus::Rect rect(19, 37, 40, 40);
 
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
+#pragma warning(pop)
 
 		graphics.FillRectangle(&backGroundBrush, rect);
 

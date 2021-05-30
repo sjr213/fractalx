@@ -244,7 +244,10 @@ protected:
 
 		Rect gRect(0, 0, NumberOfColors, ColorLineHeight);
 
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		HatchBrush backGroundBrush(HatchStyle::HatchStyleNarrowHorizontal, Color::Black, Color::White);
+#pragma warning(pop)
 
 		graphics.FillRectangle(&backGroundBrush, gRect);
 
@@ -280,7 +283,10 @@ protected:
 
 		Rect gRect(0, 0, NumberOfColors, TickRectHeight);
 
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		SolidBrush brush(Color::White);
+#pragma warning(pop)
 
 		graphics.FillRectangle(&brush, gRect);
 	}
@@ -289,7 +295,10 @@ protected:
 	{
 		Graphics graphics(dc);
 
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		Pen pen(Color::Black);
+#pragma warning(pop)
 
 		graphics.DrawLine(&pen, 0, 5, 0, TickRectHeight);
 

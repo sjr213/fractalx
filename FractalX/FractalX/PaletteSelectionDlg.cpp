@@ -221,7 +221,10 @@ protected:
 	{
 		Gdiplus::Rect gRect(0, 0, NumberOfColors, BitmapHeight);
 
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleNarrowHorizontal, Color::Black, Color::White);
+#pragma warning(pop)
 
 		graphics.FillRectangle(&backGroundBrush, gRect);
 

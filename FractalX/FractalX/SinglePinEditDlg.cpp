@@ -190,7 +190,11 @@ protected:
 	{
 		CPaintDC dc(this);
 		Graphics graphics(dc);
+
+#pragma warning(push)
+#pragma warning(disable: 4245)
 		HatchBrush backGroundBrush(Gdiplus::HatchStyle::HatchStyleWideDownwardDiagonal, Color::Black, Color::White);
+#pragma warning(pop)
 		Pen blackPen(Color(255, 0, 0, 0), 2);
 
 		Gdiplus::Rect rect1(47, 51, 40, 40);
