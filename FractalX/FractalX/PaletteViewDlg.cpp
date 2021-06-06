@@ -607,9 +607,9 @@ protected:
 			wchar_t message[100] = { 0 };
 			FileExcept.GetErrorMessage(message, 100);
 
-			wstringstream ss;
-			ss << L"Error opening file: " << fileName.GetString() << L": " << message;
-			CString error = ss.str().c_str();
+			wstringstream ss2;
+			ss2 << L"Error opening file: " << fileName.GetString() << L": " << message;
+			CString error = ss2.str().c_str();
 			AfxMessageBox(error, MB_ICONWARNING);
 			return;
 		}

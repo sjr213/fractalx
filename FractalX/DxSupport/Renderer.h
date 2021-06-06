@@ -72,11 +72,11 @@ namespace DXF
 
 		virtual bool DrawImage(CDC& dc, CSize imageSize) = 0;
 
-		virtual void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) = 0;
+		virtual void SetBackgroundColor(DirectX::SimpleMath::Color bkColor) = 0;
 
-		virtual void SetEffectColors(DxEffectColors& effectColors) = 0;
+		virtual void SetEffectColors(DxEffectColors effectColors) = 0;
 
-		virtual void SetLights(DxLights& lights) = 0;
+		virtual void SetLights(DxLights lights) = 0;
 
 		virtual std::optional<DXF::Vertex<float>> Map2Dto3D(int x, int y) = 0;
 

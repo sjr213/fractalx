@@ -431,12 +431,12 @@ namespace DXF
 			return CSize(m_outputWidth, m_outputHeight);
 		}
 
-		void SetBackgroundColor(const DirectX::SimpleMath::Color& bkColor) override
+		void SetBackgroundColor(DirectX::SimpleMath::Color bkColor) override
 		{
 			m_backgroundColor = bkColor;
 		}
 
-		void SetEffectColors(DxEffectColors& effectColors) override
+		void SetEffectColors(DxEffectColors effectColors) override
 		{
 			m_effectColors = effectColors;
 			SetEffectColors(*m_effect);
@@ -445,7 +445,7 @@ namespace DXF
 				SetEffectColors(*m_effect2);
 		}
 
-		void SetLights(DxLights& lights) override
+		void SetLights(DxLights lights) override
 		{
 			m_lights = lights;
 			SetLighting(*m_effect);

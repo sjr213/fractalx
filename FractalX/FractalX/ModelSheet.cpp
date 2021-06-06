@@ -55,7 +55,7 @@ ModelData CModelSheet::GetModelData() const
 	return m_data;
 }
 
-void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams>& traceParams)
+void CModelSheet::SetTraceParams(std::shared_ptr<const DXF::TraceParams> traceParams)
 {
 	*m_traceParams = *traceParams;
 	m_traceParamsPage.SetTraceParams(*m_traceParams);

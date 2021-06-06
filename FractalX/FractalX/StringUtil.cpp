@@ -6,7 +6,7 @@
 
 namespace StringUtil
 {
-	CString MakeStatusMessage(CPoint start, CPoint end, std::optional<DXF::Vertex<float>>& startVertex, std::optional<DXF::Vertex<float>>& endVertex)
+	CString MakeStatusMessage(CPoint start, CPoint end, std::optional<DXF::Vertex<float>> startVertex, std::optional<DXF::Vertex<float>> endVertex)
 	{
 		std::wstringstream ss;
 		ss << L'(' << start.x << L", " << start.y << L") ";

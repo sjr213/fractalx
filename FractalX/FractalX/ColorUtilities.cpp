@@ -7,6 +7,7 @@
 #include "ColorPin.h"
 #include "ColorContrast.h"
 #include "hslUtilities.h"
+#include <sstream>
 
 using namespace DxColor;
 
@@ -300,8 +301,11 @@ namespace fx::ColorUtilities
 			CString error;
 			wchar_t message[100] = { 0 };
 			FileExcept.GetErrorMessage(message, 100);
-			error.Format(_T("Error opening file: %s: %s"), palettePath, message);
-			AfxMessageBox(error, MB_ICONWARNING);
+
+			std::wstringstream ss;
+			ss << L"Error opening file : " << palettePath.GetString() << L": " << message;
+			AfxMessageBox(ss.str().c_str(), MB_ICONWARNING);
+
 			return nullptr;
 		}
 
