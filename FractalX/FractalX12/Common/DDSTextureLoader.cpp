@@ -1239,7 +1239,7 @@ static HRESULT CreateD3DResources12(
 	_In_ size_t arraySize,
 	_In_ DXGI_FORMAT format,
 	_In_ bool forceSRGB,
-	_In_ bool isCubeMap,
+	_In_ bool /*isCubeMap*/,
 	_In_reads_opt_(mipCount*arraySize) D3D12_SUBRESOURCE_DATA* initData,
 	ComPtr<ID3D12Resource>& texture,
 	ComPtr<ID3D12Resource>& textureUploadHeap
@@ -1270,8 +1270,9 @@ static HRESULT CreateD3DResources12(
 		texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 		texDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+        auto heapPropDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 		hr = device->CreateCommittedResource(
-			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+			&heapPropDefault,
 			D3D12_HEAP_FLAG_NONE,
 			&texDesc,
 			D3D12_RESOURCE_STATE_COMMON,
@@ -1289,10 +1290,12 @@ static HRESULT CreateD3DResources12(
 			const UINT num2DSubresources = texDesc.DepthOrArraySize * texDesc.MipLevels;
 			const UINT64 uploadBufferSize = GetRequiredIntermediateSize(texture.Get(), 0, num2DSubresources);
 
+            auto heapPropUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+            auto ResourceDescUploadBuf = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 			hr = device->CreateCommittedResource(
-				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+				&heapPropUpload,
 				D3D12_HEAP_FLAG_NONE,
-				&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
+				&ResourceDescUploadBuf,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
 				IID_PPV_ARGS(&textureUploadHeap));
@@ -1303,14 +1306,16 @@ static HRESULT CreateD3DResources12(
 			}
 			else
 			{
-				cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(),
-					D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
+                auto textureTransition = CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(),
+                    D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+				cmdList->ResourceBarrier(1, &textureTransition);
 
 				// Use Heap-allocating UpdateSubresources implementation for variable number of subresources (which is the case for textures).
 				UpdateSubresources(cmdList, texture.Get(), textureUploadHeap.Get(), 0, 0, num2DSubresources, initData);
 
-				cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(),
-					D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+                auto textureTransition2 = CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(),
+                    D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				cmdList->ResourceBarrier(1, &textureTransition2);
 			}
 		}
 	} break;
@@ -1677,7 +1682,7 @@ static HRESULT CreateTextureFromDDS12(
 	_In_reads_bytes_(bitSize) const uint8_t* bitData,
 	_In_ size_t bitSize,
 	_In_ size_t maxsize,
-	_In_ bool forceSRGB,
+	_In_ bool /*forceSRGB*/,
 	ComPtr<ID3D12Resource>& texture,
 	ComPtr<ID3D12Resource>& textureUploadHeap)
 {

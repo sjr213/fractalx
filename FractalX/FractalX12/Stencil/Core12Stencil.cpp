@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Core12Stencil.h"
 
+#include "NarrowCast.h"
 #include "GeometryGenerator.h"
 
 using namespace DirectX;
@@ -46,7 +47,7 @@ bool Core12Stencil::Initialize(HWND mainWnd, int width, int height)
 	return true;
 }
 
-void Core12Stencil::OnTimer(bool start)
+void Core12Stencil::OnTimer(bool /*start*/)
 {
 	m_timer.Tick();
 
@@ -110,15 +111,18 @@ void Core12Stencil::Draw()
 	m_commandList->RSSetScissorRects(1, &m_scissorRect);
 
 	// Indicate a state transition on the resource usage.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	auto backBuffer = CurrentBackBuffer();
+	auto barrierToRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_commandList->ResourceBarrier(1, &barrierToRenderTarget);
 
 	// Clear the back buffer and depth buffer.
 	m_commandList->ClearRenderTargetView(CurrentBackBufferView(), (float*)&m_mainPassCB.FogColor, 0, nullptr);
 	m_commandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	// Specify the buffers we are going to render to.
-	m_commandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
+	auto backBufferDesc = CurrentBackBufferView();
+	auto depthStencilDesc = DepthStencilView();
+	m_commandList->OMSetRenderTargets(1, &backBufferDesc, true, &depthStencilDesc);
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_srvDescriptorHeap.Get() };
 	m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -156,8 +160,8 @@ void Core12Stencil::Draw()
 	DrawRenderItems(m_commandList.Get(), m_ritemLayer[(int)RenderLayer::Shadow]);
 
 	// Indicate a state transition on the resource usage.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+	auto barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	m_commandList->ResourceBarrier(1, &barrierToPresent);
 
 	// Done recording commands.
 	ThrowIfFailed(m_commandList->Close());
@@ -345,9 +349,12 @@ void Core12Stencil::UpdateMainPassCB(const GameTimer& gt)
 	XMMATRIX proj = XMLoadFloat4x4(&m_proj);
 
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
-	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-	XMMATRIX invProj = XMMatrixInverse(&XMMatrixDeterminant(proj), proj);
-	XMMATRIX invViewProj = XMMatrixInverse(&XMMatrixDeterminant(viewProj), viewProj);
+	auto viewDet = XMMatrixDeterminant(view);
+	XMMATRIX invView = XMMatrixInverse(&viewDet, view);
+	auto projDet = XMMatrixDeterminant(proj);
+	XMMATRIX invProj = XMMatrixInverse(&projDet, proj);
+	auto viewProjDet = XMMatrixDeterminant(viewProj);
+	XMMATRIX invViewProj = XMMatrixInverse(&viewProjDet, viewProj);
 
 	XMStoreFloat4x4(&m_mainPassCB.View, XMMatrixTranspose(view));
 	XMStoreFloat4x4(&m_mainPassCB.InvView, XMMatrixTranspose(invView));
@@ -375,7 +382,7 @@ void Core12Stencil::UpdateMainPassCB(const GameTimer& gt)
 	currPassCB->CopyData(0, m_mainPassCB);
 }
 
-void Core12Stencil::UpdateReflectedPassCB(const GameTimer& gt)
+void Core12Stencil::UpdateReflectedPassCB(const GameTimer& /*gt*/)
 {
 	m_reflectedPassCB = m_mainPassCB;
 
@@ -497,7 +504,7 @@ void Core12Stencil::BuildDescriptorHeaps()
 	srvDesc.Format = bricksTex->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MipLevels = DxCore::narrow_cast<UINT>(-1);
 	m_d3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hDescriptor);
 
 	// next descriptor

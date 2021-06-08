@@ -203,7 +203,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	return TRUE;
 }
 
-void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
+void CMainFrame::SetDockingWindowIcons(BOOL /*bHiColorIcons*/)
 {
 }
 

@@ -142,8 +142,9 @@ void Core12Base::Resize(int width, int height)
 	optClear.Format = m_depthStencilFormat;
 	optClear.DepthStencil.Depth = 1.0f;
 	optClear.DepthStencil.Stencil = 0;
+	auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	ThrowIfFailed(m_d3dDevice->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&depthStencilDesc,
 		D3D12_RESOURCE_STATE_COMMON,
@@ -159,8 +160,8 @@ void Core12Base::Resize(int width, int height)
 	m_d3dDevice->CreateDepthStencilView(m_depthStencilBuffer.Get(), &dsvDesc, DepthStencilView());
 
 	// Transition the resource from its initial state to be used as a depth buffer.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_depthStencilBuffer.Get(),
-		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	m_commandList->ResourceBarrier(1, &barrier);
 
 	// Execute the resize commands.
 	ThrowIfFailed(m_commandList->Close());
@@ -366,10 +367,10 @@ void Core12Base::LogAdapters()
 		++i;
 	}
 
-	for (size_t i = 0; i < adapterList.size(); ++i)
+	for (size_t j = 0; j < adapterList.size(); ++j)
 	{
-		LogAdapterOutputs(adapterList[i]);
-		ReleaseCom(adapterList[i]);
+		LogAdapterOutputs(adapterList[j]);
+		ReleaseCom(adapterList[j]);
 	}
 }
 
