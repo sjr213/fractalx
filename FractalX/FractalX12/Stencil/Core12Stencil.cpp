@@ -1032,8 +1032,10 @@ void Core12Stencil::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const st
 	{
 		auto ri = ritems[i];
 
-		cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
-		cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
+		auto vertexBufferView = ri->Geo->VertexBufferView();
+		cmdList->IASetVertexBuffers(0, 1, &vertexBufferView);
+		auto indexBufferView = ri->Geo->IndexBufferView();
+		cmdList->IASetIndexBuffer(&indexBufferView);
 		cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
 
 		CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
