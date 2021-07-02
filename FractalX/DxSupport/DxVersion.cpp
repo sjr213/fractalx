@@ -2,7 +2,7 @@
 #include "DxVersion.h"
 
 
-// Test commit
+// Test commit again
 namespace DXF
 {
 	CString GetDxVersionString(DxVersion dxVersion)
