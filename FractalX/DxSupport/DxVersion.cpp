@@ -2,7 +2,7 @@
 #include "DxVersion.h"
 
 
-
+// Test commit
 namespace DXF
 {
 	CString GetDxVersionString(DxVersion dxVersion)
@@ -17,5 +17,6 @@ namespace DXF
 			assert(false);
 			return _T("DirectX 11");
 		}
+
 	}
 }
