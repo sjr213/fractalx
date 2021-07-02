@@ -10,4 +10,5 @@ namespace DXF
 	};
 
 	CString GetDxVersionString(DxVersion dxVersion);
+	void Serialize(CArchive& ar, DxVersion& dx);
 }

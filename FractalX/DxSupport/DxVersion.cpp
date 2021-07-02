@@ -2,7 +2,6 @@
 #include "DxVersion.h"
 
 
-// Test commit again 3
 namespace DXF
 {
 	CString GetDxVersionString(DxVersion dxVersion)
@@ -17,6 +16,19 @@ namespace DXF
 			assert(false);
 			return _T("DirectX 11");
 		}
+	}
 
+	void Serialize(CArchive& ar, DxVersion& dx)
+	{
+		if (ar.IsStoring())
+		{
+			ar << static_cast<std::uint16_t>(dx);
+		}
+		else
+		{
+			std::uint16_t dxVer = 1;
+			ar >> dxVer;
+			dx = static_cast<DxVersion>(dxVer);
+		}
 	}
 }

@@ -10,7 +10,7 @@ namespace DXF
 	// version 2 - added VertexSource and Vertex1 and Vertex2
 	void Serialize(CArchive& ar, ModelData& modelData)
 	{
-		const int ModelVersion = 2;
+		const int ModelVersion = 3;
 
 		if (ar.IsStoring())
 		{
@@ -22,6 +22,7 @@ namespace DXF
 			Serialize(ar, modelData.VertexTR);
 			Serialize(ar, modelData.VertexBL);
 			Serialize(ar, modelData.VertexBR);
+			Serialize(ar, modelData.DirectXVersion);
 		}
 		else
 		{
@@ -48,6 +49,14 @@ namespace DXF
 			Serialize(ar, modelData.VertexTR);
 			Serialize(ar, modelData.VertexBL);
 			Serialize(ar, modelData.VertexBR);
+
+			if (version < 3)
+			{
+				modelData.DirectXVersion = DxVersion::Dx11;
+				return;
+			}
+				
+			Serialize(ar, modelData.DirectXVersion);
 		}
 	}
 }
