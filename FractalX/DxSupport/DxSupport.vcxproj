@@ -188,6 +188,7 @@
     <ClInclude Include="RayTracerCommon.h" />
     <ClInclude Include="RayTracerDoubleCommon.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererDx11.h" />
     <ClInclude Include="RotationGroup.h" />
     <ClInclude Include="RotationParams.h" />
     <ClInclude Include="RotationSelectionType.h" />
@@ -232,7 +233,7 @@
     <ClCompile Include="MyDxHelpers.cpp" />
     <ClCompile Include="RayTracerCommon.cpp" />
     <ClCompile Include="RayTracerDoubleCommon.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererDx11.cpp" />
     <ClCompile Include="RotationParams.cpp" />
     <ClCompile Include="RotationSelectionType.cpp" />
     <ClCompile Include="SeedTriangles.cpp" />

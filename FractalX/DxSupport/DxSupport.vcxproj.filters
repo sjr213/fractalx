@@ -159,6 +159,9 @@
     <ClInclude Include="DxVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RendererDx11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -168,9 +171,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DxException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RotationParams.cpp">
@@ -270,6 +270,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DxVersion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererDx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

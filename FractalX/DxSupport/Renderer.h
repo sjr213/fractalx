@@ -4,10 +4,10 @@
 #include "ModelData.h"
 #include <optional>
 #include "Perspective.h"
+#include <string>
 #include <tuple>
 #include "Vertex.h"
 #include "VertexData.h"
-#include <string>
 
 class CDC;
 
@@ -21,8 +21,6 @@ namespace DXF
 	class Renderer
 	{
 	public:
-		static std::shared_ptr<Renderer> CreateRenderer();
-
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;
 

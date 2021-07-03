@@ -1109,7 +1109,7 @@ namespace DXF
 		}
 	};
 
-	std::shared_ptr<Renderer> Renderer::CreateRenderer()
+	std::shared_ptr<Renderer> CreateRendererDx11()
 	{
 		return std::make_shared<RendererImp>();
 	}
