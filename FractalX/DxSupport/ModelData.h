@@ -1,4 +1,6 @@
 #pragma once
+
+#include "DxVersion.h"
 #include "SeedTriangles.h"
 #include "VertexSource.h"
 #include "Vertex.h"
@@ -14,6 +16,7 @@ namespace DXF
 		Vertex<float> VertexTR;	// top right
 		Vertex<float> VertexBL;	// bottom left
 		Vertex<float> VertexBR; // bottom right
+		DxVersion DirectXVersion = DxVersion::Dx11;
 	};
 
 	void Serialize(CArchive& ar, ModelData& modelData);
