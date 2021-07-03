@@ -18,6 +18,34 @@ namespace DXF
 		}
 	}
 
+	int GetIndexForDxVersion(DxVersion dxVer)
+	{
+		switch (dxVer)
+		{
+		case DxVersion::Dx11:
+			return 0;
+		case DxVersion::Dx12:
+			return 1;
+		default:
+			assert(false);
+			return 0;
+		}
+	}
+
+	DxVersion GetDxVersionFromIndex(int index)
+	{
+		switch (index)
+		{
+		case 0:
+			return DxVersion::Dx11;
+		case 1:
+			return DxVersion::Dx12;
+		default:
+			assert(false);
+			return DxVersion::Dx11;
+		}
+	}
+
 	void Serialize(CArchive& ar, DxVersion& dx)
 	{
 		if (ar.IsStoring())
