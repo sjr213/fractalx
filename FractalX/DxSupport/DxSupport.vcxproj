@@ -101,7 +101,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DxCore.lib;D3D12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -146,6 +146,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +155,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DxCore.lib;D3D12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -167,6 +168,17 @@
     <ClInclude Include="CartesianConverterFactory.h" />
     <ClInclude Include="CartesianConverterGroup.h" />
     <ClInclude Include="DefaultFields.h" />
+    <ClInclude Include="DirectX12\Common\Core12Base.h" />
+    <ClInclude Include="DirectX12\Common\d3dUtil.h" />
+    <ClInclude Include="DirectX12\Common\d3dx12.h" />
+    <ClInclude Include="DirectX12\Common\DDSTextureLoader.h" />
+    <ClInclude Include="DirectX12\Common\GameTimer.h" />
+    <ClInclude Include="DirectX12\Common\GeometryGenerator.h" />
+    <ClInclude Include="DirectX12\Common\MathHelper.h" />
+    <ClInclude Include="DirectX12\Common\UploadBuffer.h" />
+    <ClInclude Include="DirectX12\Core12.h" />
+    <ClInclude Include="DirectX12\FrameResource.h" />
+    <ClInclude Include="DirectX12\RendererDx12.h" />
     <ClInclude Include="DoubleRayTracer.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
@@ -217,6 +229,15 @@
     <ClCompile Include="CartesianConverterFactory.cpp" />
     <ClCompile Include="CartesianConverterGroup.cpp" />
     <ClCompile Include="DefaultFields.cpp" />
+    <ClCompile Include="DirectX12\Common\Core12Base.cpp" />
+    <ClCompile Include="DirectX12\Common\d3dUtil.cpp" />
+    <ClCompile Include="DirectX12\Common\DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectX12\Common\GameTimer.cpp" />
+    <ClCompile Include="DirectX12\Common\GeometryGenerator.cpp" />
+    <ClCompile Include="DirectX12\Common\MathHelper.cpp" />
+    <ClCompile Include="DirectX12\Core12.cpp" />
+    <ClCompile Include="DirectX12\FrameResource.cpp" />
+    <ClCompile Include="DirectX12\RendererDx12.cpp" />
     <ClCompile Include="DoubleRayTracer.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />
