@@ -436,6 +436,7 @@ void Core12Stencil::LoadTextures()
 	m_textures[checkboardTex->Name] = std::move(checkboardTex);
 	m_textures[iceTex->Name] = std::move(iceTex);
 	m_textures[white1x1Tex->Name] = std::move(white1x1Tex);
+
 }
 
 void Core12Stencil::BuildRootSignature()

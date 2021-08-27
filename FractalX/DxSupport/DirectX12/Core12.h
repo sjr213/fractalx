@@ -3,11 +3,13 @@
 // Copy and adapt from StencilDemoApp.cpp
 
 #include "Common/Core12Base.h"
+#include "DefaultFields.h"
 #include <DirectXMath.h>
-#include "FrameResource.h"
-#include "Common/GameTimer.h"
 #include "Common/MathHelper.h"
 #include "Common/UploadBuffer.h"
+#include "RotationGroup.h"
+#include "FrameResourceFx.h"
+#include "Vertex.h"
 
 namespace DxSupport
 {
@@ -68,33 +70,49 @@ namespace DxSupport
 
 		bool Initialize(HWND mainWnd, int width, int height) override;
 
-		void OnTimer(bool start);
-
 		void Resize(int width, int height) override;
-		void Update() override;
-		void Update(const GameTimer& gt);
+		void Update(float totalTimeSecs, float deltaTimeSecs);
 		void Draw() override;
 
-		void OnMouseDown(WPARAM btnState, int x, int y) override;
-		void OnMouseUp(WPARAM btnState, int x, int y) override;
-		void OnMouseMove(WPARAM btnState, int x, int y) override;
+		// For FractalX
+		void SetVertices(std::vector<Vertex>&& vertices);
+		void SetIndices(std::vector<std::int32_t>&& indices);
+		void SetTextureColors(std::vector<uint32_t> colors);
+
+		void SetCamera(const DXF::Vertex<float>& camera);
+		void SetTarget(const DXF::Vertex<float>& target);
+		void SetPerspective(float nearView, float farView);
+
+		void SetRotationGroup(const DXF::RotationGroup& rg);
+		DXF::RotationGroup GetRotationGroup() const;
+
+		void SetBackgroundColor(const DirectX::XMFLOAT4& backgroundColor);
+		void SetAmbientColor(const DirectX::XMFLOAT4& ambientColor);
+		void SetDiffuseAlbedo(const DirectX::XMFLOAT4& diffuseAlbedo);
+		void SetFresnelR0(const DirectX::XMFLOAT3& fresnelR0);
+		void SetLight(int index, DirectX::XMFLOAT3& color, DirectX::XMFLOAT3& direction);
+		void SetWorldScale(const DXF::Vertex<float>& scale);
+		DXF::Vertex<float> GetWorldScale() const;
+		void SetBackgroundScale(const DXF::Vertex<float>& scale);
+		DXF::Vertex<float> GetWBackgroundScale() const;
+		void SetWorlds(float totalTime); // replaces OnKeyboardInput()
+
+		bool IsReady();
 
 	private:
 
-		void OnKeyboardInput(const GameTimer& gt);
 		void UpdateCamera();
-		void AnimateMaterials(const GameTimer& gt);
+		void AnimateMaterials();
 		void UpdateObjectCBs();
-		void UpdateMaterialCBs(const GameTimer& gt);
-		void UpdateMainPassCB(const GameTimer& gt);
-		void UpdateReflectedPassCB(const GameTimer& gt);
+		void UpdateMaterialCBs();
+		void UpdateMainPassCB(float totalTimeSecs, float deltaTimeSecs);
+		void UpdateReflectedPassCB();
 
 		void LoadTextures();
 		void BuildRootSignature();
 		void BuildDescriptorHeaps();
 		void BuildShadersAndInputLayout();
-		void BuildRoomGeometry();
-		void BuildSkullGeometry();
+		void BuildMainModelGeometry();
 		void BuildPSOs();
 		void BuildFrameResources();
 		void BuildMaterials();
@@ -105,8 +123,8 @@ namespace DxSupport
 
 	private:
 
-		std::vector<std::unique_ptr<FrameResourceStencil>> m_frameResources;
-		FrameResourceStencil* m_currFrameResource = nullptr;
+		std::vector<std::unique_ptr<FrameResourceFx>> m_frameResources;
+		FrameResourceFx* m_currFrameResource = nullptr;
 		int m_currFrameResourceIndex = 0;
 
 		UINT m_cbvSrvDescriptorSize = 0;
@@ -124,9 +142,7 @@ namespace DxSupport
 		std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 
 		// Cache render items of interest.
-		RenderItem* m_skullRitem = nullptr;
-		RenderItem* m_reflectedSkullRitem = nullptr;
-		RenderItem* m_shadowedSkullRitem = nullptr;
+		RenderItem* m_mainRitem = nullptr;
 
 		// List of all the render items.
 		std::vector<std::unique_ptr<RenderItem>> m_allRitems;
@@ -147,7 +163,21 @@ namespace DxSupport
 		float m_phi = 0.42f * DirectX::XM_PI;
 		float m_radius = 12.0f;
 
-		POINT m_lastMousePos;
-		GameTimer m_timer;
+		// new for FractalX
+		std::vector<Vertex> m_vertices;
+		std::vector<std::int32_t> m_indices;
+		std::vector<uint32_t> m_colors;
+		DXF::Vertex<float> m_camera = DXF::GetDefaultCamera();
+		DXF::Vertex<float> m_target = DXF::GetDefaultTarget();
+		float m_near = 1.0f;
+		float m_far = 1000.0f;
+		DXF::RotationGroup m_rotationGroup;
+		DirectX::XMFLOAT4 m_backgroundColor = {1.0f, 0.0f, 0.0f, 1.0f};
+		DirectX::XMFLOAT4 m_ambientLight = { 0.25f, 0.25f, 0.25f, 1.0f };
+		DirectX::XMFLOAT4 m_diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
+		DirectX::XMFLOAT3 m_fresnelR0 = { 0.05f, 0.05f, 0.05f };
+		Light m_lights[3];
+		DXF::Vertex<float> m_worldScale = DXF::GetDefaultWorldScale();
+		DXF::Vertex<float> m_backgroundScale = DXF::GetDefaultWorldScale();
 	};
 }

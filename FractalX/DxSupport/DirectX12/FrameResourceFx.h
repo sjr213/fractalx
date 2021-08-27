@@ -51,6 +51,12 @@ namespace DxSupport
             Normal(nx, ny, nz),
             TexC(u, v) {}
 
+        Vertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 norm, DirectX::XMFLOAT2 texC)
+            : Pos(pos)
+            , Normal(norm)
+            , TexC(texC)
+        {}
+
         DirectX::XMFLOAT3 Pos;
         DirectX::XMFLOAT3 Normal;
         DirectX::XMFLOAT2 TexC;
@@ -58,14 +64,14 @@ namespace DxSupport
 
     // Stores the resources needed for the CPU to build the command lists
     // for a frame.  
-    struct FrameResourceStencil
+    struct FrameResourceFx
     {
     public:
 
-        FrameResourceStencil(ID3D12Device* device, UINT passCount, UINT objectCount, UINT materialCount);
-        FrameResourceStencil(const FrameResourceStencil& rhs) = delete;
-        FrameResourceStencil& operator=(const FrameResourceStencil& rhs) = delete;
-        ~FrameResourceStencil();
+        FrameResourceFx(ID3D12Device* device, UINT passCount, UINT objectCount, UINT materialCount);
+        FrameResourceFx(const FrameResourceFx& rhs) = delete;
+        FrameResourceFx& operator=(const FrameResourceFx& rhs) = delete;
+        ~FrameResourceFx();
 
         // We cannot reset the allocator until the GPU is done processing the commands.
         // So each frame needs their own allocator.

@@ -92,7 +92,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\DxCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -101,7 +101,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>DxCore.lib;D3D12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -146,7 +146,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\DxCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,7 +155,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>DxCore.lib;D3D12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -172,12 +172,12 @@
     <ClInclude Include="DirectX12\Common\d3dUtil.h" />
     <ClInclude Include="DirectX12\Common\d3dx12.h" />
     <ClInclude Include="DirectX12\Common\DDSTextureLoader.h" />
-    <ClInclude Include="DirectX12\Common\GameTimer.h" />
     <ClInclude Include="DirectX12\Common\GeometryGenerator.h" />
     <ClInclude Include="DirectX12\Common\MathHelper.h" />
     <ClInclude Include="DirectX12\Common\UploadBuffer.h" />
     <ClInclude Include="DirectX12\Core12.h" />
-    <ClInclude Include="DirectX12\FrameResource.h" />
+    <ClInclude Include="DirectX12\Dx12TextureMapper.h" />
+    <ClInclude Include="DirectX12\FrameResourceFx.h" />
     <ClInclude Include="DirectX12\RendererDx12.h" />
     <ClInclude Include="DoubleRayTracer.h" />
     <ClInclude Include="DxEffectColors.h" />
@@ -232,11 +232,11 @@
     <ClCompile Include="DirectX12\Common\Core12Base.cpp" />
     <ClCompile Include="DirectX12\Common\d3dUtil.cpp" />
     <ClCompile Include="DirectX12\Common\DDSTextureLoader.cpp" />
-    <ClCompile Include="DirectX12\Common\GameTimer.cpp" />
     <ClCompile Include="DirectX12\Common\GeometryGenerator.cpp" />
     <ClCompile Include="DirectX12\Common\MathHelper.cpp" />
     <ClCompile Include="DirectX12\Core12.cpp" />
-    <ClCompile Include="DirectX12\FrameResource.cpp" />
+    <ClCompile Include="DirectX12\Dx12TextureMapper.cpp" />
+    <ClCompile Include="DirectX12\FrameResourceFx.cpp" />
     <ClCompile Include="DirectX12\RendererDx12.cpp" />
     <ClCompile Include="DoubleRayTracer.cpp" />
     <ClCompile Include="DxException.cpp" />

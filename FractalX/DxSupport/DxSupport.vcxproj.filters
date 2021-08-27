@@ -183,9 +183,6 @@
     <ClInclude Include="DirectX12\Common\DDSTextureLoader.h">
       <Filter>Dx12\Common</Filter>
     </ClInclude>
-    <ClInclude Include="DirectX12\Common\GameTimer.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
     <ClInclude Include="DirectX12\Common\GeometryGenerator.h">
       <Filter>Dx12\Common</Filter>
     </ClInclude>
@@ -198,7 +195,10 @@
     <ClInclude Include="DirectX12\Core12.h">
       <Filter>Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="DirectX12\FrameResource.h">
+    <ClInclude Include="DirectX12\FrameResourceFx.h">
+      <Filter>Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\Dx12TextureMapper.h">
       <Filter>Dx12</Filter>
     </ClInclude>
   </ItemGroup>
@@ -314,9 +314,6 @@
     <ClCompile Include="RendererDx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectX12\RendererDx12.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="DirectX12\Common\Core12Base.cpp">
       <Filter>Dx12\Common</Filter>
     </ClCompile>
@@ -324,9 +321,6 @@
       <Filter>Dx12\Common</Filter>
     </ClCompile>
     <ClCompile Include="DirectX12\Common\DDSTextureLoader.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Common\GameTimer.cpp">
       <Filter>Dx12\Common</Filter>
     </ClCompile>
     <ClCompile Include="DirectX12\Common\GeometryGenerator.cpp">
@@ -338,7 +332,13 @@
     <ClCompile Include="DirectX12\Core12.cpp">
       <Filter>Dx12</Filter>
     </ClCompile>
-    <ClCompile Include="DirectX12\FrameResource.cpp">
+    <ClCompile Include="DirectX12\RendererDx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\FrameResourceFx.cpp">
+      <Filter>Dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\Dx12TextureMapper.cpp">
       <Filter>Dx12</Filter>
     </ClCompile>
   </ItemGroup>

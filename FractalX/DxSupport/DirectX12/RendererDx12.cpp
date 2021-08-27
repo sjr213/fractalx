@@ -31,9 +31,12 @@
 #include "Core12.h"
 //#include "vertexFactory.h"
 //#include "VertexTypes.h"
+#include "FrameResourceFx.h"
+#include "NarrowCast.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+using namespace DxCore;
 
 using Microsoft::WRL::ComPtr;
 
@@ -50,8 +53,6 @@ namespace DXF
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
 
-		RotationGroup m_rotationGroup;
-
 		float m_nearPlaneView = 0.1f;
 		float m_farPlaneView = 10.0f;
 
@@ -65,8 +66,6 @@ namespace DXF
 		DxEffectColors m_effectColors;
 		DxLights m_lights;
 
-		Vertex<float> m_worldScale = GetDefaultWorldScale();
-		Vertex<float> m_backgroundScale = GetDefaultWorldScale();
 		std::shared_ptr<DxSupport::Core12> m_core12;
 
 		bool m_ready = false;
@@ -83,24 +82,32 @@ namespace DXF
 
 		void Initialize(HWND window, int width, int height) override
 		{
-			m_window = window;
-			m_outputWidth = std::max(width, 1);
-			m_outputHeight = std::max(height, 1);
-
+			m_window = window;							// maybe remove m_window
+			m_outputWidth = std::max(width, 1);			// maybe remove m_outputWidth
+			m_outputHeight = std::max(height, 1);		// maybe remove m_outputHeight
+			m_core12->Initialize(m_window, m_outputWidth, m_outputHeight);
 		}
 
 		void Tick() override
 		{
 			m_timer.Tick([&]()
 				{
-//					Update(m_timer);
+					Update(m_timer);
 				});
 
 			// Don't try to render anything before the first Update.
 			if (m_timer.GetFrameCount() == 0)
 				return;
 
-//			Render();
+			m_core12->Draw();
+		}
+
+		void Update(DXF::StepTimer const& timer)
+		{
+			float time = float(timer.GetTotalSeconds());
+			float deltaTime = float(timer.GetElapsedSeconds());
+
+			m_core12->Update(time, deltaTime);
 		}
 
 		void OnWindowSizeChanged(int width, int height) override
@@ -131,9 +138,25 @@ namespace DXF
 			height = m_outputHeight;
 		}
 
-		void SetModel(const DxVertexData& /*vertexData*/) override
+		void SetModel(const DxVertexData& vertexData) override
 		{
+			std::vector<DxSupport::Vertex> vertices;
+			vertices.reserve(vertexData.Vertices.size());
+			std::for_each(vertexData.Vertices.begin(), vertexData.Vertices.end(),
+				[&vertices](const DirectX::VertexPositionNormalTexture& v)
+				{
+					vertices.emplace_back(v.position, v.normal, v.textureCoordinate);
+				});
+			m_core12->SetVertices(std::move(vertices));
 
+			std::vector<int32_t> indices;
+			indices.reserve(vertexData.Indices.size());
+			std::for_each(vertexData.Indices.begin(), vertexData.Indices.end(),
+				[&indices](const uint32_t& i)
+				{
+					indices.push_back(narrow<int32_t>(i));
+				});
+			m_core12->SetIndices(std::move(indices));
 		}
 
 		void SetModel2(const DxBackgroundVertexData& /*bkgndVertexData*/) override
@@ -141,26 +164,28 @@ namespace DXF
 
 		}
 
-
-
 		void SetRotationGroup(const RotationGroup& rg) override
 		{
-			m_rotationGroup = rg;
+			m_core12->SetRotationGroup(rg);
 		}
 
 		RotationGroup GetRotationGroup() override
 		{
-			return m_rotationGroup;
+			return m_core12->GetRotationGroup();
 		}
 
-		void RefreshRender(float /*time*/) override
+		void RefreshRender(float time) override
 		{
+			if (!m_core12->IsReady())
+				return;
 
+			m_core12->Update(time, time);
+			m_core12->Draw();
 		}
 
 		void SetTextureColors(std::vector<uint32_t> colors) override
 		{
-
+			m_core12->SetTextureColors(colors);
 		}
 
 		void SetTexture2()
@@ -179,9 +204,6 @@ namespace DXF
 
 		void SetPerspective(const DxPerspective& perspective) override
 		{
-	//		if (!m_d3dDevice)
-	//			return;
-
 			float nearView = perspective.NearPlane;
 			float farView = perspective.FarPlane;
 
@@ -191,17 +213,18 @@ namespace DXF
 			m_nearPlaneView = nearView;
 			m_farPlaneView = farView;
 
-	//		CreateProjectionMatrix();
+			m_core12->SetPerspective(nearView, farView);
 		}
 
-		void SetView(const Vertex<float>& /*camera*/, const Vertex<float>& /*target*/, const Vertex<float>& /*targetBackgnd*/) override
+		void SetView(const Vertex<float>& camera, const Vertex<float>& target, const Vertex<float>& /*targetBackgnd*/) override
 		{
-
+			m_core12->SetCamera(camera);
+			m_core12->SetTarget(target);
 		}
 
-		void SetTarget(const Vertex<float>& /*target*/) override
+		void SetTarget(const Vertex<float>& target) override
 		{
-
+			m_core12->SetTarget(target);
 		}
 
 		void SetTargetBackground(const Vertex<float>& /*targetBackgnd*/) override
@@ -226,7 +249,7 @@ namespace DXF
 
 		bool IsReady() override
 		{
-			return false;
+			return m_core12 != nullptr;
 		}
 
 		bool DrawImage(CDC& /*dc*/, CSize /*targetSize*/) override
@@ -239,19 +262,29 @@ namespace DXF
 			return CSize(m_outputWidth, m_outputHeight);
 		}
 
-		void SetBackgroundColor(DirectX::SimpleMath::Color /*bkColor*/) override
+		void SetBackgroundColor(DirectX::SimpleMath::Color bkColor) override
 		{
-
+			m_core12->SetBackgroundColor(bkColor);
 		}
 
-		void SetEffectColors(DxEffectColors /*effectColors*/) override
+		void SetEffectColors(DxEffectColors effectColors) override
 		{
-
+			// These values have different meanings than Dx11
+			m_core12->SetAmbientColor(effectColors.AmbientColor);
+			m_core12->SetDiffuseAlbedo(effectColors.DiffuseColor);
+			m_core12->SetFresnelR0(effectColors.SpecularColor.ToVector3());
 		}
 
-		void SetLights(DxLights /*lights*/) override
+		void SetLights(DxLights lights) override
 		{
+			for (int i = 0; i < 3; ++i)
+			{
+				auto color = lights.Lights.at(i).DiffuseColor.ToVector3();
+				if (lights.Lights.at(i).Enable == false)
+					color = { 0,0,0 };
 
+				m_core12->SetLight(i, color, lights.Lights.at(i).Direction);
+			}
 		}
 
 		std::optional<DXF::Vertex<float>> Map2Dto3D(int /*x*/, int /*y*/) override
@@ -261,22 +294,22 @@ namespace DXF
 
 		void SetWorldScale(const DXF::Vertex<float>& scale) override
 		{
-			m_worldScale = scale;
+			m_core12->SetWorldScale(scale);
 		}
 
 		Vertex<float> GetWorldScale() const override
 		{
-			return m_worldScale;
+			return m_core12->GetWorldScale();
 		}
 
 		void SetBackgroundScale(const DXF::Vertex<float>& scale) override
 		{
-			m_backgroundScale = scale;
+			m_core12->SetBackgroundScale(scale);
 		}
 
 		Vertex<float> GetBackgroundScale() const override
 		{
-			return m_backgroundScale;
+			return m_core12->GetWBackgroundScale();
 		}
 
 	protected:
@@ -286,12 +319,6 @@ namespace DXF
 		{
 
 		}
-
-
-
-
-
-
 	};
 
 	std::shared_ptr<Renderer> CreateRendererDx12()

@@ -24,13 +24,7 @@ public:
 
 	virtual bool Initialize(HWND mainWnd, int width, int height);
 	virtual void Resize(int width, int height);
-	virtual void Update() = 0;
 	virtual void Draw() = 0;
-
-	// Convenience overrides for handling mouse input.
-	virtual void OnMouseDown(WPARAM /*btnState*/, int /*x*/, int /*y*/) { }
-	virtual void OnMouseUp(WPARAM /*btnState*/, int /*x*/, int /*y*/) { }
-	virtual void OnMouseMove(WPARAM /*btnState*/, int /*x*/, int /*y*/) { }
 
 protected:
 	virtual void CreateRtvAndDsvDescriptorHeaps();
