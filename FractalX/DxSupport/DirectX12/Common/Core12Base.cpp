@@ -52,8 +52,11 @@ bool Core12Base::Initialize(HWND mainWnd, int width, int height)
 
 	m_hWnd = mainWnd;
 
-	if (!InitDirect3D())
-		return false;
+	if (m_d3dDevice == nullptr)
+	{
+		if (!InitDirect3D())
+			return false;
+	}
 
 	// Do the initial resize code.
 	Resize(width, height);
