@@ -33,6 +33,7 @@
 //#include "VertexTypes.h"
 #include "FrameResourceFx.h"
 #include "NarrowCast.h"
+#include "ColorUtil.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -185,7 +186,8 @@ namespace DXF
 
 		void SetTextureColors(std::vector<uint32_t> colors) override
 		{
-			m_core12->SetTextureColors(colors);
+			// convert colors from argb to rgba
+			m_core12->SetTextureColors(ColorUtil::ConvertFromARGBtoRGBA(colors));
 		}
 
 		void SetTexture2()
