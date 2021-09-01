@@ -167,6 +167,7 @@
     <ClInclude Include="CartesianConversionType.h" />
     <ClInclude Include="CartesianConverterFactory.h" />
     <ClInclude Include="CartesianConverterGroup.h" />
+    <ClInclude Include="ColorUtil.h" />
     <ClInclude Include="DefaultFields.h" />
     <ClInclude Include="DirectX12\Common\Core12Base.h" />
     <ClInclude Include="DirectX12\Common\d3dUtil.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="CartesianConversionType.cpp" />
     <ClCompile Include="CartesianConverterFactory.cpp" />
     <ClCompile Include="CartesianConverterGroup.cpp" />
+    <ClCompile Include="ColorUtil.cpp" />
     <ClCompile Include="DefaultFields.cpp" />
     <ClCompile Include="DirectX12\Common\Core12Base.cpp" />
     <ClCompile Include="DirectX12\Common\d3dUtil.cpp" />

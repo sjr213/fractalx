@@ -201,6 +201,9 @@
     <ClInclude Include="DirectX12\Dx12TextureMapper.h">
       <Filter>Dx12</Filter>
     </ClInclude>
+    <ClInclude Include="ColorUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -340,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="DirectX12\Dx12TextureMapper.cpp">
       <Filter>Dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorUtil.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
