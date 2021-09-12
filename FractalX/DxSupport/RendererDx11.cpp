@@ -311,6 +311,9 @@ namespace DXF
 				PrepareBackgroundTexture();
 		}
 
+		void ReloadTextures() override
+		{}
+
 		DxPerspective GetPerspective() const override
 		{
 			DxPerspective perspective;

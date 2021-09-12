@@ -443,15 +443,51 @@ void Core12::UpdateReflectedPassCB()
 	currPassCB->CopyData(1, m_reflectedPassCB);
 }
 
+void Core12::ReloadTextures()
+{
+	if (m_d3dDevice == nullptr)
+		return;
+
+	// the textures don't exist yet they will be created later during intialization
+	// otherwise continue to replace the textures
+	if (m_textures.empty())
+		return;
+
+	// Cycle through the circular frame resource array.
+	m_currFrameResourceIndex = (m_currFrameResourceIndex + 1) % g_NumFrameResources;
+	m_currFrameResource = m_frameResources[m_currFrameResourceIndex].get();
+
+	// Has the GPU finished processing the commands of the current frame resource?
+	// If not, wait until the GPU has completed commands up to this fence point.
+	if (m_currFrameResource->Fence != 0 && m_fence->GetCompletedValue() < m_currFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		ThrowIfFailed(m_fence->SetEventOnCompletion(m_currFrameResource->Fence, eventHandle));
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
+
+	auto cmdListAlloc = m_currFrameResource->CmdListAlloc;
+
+	ThrowIfFailed(cmdListAlloc->Reset());
+	ThrowIfFailed(m_commandList->Reset(cmdListAlloc.Get(), nullptr));
+
+	LoadTextures();
+
+	// Execute the initialization commands.
+	ThrowIfFailed(m_commandList->Close());
+	ID3D12CommandList* cmdsLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+}
 
 void Core12::LoadTextures()
 {
 	// from https://stackoverflow.com/questions/35568302/what-is-the-d3d12-equivalent-of-d3d11-createtexture2d
 
-//	ComPtr<ID3D12Resource> textureUploadHeap;
-
+	std::string textureName = "colorTex";
+	m_textures[textureName].reset();
 	auto colorTex = std::make_unique<Texture>();
-	colorTex->Name = "colorTex";
+	colorTex->Name = textureName;
 
 	// Create the texture.
 	UINT textureWidth = DxCore::narrow<UINT>(m_colors.size());
@@ -503,7 +539,7 @@ void Core12::LoadTextures()
 	UpdateSubresources(m_commandList.Get(), colorTex->Resource.Get(), colorTex->UploadHeap.Get(), 0, 0, 1, &textureData);
 	auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(colorTex->Resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	m_commandList->ResourceBarrier(1, &resourceBarrier);
-
+	
 	m_textures[colorTex->Name] = std::move(colorTex);
 }
 

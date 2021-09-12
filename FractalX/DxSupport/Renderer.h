@@ -48,6 +48,8 @@ namespace DXF
 
 		virtual void SetTextureColors(std::vector<uint32_t> colors) = 0;
 
+		virtual void ReloadTextures() = 0;
+
 		virtual void SetPerspective(const DxPerspective& perspective) = 0;
 
 		virtual DxPerspective GetPerspective() const = 0;

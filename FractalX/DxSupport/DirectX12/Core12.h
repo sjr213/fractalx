@@ -99,6 +99,8 @@ namespace DxSupport
 
 		bool IsReady();
 
+		void ReloadTextures();
+
 	private:
 
 		void UpdateCamera();
