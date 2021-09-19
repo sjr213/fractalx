@@ -121,7 +121,7 @@ namespace DXF
 
 			try
 			{
-//				CreateResources();
+				m_core12->Resize(width, height);
 				m_ready = true;
 			}
 			catch (DxException& ex)
