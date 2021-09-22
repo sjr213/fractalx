@@ -167,6 +167,9 @@ namespace DXF
 			if (!IsReady())
 				return;
 
+			if (width == m_outputWidth && height == m_outputHeight)
+				return;
+
 			m_outputWidth = std::max(width, 1);
 			m_outputHeight = std::max(height, 1);
 
@@ -174,6 +177,7 @@ namespace DXF
 			{
 				CreateResources();
 				m_ready = true;
+				RefreshRender(0);
 			}
 			catch (DxException & ex)
 			{

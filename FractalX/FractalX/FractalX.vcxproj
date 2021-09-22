@@ -206,6 +206,7 @@
     <ClInclude Include="ContrastDlg.h" />
     <ClInclude Include="ConversionUtil.h" />
     <ClInclude Include="ctrls.h" />
+    <ClInclude Include="CustomeHints.h" />
     <ClInclude Include="DialogUtils.h" />
     <ClInclude Include="EffectColorDlg.h" />
     <ClInclude Include="FileSupport.h" />

@@ -116,6 +116,9 @@ namespace DXF
 			if (!IsReady())
 				return;
 
+			if (width == m_outputWidth && height == m_outputHeight)
+				return;
+
 			m_outputWidth = std::max(width, 1);
 			m_outputHeight = std::max(height, 1);
 
@@ -123,6 +126,8 @@ namespace DXF
 			{
 				m_core12->Resize(width, height);
 				m_ready = true;
+				m_core12->Update(0, 0);
+				m_core12->Draw();
 			}
 			catch (DxException& ex)
 			{
