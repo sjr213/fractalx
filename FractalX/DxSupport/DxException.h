@@ -1,6 +1,6 @@
 #pragma once
 #include <vcruntime_exception.h>
-
+#include <string>
 
 namespace DXF
 {
@@ -21,7 +21,7 @@ namespace DXF
 		long m_hr;
 	};
 
-	inline void ThrowIfFailed(HRESULT hr, std::string msg)
+	inline void ThrowIfFailure(HRESULT hr, std::string msg)
 	{
 		if (FAILED(hr))
 		{

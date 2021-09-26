@@ -84,6 +84,11 @@ void Core12Base::CreateRtvAndDsvDescriptorHeaps()
 		&dsvHeapDesc, IID_PPV_ARGS(m_dsvHeap.GetAddressOf())));
 }
 
+CSize Core12Base::GetClientSize()
+{
+	return CSize(m_clientWidth, m_clientHeight);
+}
+
 void Core12Base::Resize(int width, int height)
 {
 	assert(m_d3dDevice);

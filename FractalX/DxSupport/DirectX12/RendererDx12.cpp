@@ -3,41 +3,23 @@
 #include "Renderer.h"
 
 #include <afxwin.h>
-//#include <algorithm>
-//#include "BackgroundVertexData.h"
-//#include "CommonStates.h"
-//#include <d3d11_1.h>
-//#include "DefaultFields.h"
+#include "ColorUtil.h"
+#include "Core12.h"
 #include <DirectXColors.h>
-//#include "DirectXHelpers.h"
-//#include "DirectXPackedVector.h"
-//#include "DxfColorFactory.h"
 #include "DxEffectColors.h"
 #include "DxException.h"
-#include <wrl/client.h>
-//#include "DxFactoryMethods.h"
 #include "DxLight.h"
 #include <dxgi.h>
-//#include <dxgi1_2.h>
-//#include "DxWicTextureFactory.h"
-//#include "Effects.h"
-//#include "ModelData.h"
-//#include "MyDxHelpers.h"
-//#include "PrimitiveBatch.h"
-#include "RotationGroup.h"
-#include "SimpleMath.h"
-
-#include "StepTimer.h"
-#include "Core12.h"
-//#include "vertexFactory.h"
-//#include "VertexTypes.h"
 #include "FrameResourceFx.h"
 #include "NarrowCast.h"
-#include "ColorUtil.h"
+#include "RotationGroup.h"
+#include "SimpleMath.h"
+#include "StepTimer.h"
+#include <wrl/client.h>
 
+using namespace DxCore;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
-using namespace DxCore;
 
 using Microsoft::WRL::ComPtr;
 
@@ -46,11 +28,6 @@ namespace DXF
 	class RendererDx12Imp : public Renderer
 	{
 	private:
-		// Device resources.
-		HWND m_window;
-		int m_outputWidth;
-		int m_outputHeight;
-
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
 
@@ -74,19 +51,13 @@ namespace DXF
 	public:
 
 		RendererDx12Imp() :
-			m_window(nullptr),
-			m_outputWidth(400),
-			m_outputHeight(400),
 			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)),	// r,g.b,a
 			m_core12(new DxSupport::Core12())
 		{}
 
 		void Initialize(HWND window, int width, int height) override
 		{
-			m_window = window;							// maybe remove m_window
-			m_outputWidth = std::max(width, 1);			// maybe remove m_outputWidth
-			m_outputHeight = std::max(height, 1);		// maybe remove m_outputHeight
-			m_core12->Initialize(m_window, m_outputWidth, m_outputHeight);
+			m_core12->Initialize(window, width, height);
 		}
 
 		void Tick() override
@@ -116,11 +87,10 @@ namespace DXF
 			if (!IsReady())
 				return;
 
-			if (width == m_outputWidth && height == m_outputHeight)
-				return;
+			auto size = m_core12->GetClientSize();
 
-			m_outputWidth = std::max(width, 1);
-			m_outputHeight = std::max(height, 1);
+			if (width == size.cx && height == size.cy)
+				return;
 
 			try
 			{
@@ -140,8 +110,9 @@ namespace DXF
 
 		void GetWindowSize(int& width, int& height) const override
 		{
-			width = m_outputWidth;
-			height = m_outputHeight;
+			auto size = m_core12->GetClientSize();
+			width = size.cx;
+			height = size.cy;
 		}
 
 		void SetModel(const DxVertexData& vertexData) override
@@ -271,7 +242,8 @@ namespace DXF
 
 		CSize GetScreenSize() const override
 		{
-			return CSize(m_outputWidth, m_outputHeight);
+			auto size = m_core12->GetClientSize();
+			return CSize(size.cx, size.cy);
 		}
 
 		void SetBackgroundColor(DirectX::SimpleMath::Color bkColor) override

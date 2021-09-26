@@ -529,9 +529,9 @@ namespace DXF
 			};
 
 			Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
-			DXF::ThrowIfFailed(CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgi_factory), "failed to create dxgi factory");
+			DXF::ThrowIfFailure(CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgi_factory), "failed to create dxgi factory");
 
-			DXF::ThrowIfFailed(dxgi_factory.As(&m_dxgi_factory), "failed to create dxgi factory1");
+			DXF::ThrowIfFailure(dxgi_factory.As(&m_dxgi_factory), "failed to create dxgi factory1");
 
 			// Create the DX11 API device object, and get a corresponding context.
 			ComPtr<ID3D11Device> device;
@@ -582,8 +582,8 @@ namespace DXF
 				}
 			}
 #endif
-			DXF::ThrowIfFailed(device.As(&m_d3dDevice), "device 1 not supported");
-			DXF::ThrowIfFailed(context.As(&m_d3dContext), "context 1 not supported");
+			DXF::ThrowIfFailure(device.As(&m_d3dDevice), "device 1 not supported");
+			DXF::ThrowIfFailure(context.As(&m_d3dContext), "context 1 not supported");
 
 			CreateBlendState();
 
@@ -598,7 +598,7 @@ namespace DXF
 			size_t byteCodeLength;
 			m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
-			DXF::ThrowIfFailed(
+			DXF::ThrowIfFailure(
 				m_d3dDevice->CreateInputLayout(VertexPositionNormalTexture::InputElements,
 					VertexPositionNormalTexture::InputElementCount,
 					shaderByteCode, byteCodeLength,
@@ -607,7 +607,7 @@ namespace DXF
 			if (m_textureColors.empty())
 				m_textureColors = CreateRainbow();
 
-			DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture,
+			DXF::ThrowIfFailure(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture,
 				m_textureView), "failed to create texture");
 
 			m_effect->SetTexture(m_textureView.Get());
@@ -647,11 +647,11 @@ namespace DXF
 				if (m_textureColors.empty())
 					return;
 
-				DXF::ThrowIfFailed(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture2,
+				DXF::ThrowIfFailure(CreateTexture2D(*m_d3dDevice.Get(), m_textureColors, m_texture2,
 						m_textureView2), "failed to create texture2");
 			}
 			else
-				DXF::ThrowIfFailed(WicTextureFactory::CreateWicTexture2D(*m_d3dDevice.Get(), *m_d3dContext.Get(),
+				DXF::ThrowIfFailure(WicTextureFactory::CreateWicTexture2D(*m_d3dDevice.Get(), *m_d3dContext.Get(),
 					m_textureFile, m_texture2, m_textureView2), "failed to create wic texture2");
 
 			m_effect2->SetTexture(m_textureView2.Get());
@@ -686,7 +686,7 @@ namespace DXF
 			}
 			else
 			{
-				DXF::ThrowIfFailed(hr, "failed to resize swap chain buffer");
+				DXF::ThrowIfFailure(hr, "failed to resize swap chain buffer");
 				return true;
 			}
 		}
@@ -695,15 +695,15 @@ namespace DXF
 		{
 			// First, retrieve the underlying DXGI Device from the D3D Device.
 			ComPtr<IDXGIDevice1> dxgiDevice;
-			DXF::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice), "device 1 not supported");
+			DXF::ThrowIfFailure(m_d3dDevice.As(&dxgiDevice), "device 1 not supported");
 
 			// Identify the physical adapter (GPU or card) this device is running on.
 			ComPtr<IDXGIAdapter> dxgiAdapter;
-			DXF::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()), "could not get adapter");
+			DXF::ThrowIfFailure(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()), "could not get adapter");
 
 			// And obtain the factory object that created it.
 			ComPtr<IDXGIFactory2> dxgiFactory;
-			DXF::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf())), "could not get factory 2 from adapter");
+			DXF::ThrowIfFailure(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf())), "could not get factory 2 from adapter");
 
 			// Create a descriptor for the swap chain.
 			DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -720,7 +720,7 @@ namespace DXF
 			fsSwapChainDesc.Windowed = TRUE;
 
 			// Create a SwapChain from a Win32 window.
-			DXF::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
+			DXF::ThrowIfFailure(dxgiFactory->CreateSwapChainForHwnd(
 				m_d3dDevice.Get(),
 				m_window,
 				&swapChainDesc,
@@ -730,7 +730,7 @@ namespace DXF
 			), "failed to create swap chain");
 
 			// This template does not support exclusive full screen mode and prevents DXGI from responding to the ALT+ENTER shortcut.
-			DXF::ThrowIfFailed(dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER), "failed to associate window");
+			DXF::ThrowIfFailure(dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER), "failed to associate window");
 		}
 
 		// Allocate all memory resources that change on a window SizeChanged event.
@@ -761,10 +761,10 @@ namespace DXF
 
 			// Obtain the back buffer for this window which will be the final 3D render target.
 			ComPtr<ID3D11Texture2D> backBuffer;
-			DXF::ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())), "failed to get back buffer");
+			DXF::ThrowIfFailure(m_swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())), "failed to get back buffer");
 
 			// Create a view interface on the render target to use on bind.
-			DXF::ThrowIfFailed(m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), nullptr,
+			DXF::ThrowIfFailure(m_d3dDevice->CreateRenderTargetView(backBuffer.Get(), nullptr,
 				m_renderTargetView.ReleaseAndGetAddressOf()), "failed to create render target view");
 
 			// Allocate a 2-D surface as the depth/stencil buffer and
@@ -773,11 +773,11 @@ namespace DXF
 			//			depthStencilDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
 			ComPtr<ID3D11Texture2D> depthStencil;
-			DXF::ThrowIfFailed(m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, depthStencil.GetAddressOf()),
+			DXF::ThrowIfFailure(m_d3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, depthStencil.GetAddressOf()),
 				"failed to create texture");
 
 			CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
-			DXF::ThrowIfFailed(m_d3dDevice->CreateDepthStencilView(depthStencil.Get(), &depthStencilViewDesc,
+			DXF::ThrowIfFailure(m_d3dDevice->CreateDepthStencilView(depthStencil.Get(), &depthStencilViewDesc,
 				m_depthStencilView.ReleaseAndGetAddressOf()), "failed to create stencil view");
 
 			CreateViewMatrix();
@@ -801,7 +801,7 @@ namespace DXF
 			blendStateDesc.RenderTarget[0].LogicOp = D3D11_LOGIC_OP_NOOP;
 
 			ComPtr<ID3D11BlendState1> blendState;
-			DXF::ThrowIfFailed(m_d3dDevice->CreateBlendState1(&blendStateDesc, m_blendState.ReleaseAndGetAddressOf()),
+			DXF::ThrowIfFailure(m_d3dDevice->CreateBlendState1(&blendStateDesc, m_blendState.ReleaseAndGetAddressOf()),
 				"Could not create blend state");
 		}
 
@@ -813,10 +813,10 @@ namespace DXF
 			if (m_vertices.empty())
 				return;
 
-			DXF::ThrowIfFailed(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices,
+			DXF::ThrowIfFailure(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices,
 				m_vertexBuffer), "Could not create immutable texture vertex buffer");
 
-			DXF::ThrowIfFailed(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices,
+			DXF::ThrowIfFailure(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices,
 				m_indexBuffer, m_nIndices), "Could not create immutable index buffer");
 		}
 
@@ -831,10 +831,10 @@ namespace DXF
 			if (m_vertices2.empty())
 				return;
 
-			DXF::ThrowIfFailed(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices2,
+			DXF::ThrowIfFailure(CreateImmutableTextureVertexBuffer(*m_d3dDevice.Get(), m_vertices2,
 				m_vertexBuffer2), "Could not create immutable texture vertex buffer 2");
 
-			DXF::ThrowIfFailed(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices2,
+			DXF::ThrowIfFailure(CreateImmutableIndexBuffer(*m_d3dDevice.Get(), m_indices2,
 				m_indexBuffer2, m_nIndices2), "Could not create immutable index buffer 2");
 		}
 

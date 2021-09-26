@@ -25,6 +25,7 @@ public:
 	virtual bool Initialize(HWND mainWnd, int width, int height);
 	virtual void Resize(int width, int height);
 	virtual void Draw() = 0;
+	CSize GetClientSize();
 
 protected:
 	virtual void CreateRtvAndDsvDescriptorHeaps();
