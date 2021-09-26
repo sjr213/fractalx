@@ -76,6 +76,16 @@ void Core12::SetPerspective(float nearView, float farView)
 	XMStoreFloat4x4(&m_proj, P);
 }
 
+float Core12::GetNearPlane() const
+{
+	return m_near;
+}
+
+float Core12::GetFarPlane() const
+{
+	return m_far;
+}
+
 void Core12::SetRotationGroup(const RotationGroup& rg)
 {
 	m_rotationGroup = rg;

@@ -31,9 +31,6 @@ namespace DXF
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
 
-		float m_nearPlaneView = 0.1f;
-		float m_farPlaneView = 10.0f;
-
 		Vertex<float> m_camera = GetDefaultCamera();
 		Vertex<float> m_target = GetDefaultTarget();
 		Vertex<float> m_targetBackground = GetDefaultTarget();
@@ -172,8 +169,8 @@ namespace DXF
 		DxPerspective GetPerspective() const override
 		{
 			DxPerspective perspective;
-			perspective.NearPlane = m_nearPlaneView;
-			perspective.FarPlane = m_farPlaneView;
+			perspective.NearPlane = m_core12->GetNearPlane();
+			perspective.FarPlane = m_core12->GetFarPlane();
 
 			return perspective;
 		}
@@ -185,9 +182,6 @@ namespace DXF
 
 			if (nearView > farView)
 				std::swap(nearView, farView);
-
-			m_nearPlaneView = nearView;
-			m_farPlaneView = farView;
 
 			m_core12->SetPerspective(nearView, farView);
 		}

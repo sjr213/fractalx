@@ -101,6 +101,9 @@ namespace DxSupport
 
 		void ReloadTextures();
 
+		float GetNearPlane() const;
+		float GetFarPlane() const;
+
 	private:
 
 		void UpdateCamera();
