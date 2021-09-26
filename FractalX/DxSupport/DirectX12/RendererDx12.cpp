@@ -198,8 +198,6 @@ namespace DXF
 		void ReloadTextures() override
 		{
 			m_core12->ReloadTextures();
-			m_core12->Update(0, 0);
-			m_core12->Draw();
 		}
 
 		void SetTexture2()
