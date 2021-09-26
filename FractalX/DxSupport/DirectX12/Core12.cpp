@@ -71,6 +71,9 @@ void Core12::SetPerspective(float nearView, float farView)
 {
 	m_near = nearView;
 	m_far = farView;
+
+	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, AspectRatio(), m_near, m_far);
+	XMStoreFloat4x4(&m_proj, P);
 }
 
 void Core12::SetRotationGroup(const RotationGroup& rg)
