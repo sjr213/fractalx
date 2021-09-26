@@ -44,8 +44,6 @@ namespace DXF
 
 		virtual RotationGroup GetRotationGroup() = 0;
 
-		virtual void GetWindowSize(int& width, int& height) const = 0;
-
 		virtual void SetTextureColors(std::vector<uint32_t> colors) = 0;
 
 		virtual void ReloadTextures() = 0;

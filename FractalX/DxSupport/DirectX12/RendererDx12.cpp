@@ -108,13 +108,6 @@ namespace DXF
 			}
 		}
 
-		void GetWindowSize(int& width, int& height) const override
-		{
-			auto size = m_core12->GetClientSize();
-			width = size.cx;
-			height = size.cy;
-		}
-
 		void SetModel(const DxVertexData& vertexData) override
 		{
 			std::vector<DxSupport::Vertex> vertices;

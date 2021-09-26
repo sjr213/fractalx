@@ -188,12 +188,6 @@ namespace DXF
 			}
 		}
 
-		void GetWindowSize(int& width, int& height) const override
-		{
-			width = m_outputWidth;
-			height = m_outputHeight;
-		}
-
 		void SetModel(const DxVertexData& vertexData) override
 		{
 			m_vertices = vertexData.Vertices;
