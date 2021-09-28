@@ -79,7 +79,9 @@ namespace DxSupport
 		void SetIndices(std::vector<std::int32_t>&& indices);
 		void SetTextureColors(std::vector<uint32_t> colors);
 
+		DXF::Vertex<float> GetCamera() const;
 		void SetCamera(const DXF::Vertex<float>& camera);
+		DXF::Vertex<float> GetTarget() const;
 		void SetTarget(const DXF::Vertex<float>& target);
 		void SetPerspective(float nearView, float farView);
 
@@ -97,7 +99,7 @@ namespace DxSupport
 		DXF::Vertex<float> GetWBackgroundScale() const;
 		void SetWorlds(float totalTime); // replaces OnKeyboardInput()
 
-		bool IsReady();
+		bool IsReadyToRender();
 
 		void ReloadTextures();
 

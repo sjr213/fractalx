@@ -57,9 +57,19 @@ void Core12::SetTextureColors(std::vector<uint32_t> colors)
 	m_colors = colors;
 }
 
+DXF::Vertex<float> Core12::GetCamera() const
+{
+	return m_camera;
+}
+
 void Core12::SetCamera(const DXF::Vertex<float>& camera)
 {
 	m_camera = camera;
+}
+
+DXF::Vertex<float> Core12::GetTarget() const
+{
+	return m_target;
 }
 
 void Core12::SetTarget(const DXF::Vertex<float>& target)
@@ -190,7 +200,7 @@ void Core12::Resize(int width, int height)
 	XMStoreFloat4x4(&m_proj, P);
 }
 
-bool Core12::IsReady() // Need to think about this
+bool Core12::IsReadyToRender() // Need to think about this
 {
 	return m_mainRitem != nullptr;
 }

@@ -31,24 +31,13 @@ namespace DXF
 		// Rendering loop timer.
 		DXF::StepTimer m_timer;
 
-		Vertex<float> m_camera = GetDefaultCamera();
-		Vertex<float> m_target = GetDefaultTarget();
 		Vertex<float> m_targetBackground = GetDefaultTarget();
 
-		DirectX::SimpleMath::Color m_backgroundColor;
-
-		// new colors and lights
-		DxEffectColors m_effectColors;
-		DxLights m_lights;
-
 		std::shared_ptr<DxSupport::Core12> m_core12;
-
-		bool m_ready = false;
 
 	public:
 
 		RendererDx12Imp() :
-			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f)),	// r,g.b,a
 			m_core12(new DxSupport::Core12())
 		{}
 
@@ -92,13 +81,11 @@ namespace DXF
 			try
 			{
 				m_core12->Resize(width, height);
-				m_ready = true;
 				m_core12->Update(0, 0);
 				m_core12->Draw();
 			}
 			catch (DxException& ex)
 			{
-				m_ready = false;
 				CString msg(_T("Resource initialization failed! : "));
 				msg += ex.what();
 				AfxMessageBox(msg, MB_OK);
@@ -143,7 +130,7 @@ namespace DXF
 
 		void RefreshRender(float time) override
 		{
-			if (!m_core12->IsReady())
+			if (!m_core12->IsReadyToRender())
 				return;
 
 			m_core12->Update(time, time);
@@ -204,12 +191,12 @@ namespace DXF
 
 		Vertex<float> GetCamera() const override
 		{
-			return m_camera;
+			return m_core12->GetCamera();
 		}
 
 		Vertex<float> GetTarget() const override
 		{
-			return m_target;
+			return m_core12->GetTarget();
 		}
 
 		Vertex<float> GetTargetBackground() const override
@@ -219,7 +206,7 @@ namespace DXF
 
 		bool IsReady() override
 		{
-			return m_core12 != nullptr;
+			return m_core12 != nullptr;  
 		}
 
 		bool DrawImage(CDC& /*dc*/, CSize /*targetSize*/) override
