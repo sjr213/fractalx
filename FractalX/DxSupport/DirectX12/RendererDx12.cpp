@@ -6,6 +6,7 @@
 #include "ColorUtil.h"
 #include "Core12.h"
 #include <DirectXColors.h>
+#include "Dx12CoordinateMap.h"
 #include "DxEffectColors.h"
 #include "DxException.h"
 #include "DxLight.h"
@@ -18,6 +19,7 @@
 #include <wrl/client.h>
 
 using namespace DxCore;
+using namespace DxSupport;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -73,6 +75,9 @@ namespace DXF
 			if (!IsReady())
 				return;
 
+			if (!m_core12->IsReadyToRender())
+				return;
+
 			auto size = m_core12->GetClientSize();
 
 			if (width == size.cx && height == size.cy)
@@ -120,12 +125,12 @@ namespace DXF
 
 		void SetRotationGroup(const RotationGroup& rg) override
 		{
-			m_core12->SetRotationGroup(rg);
+			m_core12->SetRotationGroup(Dx12CoordinateMap::ToD12RotationGroup(rg));
 		}
 
 		RotationGroup GetRotationGroup() override
 		{
-			return m_core12->GetRotationGroup();
+			return Dx12CoordinateMap::FromD12RotationGroup(m_core12->GetRotationGroup());
 		}
 
 		void RefreshRender(float time) override
@@ -176,17 +181,17 @@ namespace DXF
 		void SetView(const Vertex<float>& camera, const Vertex<float>& target, const Vertex<float>& /*targetBackgnd*/) override
 		{
 			m_core12->SetCamera(camera);
-			m_core12->SetTarget(target);
+			m_core12->SetTarget(Dx12CoordinateMap::ToD12Target(target));
 		}
 
 		void SetTarget(const Vertex<float>& target) override
 		{
-			m_core12->SetTarget(target);
+			m_core12->SetTarget(Dx12CoordinateMap::ToD12Target(target));
 		}
 
 		void SetTargetBackground(const Vertex<float>& /*targetBackgnd*/) override
 		{
-
+			// Dx12CoordinateMap::ToD12Target(target)
 		}
 
 		Vertex<float> GetCamera() const override
@@ -196,11 +201,12 @@ namespace DXF
 
 		Vertex<float> GetTarget() const override
 		{
-			return m_core12->GetTarget();
+			return Dx12CoordinateMap::FromD12Target(m_core12->GetTarget());
 		}
 
 		Vertex<float> GetTargetBackground() const override
 		{
+			// Dx12CoordinateMap::FromD12Target(m_core12->GetTarget());
 			return m_targetBackground;
 		}
 

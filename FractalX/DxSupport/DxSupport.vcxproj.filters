@@ -204,6 +204,9 @@
     <ClInclude Include="ColorUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Dx12CoordinateMap.h">
+      <Filter>Dx12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -346,6 +349,9 @@
     </ClCompile>
     <ClCompile Include="ColorUtil.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dx12CoordinateMap.cpp">
+      <Filter>Dx12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

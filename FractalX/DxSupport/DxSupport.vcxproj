@@ -181,6 +181,7 @@
     <ClInclude Include="DirectX12\FrameResourceFx.h" />
     <ClInclude Include="DirectX12\RendererDx12.h" />
     <ClInclude Include="DoubleRayTracer.h" />
+    <ClInclude Include="Dx12CoordinateMap.h" />
     <ClInclude Include="DxEffectColors.h" />
     <ClInclude Include="DxException.h" />
     <ClInclude Include="DxFactoryMethods.h" />
@@ -241,6 +242,7 @@
     <ClCompile Include="DirectX12\FrameResourceFx.cpp" />
     <ClCompile Include="DirectX12\RendererDx12.cpp" />
     <ClCompile Include="DoubleRayTracer.cpp" />
+    <ClCompile Include="Dx12CoordinateMap.cpp" />
     <ClCompile Include="DxException.cpp" />
     <ClCompile Include="DxFactoryMethods.cpp" />
     <ClCompile Include="DxfColorFactory.cpp" />
