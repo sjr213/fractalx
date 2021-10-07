@@ -766,6 +766,7 @@ void Core12::BuildRenderItems()
 	mainModelRitem->StartIndexLocation = mainModelRitem->Geo->DrawArgs["mainModel"].StartIndexLocation;
 	mainModelRitem->BaseVertexLocation = mainModelRitem->Geo->DrawArgs["mainModel"].BaseVertexLocation;
 	m_mainRitem = mainModelRitem.get();
+	m_ritemLayer[(int)RenderLayer::Opaque].clear();
 	m_ritemLayer[(int)RenderLayer::Opaque].push_back(mainModelRitem.get());
 
 	m_allRitems.push_back(std::move(mainModelRitem));
