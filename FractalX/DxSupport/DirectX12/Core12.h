@@ -108,6 +108,7 @@ namespace DxSupport
 
 	private:
 
+		bool BuildAll();
 		void UpdateCamera();
 		void AnimateMaterials();
 		void UpdateObjectCBs();

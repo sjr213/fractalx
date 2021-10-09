@@ -119,6 +119,7 @@ void Core12::SetAmbientColor(const DirectX::XMFLOAT4& ambientColor)
 void Core12::SetDiffuseAlbedo(const DirectX::XMFLOAT4& diffuseAlbedo)
 {
 	m_diffuseAlbedo = diffuseAlbedo;
+	BuildAll();
 }
 
 void Core12::SetFresnelR0(const DirectX::XMFLOAT3& fresnelR0)
@@ -163,6 +164,14 @@ bool Core12::Initialize(HWND mainWnd, int width, int height)
 	if (!Core12Base::Initialize(mainWnd, width, height)) 
 		return false;
 
+	return BuildAll();
+}
+
+bool Core12::BuildAll()
+{
+	if (MainWnd() == NULL)
+		return false;
+
 	// Reset the command list to prep for initialization commands.
 	ThrowIfFailed(m_commandList->Reset(m_directCmdListAlloc.Get(), nullptr));
 
@@ -170,15 +179,15 @@ bool Core12::Initialize(HWND mainWnd, int width, int height)
 	// so we have to query this information.
 	m_cbvSrvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); // ok
 
-	LoadTextures();				
+	LoadTextures();
 	BuildRootSignature();
-	BuildDescriptorHeaps();		
+	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildMainModelGeometry();
-	BuildMaterials();			
-	BuildRenderItems();			
-	BuildFrameResources();		
-	BuildPSOs();				
+	BuildMaterials();
+	BuildRenderItems();
+	BuildFrameResources();
+	BuildPSOs();
 
 	// Execute the initialization commands.
 	ThrowIfFailed(m_commandList->Close());
