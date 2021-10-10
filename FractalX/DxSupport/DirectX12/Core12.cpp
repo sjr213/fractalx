@@ -119,7 +119,6 @@ void Core12::SetAmbientColor(const DirectX::XMFLOAT4& ambientColor)
 void Core12::SetDiffuseAlbedo(const DirectX::XMFLOAT4& diffuseAlbedo)
 {
 	m_diffuseAlbedo = diffuseAlbedo;
-	BuildAll();
 }
 
 void Core12::SetFresnelR0(const DirectX::XMFLOAT3& fresnelR0)

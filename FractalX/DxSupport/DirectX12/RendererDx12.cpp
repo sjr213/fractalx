@@ -237,6 +237,7 @@ namespace DXF
 			m_core12->SetAmbientColor(effectColors.AmbientColor);
 			m_core12->SetDiffuseAlbedo(effectColors.DiffuseColor);
 			m_core12->SetFresnelR0(effectColors.SpecularColor.ToVector3());
+			m_core12->BuildAll();
 		}
 
 		void SetLights(DxLights lights) override

@@ -106,9 +106,10 @@ namespace DxSupport
 		float GetNearPlane() const;
 		float GetFarPlane() const;
 
-	private:
-
 		bool BuildAll();
+
+	private:
+	
 		void UpdateCamera();
 		void AnimateMaterials();
 		void UpdateObjectCBs();
