@@ -21,15 +21,17 @@ private:
 	const Gdiplus::Rect m_rectDiffuse;
 	const Gdiplus::Rect m_rectSpecular;
 	const Gdiplus::Rect m_rectEmissive;
+	DXF::DxVersion m_modelVersion = DXF::DxVersion::Dx11;
 
 public:
-	EffectColorDlgImpl(EffectColors colors, CWnd* pParent)
+	EffectColorDlgImpl(EffectColors colors, DXF::DxVersion version, CWnd* pParent)
 		: CEffectColorDlg(IDD_EFFECT_COLOR_DLG, pParent)
 		, m_colors(colors)
 		, m_rectAmbient(100, 45, 40, 40)
 		, m_rectDiffuse(100, 104, 40, 40)
 		, m_rectSpecular(100, 163, 40, 40)
 		, m_rectEmissive(100, 222, 40, 40)
+		, m_modelVersion(version)
 	{}
 
 	virtual ~EffectColorDlgImpl() {}
@@ -46,7 +48,16 @@ protected:
 	{
 		CEffectColorDlg::OnInitDialog();
 
+		EnableCtrls();
+
 		return TRUE;
+	}
+
+	void EnableCtrls()
+	{
+		auto specPowerCtrl = GetDlgItem(IDC_SPECULAR_POWER_EDIT);
+		if (specPowerCtrl)
+			specPowerCtrl->EnableWindow(m_modelVersion == DXF::DxVersion::Dx11);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -196,7 +207,7 @@ BEGIN_MESSAGE_MAP(EffectColorDlgImpl, CEffectColorDlg)
 	ON_BN_CLICKED(IDC_DEFAULT_BUT, &EffectColorDlgImpl::OnDefault)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CEffectColorDlg> CEffectColorDlg::CreateEffectColorDlg(DxColor::EffectColors colors, CWnd* pParent /*= nullptr*/)
+std::shared_ptr<CEffectColorDlg> CEffectColorDlg::CreateEffectColorDlg(DxColor::EffectColors colors, DXF::DxVersion version, CWnd* pParent /*= nullptr*/)
 {
-	return std::make_shared<EffectColorDlgImpl>(colors, pParent);
+	return std::make_shared<EffectColorDlgImpl>(colors, version, pParent);
 }

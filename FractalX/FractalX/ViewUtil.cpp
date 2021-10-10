@@ -164,7 +164,9 @@ namespace ViewUtil
 	bool EditEffectColors(CFractalXDoc& doc, DXF::Renderer& renderer, CWnd* pWnd)
 	{
 		auto effectColors = doc.GetEffectColors();
-		auto colorsDlg = CEffectColorDlg::CreateEffectColorDlg(effectColors, pWnd);
+		auto modelData = doc.GetModelData();
+		auto modelVersion = modelData.DirectXVersion;
+		auto colorsDlg = CEffectColorDlg::CreateEffectColorDlg(effectColors, modelVersion, pWnd);
 
 		if (colorsDlg->DoModal() == IDOK)
 		{
