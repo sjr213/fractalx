@@ -18,7 +18,7 @@ namespace DxColor
 
 	void Serialize(CArchive& ar, ColorContrast& contrast);
 
-	void Serialize(CArchive& ar, EffectColors& colors);
+	void Serialize(CArchive& ar, EffectColors& colors, int version);
 
 	void Serialize(CArchive& ar, Light& light);
 

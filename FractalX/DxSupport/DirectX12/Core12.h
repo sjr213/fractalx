@@ -92,6 +92,7 @@ namespace DxSupport
 		void SetAmbientColor(const DirectX::XMFLOAT4& ambientColor);
 		void SetDiffuseAlbedo(const DirectX::XMFLOAT4& diffuseAlbedo);
 		void SetFresnelR0(const DirectX::XMFLOAT3& fresnelR0);
+		void SetRoughness(float roughness);
 		void SetLight(int index, DirectX::XMFLOAT3& color, DirectX::XMFLOAT3& direction);
 		void SetWorldScale(const DXF::Vertex<float>& scale);
 		DXF::Vertex<float> GetWorldScale() const;
@@ -185,6 +186,7 @@ namespace DxSupport
 		DirectX::XMFLOAT4 m_ambientLight = { 0.25f, 0.25f, 0.25f, 1.0f };
 		DirectX::XMFLOAT4 m_diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
 		DirectX::XMFLOAT3 m_fresnelR0 = { 0.05f, 0.05f, 0.05f };
+		float m_roughness = 0.125;
 		Light m_lights[3];
 		DXF::Vertex<float> m_worldScale = DXF::GetDefaultWorldScale();
 		DXF::Vertex<float> m_backgroundScale = DXF::GetDefaultWorldScale();

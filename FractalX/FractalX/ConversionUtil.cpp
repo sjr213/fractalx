@@ -31,6 +31,7 @@ namespace ConversionUtil
 		dxColors.SpecularColor = ColorUtils::ConvertToDxColor(effectColors.Specular);
 		dxColors.EmissiveColor = ColorUtils::ConvertToDxColor(effectColors.Emissive);
 		dxColors.SpecularPower = effectColors.SpecularPower;
+		dxColors.Roughness = effectColors.Roughness;
 
 		return dxColors;
 	}

@@ -58,6 +58,10 @@ protected:
 		auto specPowerCtrl = GetDlgItem(IDC_SPECULAR_POWER_EDIT);
 		if (specPowerCtrl)
 			specPowerCtrl->EnableWindow(m_modelVersion == DXF::DxVersion::Dx11);
+
+		auto roughnessCtrl = GetDlgItem(IDC_ROUGHNESS_EDIT);
+		if (roughnessCtrl)
+			roughnessCtrl->EnableWindow(m_modelVersion == DXF::DxVersion::Dx12);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -128,6 +132,11 @@ protected:
 		DDX_Text(pDX, IDC_SPECULAR_POWER_EDIT, specularPower);
 		DDV_MinMaxFloat(pDX, specularPower, 0.0f, 1000.0f);
 		m_colors.SpecularPower = specularPower;
+
+		float roughness = m_colors.Roughness;
+		DDX_Text(pDX, IDC_ROUGHNESS_EDIT, roughness);
+		DDV_MinMaxFloat(pDX, roughness, 0.0f, 1.0f);
+		m_colors.Roughness = roughness;
 	}
 
 	void OnKillFocusRGB()
@@ -204,6 +213,7 @@ BEGIN_MESSAGE_MAP(EffectColorDlgImpl, CEffectColorDlg)
 	ON_EN_KILLFOCUS(IDC_EMISSIVE_GREEN_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_EMISSIVE_BLUE_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_EN_KILLFOCUS(IDC_SPECULAR_POWER_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
+	ON_EN_KILLFOCUS(IDC_ROUGHNESS_EDIT, &EffectColorDlgImpl::OnKillFocusRGB)
 	ON_BN_CLICKED(IDC_DEFAULT_BUT, &EffectColorDlgImpl::OnDefault)
 END_MESSAGE_MAP()
 

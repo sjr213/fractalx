@@ -126,6 +126,11 @@ void Core12::SetFresnelR0(const DirectX::XMFLOAT3& fresnelR0)
 	m_fresnelR0 = fresnelR0;
 }
 
+void Core12::SetRoughness(float roughness)
+{
+	m_roughness = roughness;
+}
+
 void Core12::SetLight(int index, DirectX::XMFLOAT3& color, DirectX::XMFLOAT3& direction)
 {
 	if (index < 0 || index > 2)
@@ -756,7 +761,7 @@ void Core12::BuildMaterials()
 	defaultMat->DiffuseSrvHeapIndex = 0;
 	defaultMat->DiffuseAlbedo = m_diffuseAlbedo;
 	defaultMat->FresnelR0 = m_fresnelR0;
-	defaultMat->Roughness = 0.125f;
+	defaultMat->Roughness = m_roughness;
 
 	m_materials["default"] = std::move(defaultMat);
 }

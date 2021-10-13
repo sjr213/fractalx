@@ -12,6 +12,7 @@ namespace DXF
 			, SpecularColor(DirectX::SimpleMath::Vector4(0.75f, 0.75f, 0.75f, 1.0f))
 			, EmissiveColor(DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f))
 			, SpecularPower(16.0f)
+			, Roughness(0.125f)
 		{}
 
 		DirectX::SimpleMath::Color AmbientColor;
@@ -19,5 +20,6 @@ namespace DXF
 		DirectX::SimpleMath::Color SpecularColor;
 		DirectX::SimpleMath::Color EmissiveColor;
 		float SpecularPower;
+		float Roughness;
 	};
 }

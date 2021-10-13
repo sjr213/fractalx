@@ -18,6 +18,7 @@ namespace DxColor
 			colors.Specular = ColorArgb((bite)255, (bite)192, (bite)192, (bite)192);
 			colors.Emissive = ColorArgb((bite)255, (bite)0, (bite)0, (bite)0);
 			colors.SpecularPower = 16.0f;
+			colors.Roughness = 0.125f;
 		}
 
 		ColorArgb Ambient;
@@ -25,6 +26,7 @@ namespace DxColor
 		ColorArgb Specular;
 		ColorArgb Emissive;
 		float SpecularPower;
+		float Roughness;
 	};
 
 

@@ -107,7 +107,7 @@ namespace DxColor
 		}
 	}
 
-	void Serialize(CArchive& ar, EffectColors& colors)
+	void Serialize(CArchive& ar, EffectColors& colors, int version)
 	{
 		Serialize(ar, colors.Ambient);
 		Serialize(ar, colors.Diffuse);
@@ -118,6 +118,14 @@ namespace DxColor
 			ar << colors.SpecularPower;
 		else
 			ar >> colors.SpecularPower;
+
+		if (version >= 6)
+		{
+			if (ar.IsStoring())
+				ar << colors.Roughness;
+			else
+				ar >> colors.Roughness;
+		}
 	}
 
 	void Serialize(CArchive& ar, Lights& lights)
