@@ -62,6 +62,18 @@ protected:
 		auto roughnessCtrl = GetDlgItem(IDC_ROUGHNESS_EDIT);
 		if (roughnessCtrl)
 			roughnessCtrl->EnableWindow(m_modelVersion == DXF::DxVersion::Dx12);
+
+		auto emissiveRed = GetDlgItem(IDC_EMISSIVE_RED_EDIT);
+		if (emissiveRed)
+			emissiveRed->EnableWindow(m_modelVersion == DXF::DxVersion::Dx11);
+
+		auto emissiveGreen = GetDlgItem(IDC_EMISSIVE_GREEN_EDIT);
+		if (emissiveGreen)
+			emissiveGreen->EnableWindow(m_modelVersion == DXF::DxVersion::Dx11);
+
+		auto emissiveBlue = GetDlgItem(IDC_EMISSIVE_BLUE_EDIT);
+		if (emissiveBlue)
+			emissiveBlue->EnableWindow(m_modelVersion == DXF::DxVersion::Dx11);
 	}
 
 	void DoDataExchange(CDataExchange* pDX) override
@@ -188,7 +200,8 @@ protected:
 			return;
 		}
 
-		if (PointInRect(m_rectEmissive, point))
+		// Don't respond if 
+		if (m_modelVersion == DXF::DxVersion::Dx11 && PointInRect(m_rectEmissive, point))
 		{
 			ChooseColor(m_colors.Emissive, false, *this);
 			return;
