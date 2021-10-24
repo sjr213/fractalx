@@ -1,14 +1,14 @@
 
 #pragma once
 
-class CArchive;
+#include "EffectColors.h"
 
+class CArchive;
 
 namespace DxColor
 {
 	struct ColorArgb;
 	struct ColorContrast;
-	struct EffectColors;
 	struct Light;
 	struct Lights;
 

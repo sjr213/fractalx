@@ -125,6 +125,9 @@ namespace DXF
 			m_backgroundColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f))	// r,g.b,a
 		{}
 
+		virtual ~RendererImp()
+		{}
+
 		void Initialize(HWND window, int width, int height) override
 		{
 			m_window = window;
@@ -1110,9 +1113,9 @@ namespace DXF
 		}
 	};
 
-	std::shared_ptr<Renderer> CreateRendererDx11()
+	std::unique_ptr<Renderer> CreateRendererDx11()
 	{
-		return std::make_shared<RendererImp>();
+		return std::make_unique<RendererImp>();
 	}
 }
 

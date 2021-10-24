@@ -4,5 +4,5 @@
 
 namespace DXF
 {
-	std::shared_ptr<Renderer> CreateRendererDx12();
+	std::unique_ptr<Renderer> CreateRendererDx12();
 }

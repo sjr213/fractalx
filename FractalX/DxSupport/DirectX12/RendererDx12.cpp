@@ -35,12 +35,15 @@ namespace DXF
 
 		Vertex<float> m_targetBackground = GetDefaultTarget();
 
-		std::shared_ptr<DxSupport::Core12> m_core12;
+		std::unique_ptr<DxSupport::Core12> m_core12;
 
 	public:
 
 		RendererDx12Imp() :
 			m_core12(new DxSupport::Core12())
+		{}
+
+		virtual ~RendererDx12Imp()
 		{}
 
 		void Initialize(HWND window, int width, int height) override
@@ -287,8 +290,8 @@ namespace DXF
 		}
 	};
 
-	std::shared_ptr<Renderer> CreateRendererDx12()
+	std::unique_ptr<Renderer> CreateRendererDx12()
 	{
-		return std::make_shared<RendererDx12Imp>();
+		return std::make_unique<RendererDx12Imp>();
 	}
 }

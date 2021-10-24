@@ -21,6 +21,10 @@ namespace DXF
 	class Renderer
 	{
 	public:
+		virtual ~Renderer()
+		{
+		}
+
 		// Initialization and management
 		virtual void Initialize(HWND window, int width, int height) = 0;
 
