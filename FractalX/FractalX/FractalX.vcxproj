@@ -199,6 +199,7 @@
     <ClInclude Include="BackgroundPage.h" />
     <ClInclude Include="CancelException.h" />
     <ClInclude Include="CartesianConversionDlg.h" />
+    <ClInclude Include="DxDlg.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColorSelectorDlg.h" />
     <ClInclude Include="ColorUtilities.h" />
@@ -251,6 +252,7 @@
     <ClCompile Include="BackgroundPage.cpp" />
     <ClCompile Include="CancelException.cpp" />
     <ClCompile Include="CartesianConversionDlg.cpp" />
+    <ClCompile Include="DxDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColorSelectorDlg.cpp" />
     <ClCompile Include="ColorUtilities.cpp" />

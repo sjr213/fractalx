@@ -42,7 +42,6 @@ void CModelSheet::SetModelData(const ModelData& data)
 {
 	m_data = data;
 
-	m_vertexPage.SetDxVersion(m_data.DirectXVersion);
 	m_vertexPage.SetVertexIterations(m_data.VertexIterations);
 	m_vertexPage.SetSeedTriangles(m_data.TriangleSeeds);
 	m_vertexPage.SetVertexSource(m_data.SourceVertices);
@@ -100,7 +99,6 @@ bool CModelSheet::GetDefaultTargetAndWorkScale() const
 void CModelSheet::OnOk()
 {
 	m_data.VertexIterations = m_vertexPage.GetVertexIterations();
-	m_data.DirectXVersion = m_vertexPage.GetDxVersion();
 	m_data.TriangleSeeds = m_vertexPage.GetSeedTriangles();
 	m_data.SourceVertices = m_vertexPage.GetVertexSource();
 	auto vRect = m_vertexPage.GetVertices();
