@@ -183,7 +183,11 @@ namespace DXF
 
 		void SetView(const Vertex<float>& camera, const Vertex<float>& target, const Vertex<float>& /*targetBackgnd*/) override
 		{
-			m_core12->SetCamera(camera);
+			// Since dx12 uses a LH lookat matrix and dx11 uses a RH lookat
+			// we use the negative x value to Dx12 looks like Dx11
+			auto cameraCpy = camera;
+			cameraCpy.X *= -1.0f;
+			m_core12->SetCamera(cameraCpy);
 			m_core12->SetTarget(Dx12CoordinateMap::ToD12Target(target));
 		}
 
@@ -199,7 +203,11 @@ namespace DXF
 
 		Vertex<float> GetCamera() const override
 		{
-			return m_core12->GetCamera();
+			// Since dx12 uses a LH lookat matrix and dx11 uses a RH lookat
+			// we use the negative x value to Dx12 looks like Dx11
+			auto camera = m_core12->GetCamera();
+			camera.X *= -1.0f;
+			return camera;
 		}
 
 		Vertex<float> GetTarget() const override
