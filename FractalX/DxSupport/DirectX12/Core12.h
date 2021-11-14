@@ -11,6 +11,8 @@
 #include "FrameResourceFx.h"
 #include "Vertex.h"
 
+class CDC;
+
 namespace DxSupport
 {
 	// was gNumFrameResources
@@ -108,6 +110,8 @@ namespace DxSupport
 		float GetFarPlane() const;
 
 		bool BuildAll();
+
+		bool DrawImage(CDC& dc, CSize targetSize);
 
 	private:
 	

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Core12.h"
 
+#include <afxwin.h>
 #include "NarrowCast.h"
 #include "Common/GeometryGenerator.h"
 #include "RotationParams.h"
@@ -875,4 +876,45 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> Core12::GetStaticSamplers()
 		anisotropicWrap, anisotropicClamp };
 }
 
+bool Core12::DrawImage(CDC& dc, CSize targetSize)
+{
+	if (!IsReadyToRender())
+		return false;
+
+	ComPtr<IDXGISurface1> pSurface1;
+	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)pSurface1.GetAddressOf());
+	if (FAILED(hr))
+		return false;
+
+	HDC hdc3D;
+	pSurface1->GetDC(FALSE, &hdc3D);
+
+	HBITMAP hbm3D = static_cast<HBITMAP>(GetCurrentObject(hdc3D, OBJ_BITMAP));
+
+	BITMAPINFO	bitmapInfo;
+	bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
+	bitmapInfo.bmiHeader.biBitCount = 0;
+
+	VERIFY(GetDIBits(hdc3D, hbm3D, 0, bitmapInfo.bmiHeader.biHeight, nullptr, &bitmapInfo, DIB_RGB_COLORS));
+
+	bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+	auto nBytes = static_cast<unsigned long long>(bitmapInfo.bmiHeader.biWidth + 1);
+	nBytes *= static_cast<unsigned long long>(bitmapInfo.bmiHeader.biHeight);
+	nBytes *= sizeof(DWORD);
+	std::unique_ptr<BYTE[]> pDIBits(new BYTE[nBytes]);
+	VERIFY(GetDIBits(hdc3D, hbm3D, 0, bitmapInfo.bmiHeader.biHeight, pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS));
+
+	// Better quality stretching
+	int oldMode = SetStretchBltMode(dc, HALFTONE);
+
+	VERIFY(StretchDIBits(dc, 0, 0, targetSize.cx, targetSize.cy, 0, 0, bitmapInfo.bmiHeader.biWidth, bitmapInfo.bmiHeader.biHeight,
+		pDIBits.get(), &bitmapInfo, DIB_RGB_COLORS, SRCCOPY) != GDI_ERROR);
+
+	pSurface1->ReleaseDC(nullptr);
+	SetStretchBltMode(dc, oldMode);
+
+	return true;
 }
+
+} // namespace DxSupport

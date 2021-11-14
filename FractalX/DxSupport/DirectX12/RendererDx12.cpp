@@ -226,9 +226,9 @@ namespace DXF
 			return m_core12 != nullptr;  
 		}
 
-		bool DrawImage(CDC& /*dc*/, CSize /*targetSize*/) override
+		bool DrawImage(CDC& dc, CSize targetSize) override
 		{
-			return false;
+			return m_core12->DrawImage(dc, targetSize);
 		}
 
 		CSize GetScreenSize() const override

@@ -392,7 +392,7 @@ namespace DXF
 		bool DrawImage(CDC& dc, CSize targetSize) override
 		{
 			if (! IsReady())
-				return nullptr;
+				return false;
 
 			ComPtr<IDXGISurface1> pSurface1;
 			HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)pSurface1.GetAddressOf());
