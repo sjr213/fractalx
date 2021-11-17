@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Dx12CoordinateMap.h"
 
 using namespace DXF;

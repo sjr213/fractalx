@@ -1,9 +1,9 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Core12.h"
 
 #include <afxwin.h>
 #include "NarrowCast.h"
-#include "Common/GeometryGenerator.h"
+#include "GeometryGenerator.h"
 #include "RotationParams.h"
 
 using namespace DirectX;
@@ -232,7 +232,7 @@ void Core12::Update(float totalTimeSecs, float deltaTimeSecs)
 	// If not, wait until the GPU has completed commands up to this fence point.
 	if (m_currFrameResource->Fence != 0 && m_fence->GetCompletedValue() < m_currFrameResource->Fence)
 	{
-		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		HANDLE eventHandle = CreateEventEx(nullptr, nullptr, false, EVENT_ALL_ACCESS);
 		ThrowIfFailed(m_fence->SetEventOnCompletion(m_currFrameResource->Fence, eventHandle));
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
@@ -498,7 +498,7 @@ void Core12::ReloadTextures()
 	// If not, wait until the GPU has completed commands up to this fence point.
 	if (m_currFrameResource->Fence != 0 && m_fence->GetCompletedValue() < m_currFrameResource->Fence)
 	{
-		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		HANDLE eventHandle = CreateEventEx(nullptr, nullptr, false, EVENT_ALL_ACCESS);
 		ThrowIfFailed(m_fence->SetEventOnCompletion(m_currFrameResource->Fence, eventHandle));
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
@@ -663,8 +663,8 @@ void Core12::BuildShadersAndInputLayout()
 		NULL, NULL
 	};
 */
-	m_shaders["standardVS"] = d3dUtil::CompileShader(L"..\\DxSupport\\Shaders\\Default1dTexture.hlsl", nullptr, "VS", "vs_5_0");
-	m_shaders["opaquePS"] = d3dUtil::CompileShader(L"..\\DxSupport\\Shaders\\Default1dTexture.hlsl", defines, "PS", "ps_5_0");
+	m_shaders["standardVS"] = d3dUtil::CompileShader(L"..\\DxSupport12\\Shaders\\Default1dTexture.hlsl", nullptr, "VS", "vs_5_0");
+	m_shaders["opaquePS"] = d3dUtil::CompileShader(L"..\\DxSupport12\\Shaders\\Default1dTexture.hlsl", defines, "PS", "ps_5_0");
 //	m_shaders["alphaTestedPS"] = d3dUtil::CompileShader(L"Shaders\\DefaultStencil.hlsl", alphaTestDefines, "PS", "ps_5_0");
 
 	m_inputLayout =

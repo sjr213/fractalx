@@ -2,11 +2,11 @@
 
 // Copy and adapt from StencilDemoApp.cpp
 
-#include "Common/Core12Base.h"
+#include "Core12Base.h"
 #include "DefaultFields.h"
 #include <DirectXMath.h>
-#include "Common/MathHelper.h"
-#include "Common/UploadBuffer.h"
+#include "MathHelper.h"
+#include "UploadBuffer.h"
 #include "RotationGroup.h"
 #include "FrameResourceFx.h"
 #include "Vertex.h"

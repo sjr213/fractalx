@@ -117,13 +117,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors;..\DxCore</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors;..\DxCore;..\DxSupport12</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>D3DCompiler.lib;d3d11.lib;D3D12.lib;dxgi.lib;dxguid.lib;DxSupport.lib;DxColors.lib;gdiplus.lib;DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;d3d11.lib;D3D12.lib;dxgi.lib;dxguid.lib;DxSupport.lib;DxColors.lib;gdiplus.lib;DxCore.lib;DxSupport12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
@@ -172,7 +172,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors;..\DxCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DXF;.\;..\DxSupport;..\DxColors;..\DxCore;..\DxSupport12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -180,7 +180,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>D3DCompiler.lib;d3d11.lib;D3D12.lib;dxguid.lib;DxSupport.lib;DxColors.lib;dxgi.lib;gdiplus.lib;DxCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;d3d11.lib;D3D12.lib;dxguid.lib;DxSupport.lib;DxColors.lib;dxgi.lib;gdiplus.lib;DxCore.lib;DxSupport12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>

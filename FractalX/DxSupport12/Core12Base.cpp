@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Core12Base.h"
 
 #include "d3dUtil.h"

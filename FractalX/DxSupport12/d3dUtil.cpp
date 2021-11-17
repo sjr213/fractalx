@@ -1,5 +1,5 @@
 
-#include "stdafx.h"    // added
+#include "pch.h"    // added
 #include "d3dUtil.h"
 #include <comdef.h>
 #include <fstream>

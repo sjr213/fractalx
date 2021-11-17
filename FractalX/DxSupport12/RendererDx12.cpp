@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Renderer.h"
 
 #include <afxwin.h>

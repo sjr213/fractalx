@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Dx12">
-      <UniqueIdentifier>{db10ede8-1b0b-4484-8a67-91c8e83b73f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Dx12\Common">
-      <UniqueIdentifier>{15469f1f-f61f-4ee2-b0ab-bba5ae4ba741}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -168,44 +162,8 @@
     <ClInclude Include="RendererDx11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectX12\RendererDx12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\Core12Base.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\d3dUtil.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\d3dx12.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\DDSTextureLoader.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\GeometryGenerator.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\MathHelper.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Common\UploadBuffer.h">
-      <Filter>Dx12\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Core12.h">
-      <Filter>Dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\FrameResourceFx.h">
-      <Filter>Dx12</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX12\Dx12TextureMapper.h">
-      <Filter>Dx12</Filter>
-    </ClInclude>
     <ClInclude Include="ColorUtil.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dx12CoordinateMap.h">
-      <Filter>Dx12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -320,38 +278,8 @@
     <ClCompile Include="RendererDx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectX12\Common\Core12Base.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Common\d3dUtil.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Common\DDSTextureLoader.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Common\GeometryGenerator.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Common\MathHelper.cpp">
-      <Filter>Dx12\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Core12.cpp">
-      <Filter>Dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\RendererDx12.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\FrameResourceFx.cpp">
-      <Filter>Dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX12\Dx12TextureMapper.cpp">
-      <Filter>Dx12</Filter>
-    </ClCompile>
     <ClCompile Include="ColorUtil.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dx12CoordinateMap.cpp">
-      <Filter>Dx12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

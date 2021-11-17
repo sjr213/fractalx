@@ -1,6 +1,6 @@
 #pragma once
 
-namespace DxSupport :: Dx12TextureMapper
+namespace DxSupport::Dx12TextureMapper
 {
 	constexpr size_t MaxTextureWidth = 10000;
 

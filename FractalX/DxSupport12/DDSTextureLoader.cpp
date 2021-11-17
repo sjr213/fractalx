@@ -18,7 +18,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#include "stdafx.h"    // added
+#include "pch.h"    // added
 #include <assert.h>
 #include <algorithm>
 #include <memory>
