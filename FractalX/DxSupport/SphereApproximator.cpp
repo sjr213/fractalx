@@ -31,7 +31,7 @@ namespace DXF
 
 		VertexIndex GetVertexIndex(VertexMap& vertexMap, std::vector<DirectX::XMFLOAT3>& vertices, const XMFLOAT3& vertex)
 		{
-			constexpr float minDif = 2 * std::numeric_limits<float>::min();
+//			constexpr float minDif = 2 * std::numeric_limits<float>::min();
 
 			auto iter = vertexMap.find(vertex);
 
