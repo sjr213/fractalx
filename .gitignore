@@ -21,7 +21,7 @@ release/
 *.user
 *.db-shm
 *.db-wal
-/.vs
+FractalX/.vs/
 
 
 *.testlog
