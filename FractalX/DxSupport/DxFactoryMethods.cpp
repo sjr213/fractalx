@@ -6,7 +6,6 @@
 #include <d3d11_1.h>
 #include <dxgi1_2.h>
 #include <string>
-#include "VertexTypes.h"
 #include <winerror.h>
 
 
@@ -28,7 +27,7 @@ namespace DXF
 		UINT width = static_cast<UINT>(colors.size());
 		UINT height = 1;
 
-		D3D11_SUBRESOURCE_DATA initData;
+		D3D11_SUBRESOURCE_DATA initData{};
 		initData.pSysMem = colors.data();
 		initData.SysMemPitch = width * sizeof(uint32_t);
 		initData.SysMemSlicePitch = 0;
@@ -66,14 +65,14 @@ namespace DXF
 	{
 		auto vBufLen = static_cast<UINT>(vertices.size() * sizeof(VertexPositionNormalTexture));
 
-		D3D11_BUFFER_DESC vertexDescBuffer;
+		D3D11_BUFFER_DESC vertexDescBuffer{};
 		vertexDescBuffer.Usage = D3D11_USAGE_IMMUTABLE;
 		vertexDescBuffer.ByteWidth = vBufLen;
 		vertexDescBuffer.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexDescBuffer.CPUAccessFlags = 0;
 		vertexDescBuffer.MiscFlags = 0;
 
-		D3D11_SUBRESOURCE_DATA vertexData;
+		D3D11_SUBRESOURCE_DATA vertexData{};
 		vertexData.pSysMem = vertices.data();
 
 		return device.CreateBuffer(&vertexDescBuffer, &vertexData, &vertexBuffer);
@@ -85,14 +84,14 @@ namespace DXF
 		nIndices = static_cast<DWORD>(indices.size());
 		auto iBufLen = static_cast<UINT>(sizeof(unsigned int) * nIndices);
 
-		D3D11_BUFFER_DESC indexDescBuffer;
+		D3D11_BUFFER_DESC indexDescBuffer{};
 		indexDescBuffer.Usage = D3D11_USAGE_IMMUTABLE;
 		indexDescBuffer.ByteWidth = iBufLen;
 		indexDescBuffer.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexDescBuffer.CPUAccessFlags = 0;
 		indexDescBuffer.MiscFlags = 0;
 
-		D3D11_SUBRESOURCE_DATA indexData;
+		D3D11_SUBRESOURCE_DATA indexData{};
 		indexData.pSysMem = indices.data();
 
 		return device.CreateBuffer(&indexDescBuffer, &indexData, &indexBuffer);
