@@ -22,6 +22,7 @@ release/
 *.db-shm
 *.db-wal
 FractalX/.vs/
+/OtherDependencies/
 
 
 *.testlog
