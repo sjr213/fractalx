@@ -9,3 +9,16 @@ The seed triangles are used to calculate the model and if they need to be calcul
 Using triangle files speeds up the calculation almost 2x.
 
 The file coords2.bmp should be copied from the Fractalx\res folder to the executable folder to be used in the PositionAngleDlg.cpp.
+
+These files are stored in the folder:D:\code\working_github\fractalx2\OtherDependencies which is not uploaded on GitHub because if file sizes.
+
+Put these in the folders:
+D:\code\working_github\fractalx2\FractalX\x64\Debug
+D:\code\working_github\fractalx2\FractalX\x64\Release
+
+Packages
+DxSupport: directxtk_uwp, XAudio2
+DxSupport112: directxtk12_uwp
+FractalX: directxtk_uwp, audio2
+FractalX12: Xaudio
+DxTests: XAudio2, directxtk_uwp
